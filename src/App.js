@@ -1,9 +1,11 @@
-import './App.css';
+import React from "react";
+import Example from "./shareComponents/formikCustom/example";
+
 
 function App() {
   return (
     <div className="App">
-      <h1>Social Media App</h1>
+    <Example/>
     </div>
   );
 }
