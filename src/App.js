@@ -1,11 +1,15 @@
 import React from "react";
-import Example from "./shareComponents/formikCustom/example";
-
+import Header from "./shareComponents/header/Header";
+import { Routes, Route, Redirect } from "react-router-dom";
+import Auth from "./features/auth";
 
 function App() {
   return (
     <div className="App">
-    <Example/>
+      <Routes>
+        <Route path="/auth" element={<Auth />} />
+        <Route path="/home" element={<Header />} />
+      </Routes>
     </div>
   );
 }

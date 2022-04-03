@@ -88,6 +88,7 @@ const Example = () => {
               name="checkboxOption"
               options={checkboxOptions}
             />
+            
             <FormikControl
               control="datetime"
               label="Chọn ngày sinh"

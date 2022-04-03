@@ -1,24 +1,43 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import authAPI from "../../api/AuthApi";
 
-const initialState = {
-    value: 0,
+export const LoginUser = createAsyncThunk(
+  "auth/LoginUser",
+  async (params, thunkAPI) => {
+    console.log("Bạn dô hàm login rồi nha, yên tâm");
+    const currentUser = await authAPI.getAccount(params);
+    return currentUser;
   }
-  
-  export const counterSlice = createSlice({
-    name: 'counter',
-    initialState,
-    reducers: {
-      increment: (state) => {
-        // Redux Toolkit allows us to write "mutating" logic in reducers. It
-        // doesn't actually mutate the state because it uses the Immer library,
-        // which detects changes to a "draft state" and produces a brand new
-        // immutable state based off those changes
-        state.value += 1
-      },
+);
+
+const AuthSlice = createSlice({
+  name: "auth",
+  initialState: {
+    current: {},
+    loading: false,
+    error: "",
+  },
+  reducers: {},
+  extraReducers: {
+    [LoginUser.pending]: (state) => {
+      state.loading = true;
     },
-  })
-  
-  // Action creators are generated for each case reducer function
-  export const { increment, decrement, incrementByAmount } = counterSlice.actions
-  
-  export default counterSlice.reducer
+
+    [LoginUser.rejected]: (state, action) => {
+      state.loading = false;
+      state.error = "Đăng nhập thất bại !";
+    },
+
+    [LoginUser.fulfilled]: (state, action) => {
+      state.loading = false;
+      console.log(action.payload);
+
+      state.current = action.payload;
+    },
+  },
+});
+
+// Action creators are generated for each case reducer function
+export const { reducer: AuthReducer } = AuthSlice;
+
+export default AuthReducer;

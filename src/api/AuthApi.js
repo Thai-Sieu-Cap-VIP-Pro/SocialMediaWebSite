@@ -1,12 +1,11 @@
 import axiosClient from "./AxiosClient";
 
-
-class ProductAPI {
+class AuthAPI {
   getAccount = (params) => {
-    const url = "/login";
-    return axiosClient.get(url, { params });
+    const url = "api/auth/login";
+    return axiosClient.post(url, params);
   };
 }
 
-const productAPI = new ProductAPI();
-export default productAPI;
+const authAPI = new AuthAPI();
+export default authAPI;
