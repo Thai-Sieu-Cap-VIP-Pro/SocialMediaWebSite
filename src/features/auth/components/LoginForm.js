@@ -4,7 +4,7 @@ import * as Yup from "yup";
 import "./auth.scss";
 import { Button } from "react-bootstrap";
 import FormikControl from "../../../shareComponents/formikCustom/FormikControl";
-import { Link } from "react-router-dom";
+import { Link, useNavigate, Navigate } from "react-router-dom";
 import IMAGES from "../../../assets/images/imageStore";
 import { useDispatch, useSelector } from "react-redux";
 import { LoginUser } from "../authSlice";
@@ -17,15 +17,25 @@ const initialValues = {
 const validationSchema = Yup.object({
   email: Yup.string().required("Enter your email"),
   password: Yup.string().required("Enter your password"),
+  // .matches(
+  //   /^.*(?=.{8,})((?=.*[!@#$%^&*()\-_=+{};:,<.>]){1})(?=.*\d)((?=.*[a-z]){1})((?=.*[A-Z]){1}).*$/,
+  //   "Password must contain at least 8 characters, one uppercase, one number and one special case character"
+  // ),
 });
 
 const LoginForm = () => {
+  let navigate = useNavigate();
+  const { isLogin } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
 
-  const onSubmit = (values) => {
+  console.log(isLogin);
+
+  const onSubmit = async (values) => {
     console.log(values);
     const action = LoginUser(values);
-    var actionReseult = dispatch(action);
+    await dispatch(action);
+    console.log("Login successfull");
+    navigate("/");
   };
 
   return (

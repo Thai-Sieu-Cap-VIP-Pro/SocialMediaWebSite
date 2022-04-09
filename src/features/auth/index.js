@@ -3,12 +3,14 @@ import { Route, Routes, Outlet } from "react-router-dom";
 import NotFound from "../../shareComponents/notfound/NotFound";
 import LoginForm from "./components/LoginForm";
 import RegisterForm from "./components/RegisterForm";
+import LoginPage from "./pages/LoginPage";
 
 const Auth = () => {
   return (
     <div>
       <Routes>
-        <Route path="login" element={<LoginForm />}></Route>
+        <Route index element={<LoginPage />}></Route>
+        <Route path="login" element={<LoginPage />}></Route>
         <Route path="register" element={<RegisterForm />}></Route>
       </Routes>
       <Outlet />

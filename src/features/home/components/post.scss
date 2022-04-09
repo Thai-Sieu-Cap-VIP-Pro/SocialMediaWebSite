@@ -1,0 +1,153 @@
+.postItem {
+  margin: 20px 0;
+  border: 1px solid rgba(var(--b6a, 219, 219, 219), 1);
+  border-radius: 3px;
+
+  &__header {
+    padding: 10px;
+
+    .row {
+      align-items: center;
+    }
+
+    img {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+    }
+    #more {
+      cursor: pointer;
+    }
+
+    h6 {
+      margin: 0;
+    }
+  }
+
+  &__slide {
+    padding: 0;
+
+    img {
+      width: 100%;
+    }
+  }
+
+  &__react {
+    margin: 20px 0;
+
+    svg {
+      font-size: 24px;
+      margin-right: 20px;
+    }
+  }
+
+  &__content {
+    &__likes {
+      font-weight: 500;
+    }
+
+    &__allCmt {
+      color: gray;
+      margin: 10px 0 0 0;
+    }
+
+    &__time {
+      font-size: 13px;
+      text-transform: uppercase;
+      margin: 5px 0;
+      color: gray;
+    }
+  }
+  &__comment {
+    border: 1px solid rgba(var(--b6a, 219, 219, 219), 1);
+    margin: 10px 0 0 0;
+    input {
+      border: none;
+      outline: none;
+    }
+
+    .row {
+      align-items: center;
+      height: 50px;
+    }
+
+    svg {
+      font-size: 24px;
+    }
+
+    p {
+      color: rgb(114, 114, 250);
+      font-weight: bold;
+      margin: 0;
+      margin-left: 30px;
+    }
+  }
+}
+
+.recommend {
+  margin-top: 50px;
+
+  &__header {
+    display: flex;
+    align-items: center;
+    a {
+      font-size: 12px;
+      font-weight: bold;
+      text-decoration: none;
+      color: rgb(98, 95, 95);
+      margin-left: 100px;
+    }
+
+    p {
+      font-weight: bold;
+      font-size: 13px;
+      color: rgb(141, 138, 138);
+    }
+  }
+
+  p {
+    padding: 0;
+    margin: 0;
+  }
+  ul {
+    list-style: none;
+  }
+
+  li {
+    display: flex;
+    align-items: center;
+    margin: 30px 0;
+  }
+
+  &__img {
+    margin-right: 20px;
+  }
+
+  &__img img {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    border: 1px solid rgb(234, 233, 233);
+  }
+
+  &__name {
+    margin-right: 50px;
+    a {
+      text-decoration: none;
+      font-weight: bold;
+      font-size: 15px;
+      color: rgb(98, 95, 95);
+    }
+
+    p {
+      color: gray;
+      font-size: 12px;
+    }
+  }
+
+  &__folo {
+    font-size: 12px;
+    font-weight: bold;
+    color: #0f9bf7;
+  }
+}

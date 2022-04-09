@@ -10,12 +10,19 @@ export const LoginUser = createAsyncThunk(
   }
 );
 
+export const Logout = createAsyncThunk("auth/logout", async () => {
+  console.log("dô trong create async logout");
+  //await authAPI.logout();
+  return 0;
+});
+
 const AuthSlice = createSlice({
   name: "auth",
   initialState: {
     current: {},
     loading: false,
     error: "",
+    isLogin: false,
   },
   reducers: {},
   extraReducers: {
@@ -30,9 +37,15 @@ const AuthSlice = createSlice({
 
     [LoginUser.fulfilled]: (state, action) => {
       state.loading = false;
-      console.log(action.payload);
-
+      console.log(action.payload.tokens.accessToken);
+      localStorage.setItem("authTokens", JSON.stringify(action.payload.tokens));
       state.current = action.payload;
+      state.isLogin = true;
+    },
+
+    [Logout.fulfilled]: (state, action) => {
+      state.isLogin = false;
+      localStorage.removeItem("authTokens");
     },
   },
 });
