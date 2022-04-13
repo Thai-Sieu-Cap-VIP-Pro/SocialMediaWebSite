@@ -7,6 +7,11 @@ const IMAGES = {
     avatar2: require("./loginImg/avatar2.png"),
     register: require("./loginImg/register.png"),
   },
+  honme: {
+    jisoo: require("./homeImg/jiso.jpg"),
+    jenni: require("./homeImg/jeni.webp"),
+    rose: require("./homeImg/rose.jpg"),
+  },
 };
 
 export default IMAGES;

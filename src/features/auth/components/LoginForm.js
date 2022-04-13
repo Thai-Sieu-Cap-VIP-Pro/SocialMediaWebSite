@@ -28,15 +28,16 @@ const LoginForm = () => {
   const { isLogin } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
 
-  console.log(isLogin);
-
   const onSubmit = async (values) => {
     console.log(values);
     const action = LoginUser(values);
     await dispatch(action);
-    console.log("Login successfull");
-    navigate("/");
   };
+
+  if (isLogin) {
+    navigate("/");
+    console.log("Login successfull");
+  }
 
   return (
     <div className="loginForm">

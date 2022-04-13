@@ -6,6 +6,13 @@ const Category = () => {
   return (
     <Row>
       <div className="recommend">
+        <div className="recommend__account">
+          <img src={IMAGES.avatar} alt="" />
+          <div className="recommend__account__name">
+            <p>giathai_1505</p>
+            <p>Gia Thái</p>
+          </div>
+        </div>
         <div className="recommend__header">
           <p>Gợi ý cho bạn</p>
           <a href="">Xem tất cả</a>
