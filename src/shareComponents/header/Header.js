@@ -1,40 +1,31 @@
 import React from "react";
 import "./Header.scss";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  faHome,
-  faPaperPlane,
-  faCirclePlus,
-  faCircleH,
-  faHeart,
-  faMagnifyingGlass,
-  faUser,
-  faGear,
-  faRightFromBracket,
-} from "@fortawesome/free-solid-svg-icons";
-
-import { faFontAwesome } from "@fortawesome/free-regular-svg-icons";
-import { NavLink } from "react-bootstrap";
-
+  FavoriteBorderOutlined,
+  HomeOutlined,
+  AddCircleOutline,
+  WhatsApp,
+  SettingsOutlined,
+  AccountCircleOutlined,
+  LocalDiningOutlined,
+  SearchOutlined,
+} from "@material-ui/icons";
 import IMAGES from "../../assets/images/imageStore";
-import { Link, Navigate, useNavigate } from "react-router-dom";
-import { Logout } from "../../features/auth/authSlice";
+import { useNavigate, NavLink } from "react-router-dom";
+import { getPosts, Logout } from "../../features/auth/authSlice";
 import { useDispatch } from "react-redux";
 
 const Header = () => {
   const dispatch = useDispatch();
   let navigate = useNavigate();
+
   const handleSearch = () => {
     console.log("Thay đổi trong ô search");
   };
 
   const handleLogout = async () => {
-    console.log("Bạn đang logout");
-    const action = Logout();
+    const action = getPosts();
     await dispatch(action);
-
-    console.log("Logout successfull");
-    navigate("/auth/login");
   };
 
   return (
@@ -43,40 +34,37 @@ const Header = () => {
         <img src={IMAGES.logo} alt="" />
       </div>
       <div className="header__search">
-        <FontAwesomeIcon className="concho" icon={faMagnifyingGlass} />
-        <input type="text" value="search..." onChange={handleSearch} />
+        <SearchOutlined className="concho" />
+        <input type="text" placeholder="search..." onChange={handleSearch} />
       </div>
       <div className="header__icons">
-        <NavLink to="">
-          <FontAwesomeIcon icon={faHome} />
+        <NavLink to="/">
+          <HomeOutlined />
         </NavLink>
-        <Link to="/messenger">
-          <FontAwesomeIcon icon={faPaperPlane} />
-        </Link>
-        <NavLink>
-          <FontAwesomeIcon icon={faCirclePlus} />
+        <NavLink to="/messenger">
+          <WhatsApp />
         </NavLink>
-        <NavLink>
-          <FontAwesomeIcon icon={faFontAwesome} />
+        <NavLink to="/new">
+          <AddCircleOutline />
         </NavLink>
-        <NavLink>
-          <FontAwesomeIcon icon={faHeart} />
+        <NavLink to="/liked">
+          <FavoriteBorderOutlined />
         </NavLink>
       </div>
       <div className="header__profile">
         <img src={IMAGES.avatar} alt="" />
-        <div className="header__profile__list">
+        <div className="header__profile__list" id="header__profile__list">
           <ul>
             <li>
-              <FontAwesomeIcon icon={faHome} />
-              <i>Trang chủ</i>
+              <AccountCircleOutlined />
+              <i>Trang cá nhân</i>
             </li>
             <li>
-              <FontAwesomeIcon icon={faGear} />
+              <SettingsOutlined />
               <i>Cài đặt</i>
             </li>
             <li id="logout" onClick={handleLogout}>
-              <FontAwesomeIcon icon={faRightFromBracket} />
+              <LocalDiningOutlined />
               <i>Đăng xuất</i>
             </li>
           </ul>
