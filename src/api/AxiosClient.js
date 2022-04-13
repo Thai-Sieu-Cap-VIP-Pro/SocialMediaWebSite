@@ -1,14 +1,9 @@
 import queryString from "query-string";
 import jwt_decode from "jwt-decode";
 import dayjs from "dayjs";
-const { default: axios } = require("axios");
-
-let authTokens = localStorage.getItem("authTokens")
-  ? JSON.parse(localStorage.getItem("authTokens"))
-  : null;
+import axios from "axios";
 
 const axiosClient = axios.create({
-  baseURL: process.env.REACT_APP_API_URL,
   headers: {
     "Content-type": "application/json",
   },
@@ -16,15 +11,18 @@ const axiosClient = axios.create({
 });
 
 axiosClient.interceptors.request.use(async (req) => {
-  // if (!authTokens) {
-  //   authTokens = localStorage.getItem("authTokens")
-  //     ? JSON.parse(localStorage.getItem("authTokens"))
-  //     : null;
-  //   req.headers.Authorization = `Bearer ${authTokens?.accessToken}`;
-  // }
+  let authTokens = localStorage.getItem("authTokens")
+    ? JSON.parse(localStorage.getItem("authTokens"))
+    : null;
+
+  if (authTokens) {
+    req.headers.Authorization = `Bearer ${authTokens.accessToken}`;
+  }
 
   // const user = jwt_decode(authTokens.accessToken);
+
   // const isExpired = dayjs.unix(user.exp).diff(dayjs()) < 1;
+  // console.log(isExpired);
 
   // if (!isExpired) return req;
 

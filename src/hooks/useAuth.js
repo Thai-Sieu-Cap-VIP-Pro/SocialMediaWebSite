@@ -2,8 +2,14 @@ import React from "react";
 import { useSelector } from "react-redux";
 
 const useAuth = () => {
-  const { isLogin } = useSelector((state) => state.auth);
-  console.log(isLogin);
-  return isLogin;
+  let authTokens = localStorage.getItem("authTokens")
+    ? JSON.parse(localStorage.getItem("authTokens"))
+    : null;
+
+  if (authTokens) {
+    return true;
+  } else {
+    return false;
+  }
 };
 export default useAuth;
