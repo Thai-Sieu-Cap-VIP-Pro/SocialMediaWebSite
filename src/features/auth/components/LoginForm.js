@@ -32,12 +32,9 @@ const LoginForm = () => {
     console.log(values);
     const action = LoginUser(values);
     await dispatch(action);
-  };
-
-  if (isLogin) {
     navigate("/");
     console.log("Login successfull");
-  }
+  };
 
   return (
     <div className="loginForm">

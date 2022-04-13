@@ -9,7 +9,7 @@ function App() {
   return (
     <div className="App">
       <Routes>
-        {/* <Route
+        <Route
           path="/*"
           element={
             <PrivateRout>
@@ -25,9 +25,9 @@ function App() {
               <IndexChat />
             </PrivateRout>
           }
-        ></Route> */}
-        <Route path="/*" element={<IndexHome />}></Route>
-        <Route path="/messenger/*" element={<IndexChat />}></Route>
+        ></Route>
+        {/* <Route path="/*" element={<IndexHome />}></Route> */}
+        {/* <Route path="/messenger/*" element={<IndexChat />}></Route> */}
         <Route path="/auth/*" element={<Auth />}></Route>
       </Routes>
       <Outlet></Outlet>

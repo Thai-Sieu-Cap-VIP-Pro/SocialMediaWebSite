@@ -5,11 +5,7 @@ import postAPI from "../../api/PostApi";
 export const LoginUser = createAsyncThunk(
   "auth/LoginUser",
   async (params, thunkAPI) => {
-    console.log("dô hàm login");
-
     const currentUser = await authAPI.getAccount(params);
-    console.log("chạy xong api");
-
     return currentUser;
   }
 );
@@ -22,8 +18,8 @@ export const Logout = createAsyncThunk("auth/logout", async () => {
 
 export const getPosts = createAsyncThunk("post/getPosts", async () => {
   console.log("Lấy post của thái");
-  await postAPI.getPosts();
-  return 0;
+  const listPosts = await postAPI.getPosts();
+  return listPosts;
 });
 
 const AuthSlice = createSlice({
@@ -67,7 +63,6 @@ const AuthSlice = createSlice({
   },
 });
 
-// Action creators are generated for each case reducer function
 export const { reducer: AuthReducer } = AuthSlice;
 
 export default AuthReducer;

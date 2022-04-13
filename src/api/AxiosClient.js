@@ -1,7 +1,7 @@
 import queryString from "query-string";
 import jwt_decode from "jwt-decode";
 import dayjs from "dayjs";
-const { default: axios } = require("axios");
+import axios from "axios";
 
 const axiosClient = axios.create({
   headers: {
@@ -19,10 +19,10 @@ axiosClient.interceptors.request.use(async (req) => {
     req.headers.Authorization = `Bearer ${authTokens.accessToken}`;
   }
 
-  const user = jwt_decode(authTokens.accessToken);
+  // const user = jwt_decode(authTokens.accessToken);
 
-  const isExpired = dayjs.unix(user.exp).diff(dayjs()) < 1;
-  console.log(isExpired);
+  // const isExpired = dayjs.unix(user.exp).diff(dayjs()) < 1;
+  // console.log(isExpired);
 
   // if (!isExpired) return req;
 
