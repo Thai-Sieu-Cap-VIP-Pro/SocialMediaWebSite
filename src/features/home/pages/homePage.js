@@ -1,3 +1,4 @@
+
 import React from "react";
 import { Col, Container, Row } from "react-bootstrap";
 import Header from "../../../shareComponents/header/Header";
@@ -31,6 +32,7 @@ const HomePage = () => {
       </Container>
     </>
   );
+
 };
 
 export default HomePage;

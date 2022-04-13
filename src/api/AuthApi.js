@@ -11,6 +11,7 @@ class AuthAPI {
     const url = "api/auth/lout";
     return axiosClient.get(url, params);
   };
+
 }
 
 const authAPI = new AuthAPI();
