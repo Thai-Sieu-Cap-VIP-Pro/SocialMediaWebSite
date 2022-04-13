@@ -2,6 +2,9 @@
 @import "../../../assets/styles/variable";
 
 //post-item in home page
+body {
+  overflow-y: scroll;
+}
 .postItem {
   margin: 20px 0;
   border: 1px solid $borderColor;
