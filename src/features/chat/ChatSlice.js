@@ -28,6 +28,24 @@ export const getUserContact = createAsyncThunk('user/getContact', async (args, t
     }
 });
 
+export const createMessage = createAsyncThunk('message/create', async (args, thunkAPI) => {
+    try {
+        const response = await ChatAPI.createMessage(args);
+        return response;
+    } catch (error) {
+        return thunkAPI.rejectWithValue(`${error}`);
+    }
+});
+
+export const getMessageInCons = createAsyncThunk('message/get', async (args, thunkAPI) => {
+    try {
+        const response = await ChatAPI.getMessageInCon(args);
+        return response;
+    } catch (error) {
+        return thunkAPI.rejectWithValue(`${error}`);
+    }
+});
+
 const chatSlice = createSlice({
     name: 'chat',
     initialState: {
@@ -74,6 +92,18 @@ const chatSlice = createSlice({
             state.userFollowing = action.payload.contactUsers;
         },
         [getUserContact.rejected]: (state, action) => {
+            state.loading = false;
+            state.error = true;
+        },
+        [createMessage.pending]: (state, action) => {
+            state.loading = false;
+            state.error = true;
+        },
+        [createMessage.fulfilled]: (state, action) => {
+            state.loading = false;
+            state.error = false;
+        },
+        [createMessage.rejected]: (state, action) => {
             state.loading = false;
             state.error = true;
         },

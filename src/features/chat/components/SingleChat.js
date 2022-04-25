@@ -9,7 +9,7 @@ const SingleChat = ({ _id, name, handleClick, setId, activeChat }) => {
     };
 
     return (
-        <ListGroup.Item className="singleChat">
+        <ListGroup.Item className="singleChat" onClick={handleClickSingleChat}>
             <div className="singleChat__image">
                 <img src="https://source.unsplash.com/random/50×50" alt="unsplash" />
             </div>

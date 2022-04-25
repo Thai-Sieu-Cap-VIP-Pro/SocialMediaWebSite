@@ -6,17 +6,22 @@ import { useDispatch, useSelector } from 'react-redux';
 import SingleChat from './SingleChat';
 import { getAllConversations } from '../ChatSlice';
 import './Chat.scss';
-import { Link, NavLink, useNavigate } from 'react-router-dom';
+import { Link, NavLink, useNavigate, useParams } from 'react-router-dom';
+import { socket } from '../pages/ChatPage';
 
 const ListChat = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const conversations = useSelector((state) => state.chat.conversations);
     const currentUser = useSelector((state) => state.auth.current);
+    const params = useParams();
     const [id, setId] = useState('');
 
     const handleClick = (id) => {
+        // socket.emit('disconnect', params.id);
+        // socket.emit('leaveRoom', params['*']);
         navigate(`${id}`);
+        console.log(params);
     };
 
     useEffect(() => {
@@ -35,14 +40,12 @@ const ListChat = () => {
             <ListGroup className="leftPanel__listChat">
                 {conversations.map((conversation) => {
                     return (
-                        <NavLink to={`${conversation._id}`} key={conversation._id}>
-                            <SingleChat
-                                {...conversation}
-                                // handleClick={handleClick}
-                                setId={setId}
-                                activeChat={id == conversation._id ? true : false}
-                            />
-                        </NavLink>
+                        <SingleChat
+                            {...conversation}
+                            handleClick={handleClick}
+                            setId={setId}
+                            activeChat={id === conversation._id ? true : false}
+                        />
                     );
                 })}
             </ListGroup>

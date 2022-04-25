@@ -163,7 +163,7 @@ h5,
     &__conversation {
         flex: 8;
         overflow-y: auto;
-        scroll-behavior: smooth;
+        scroll-behavior: auto;
         display: flex;
         flex-direction: column;
         padding: 1rem;
@@ -205,6 +205,7 @@ h5,
                 padding: 1rem;
                 // width: 40%;
                 max-width: 40%;
+                word-wrap: break-word;
                 &.mine {
                     background-color: rgb(221, 219, 219);
                 }
@@ -261,6 +262,9 @@ h5,
             padding-left: 40px;
             padding-right: 80px;
             border-radius: 20px;
+        }
+        & #image-input {
+            display: none;
         }
         &__icon {
             position: absolute;
