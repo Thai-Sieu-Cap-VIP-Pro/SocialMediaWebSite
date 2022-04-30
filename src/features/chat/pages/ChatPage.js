@@ -5,6 +5,10 @@ import Header from '../../../shareComponents/header/Header';
 import ChatContent from '../components/ChatContent';
 import DefaultContent from '../components/DefaultContent';
 import ListChat from '../components/ListChat';
+import io from 'socket.io-client';
+import ChatSetting from '../components/ChatSetting';
+
+export const socket = io.connect('http://localhost:3002');
 
 const ChatPage = () => {
     return (

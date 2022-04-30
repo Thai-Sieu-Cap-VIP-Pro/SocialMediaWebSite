@@ -1,9 +1,11 @@
 import React from 'react';
+import { useDispatch } from 'react-redux';
+import { deleteTag } from '../ChatSlice';
 
-const SingleTag = ({ tag, setTags, tags }) => {
+const SingleTag = ({ tag }) => {
+    const dispatch = useDispatch();
     const handleClick = (id) => {
-        const newTags = tags.filter((e) => e._id !== id);
-        setTags(newTags);
+        dispatch(deleteTag(id));
     };
     return (
         <div className="messagePopup__destinations__tags__singleTag">
