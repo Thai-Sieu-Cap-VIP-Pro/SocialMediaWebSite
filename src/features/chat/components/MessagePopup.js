@@ -6,20 +6,53 @@ import SingleDestination from './SingleDestination';
 import { createConversation, getUserContact } from '../ChatSlice';
 import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
+import { resetTag } from '../ChatSlice';
 
 const MessagePopup = ({ setIsShowPopup }) => {
     const currentUser = useSelector((state) => state.auth.current);
     const userContact = useSelector((state) => state.chat.userFollowing);
     const navigate = useNavigate();
     const dispatch = useDispatch();
-    const [tags, setTags] = useState([]);
+    const tags = useSelector((state) => state.chat.tags);
+    const conversations = useSelector((state) => state.chat.conversations);
+
     const handleClick = () => {
-        dispatch(createConversation({ users: tags }))
-            .unwrap()
-            .then((resultValue) => {
-                navigate(`${resultValue.newConversation._id}`);
-            })
-            .catch((rejectedValue) => console.log(rejectedValue));
+        let exist = [];
+        if (conversations.length !== 0) {
+            exist = conversations.filter((conversation) => {
+                const condition1 = conversation.members.length - 1 === tags.length;
+                if (condition1) {
+                    const tagIds = tags.map((tag) => tag._id);
+                    const condition2 = tagIds.every((tagId) => {
+                        return conversation.members.includes(tagId);
+                    });
+                    if (condition2) {
+                        return true;
+                    } else {
+                        return false;
+                    }
+                } else {
+                    return false;
+                }
+            });
+        }
+        if (exist.length !== 0) {
+            navigate(`${exist[0]._id}`);
+        } else {
+            dispatch(createConversation({ users: tags }))
+                .unwrap()
+                .then((resultValue) => {
+                    navigate(`${resultValue.newConversation._id}`);
+                })
+                .catch((rejectedValue) => console.log(rejectedValue));
+        }
+
+        handleClosePopup();
+    };
+
+    const handleClosePopup = () => {
+        dispatch(resetTag());
+        setIsShowPopup(false);
     };
 
     useEffect(() => {
@@ -35,9 +68,12 @@ const MessagePopup = ({ setIsShowPopup }) => {
             <div className="messagePopupOverlay"></div>
             <div className="messagePopup">
                 <div className="messagePopup__titleContainer">
-                    <Close onClick={() => setIsShowPopup(false)} fontSize="large" />
+                    <Close onClick={handleClosePopup} fontSize="large" style={{ cursor: 'pointer' }} />
                     <h5>New Message</h5>
-                    <button className="messagePopup__titleContainer__button" onClick={handleClick}>
+                    <button
+                        className={`messagePopup__titleContainer__button ${tags.length === 0 ? 'disabled' : ''}`}
+                        onClick={handleClick}
+                    >
                         Next
                     </button>
                 </div>
@@ -51,7 +87,7 @@ const MessagePopup = ({ setIsShowPopup }) => {
                                 {tags.lenght === 0
                                     ? ''
                                     : tags.map((tag, index) => {
-                                          return <SingleTag key={index} tag={tag} setTags={setTags} tags={tags} />;
+                                          return <SingleTag key={index} tag={tag} />;
                                       })}
                             </Row>
                             <Row className="messagePopup__destinations__input">
@@ -63,7 +99,7 @@ const MessagePopup = ({ setIsShowPopup }) => {
                 <div className="messagePopup__destinationList">
                     <h6 style={{ margin: '20px 0' }}>Suggested</h6>
                     {userContact.map((follow, index) => {
-                        return <SingleDestination follow={follow} key={index} setTags={setTags} />;
+                        return <SingleDestination follow={follow} key={index} />;
                     })}
                 </div>
             </div>

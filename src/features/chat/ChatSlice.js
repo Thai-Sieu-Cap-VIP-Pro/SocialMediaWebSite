@@ -46,6 +46,24 @@ export const getMessageInCons = createAsyncThunk('message/get', async (args, thu
     }
 });
 
+export const getMembersInCon = createAsyncThunk('members/get', async (args, thunkAPI) => {
+    try {
+        const response = await ChatAPI.getMembersInCon(args);
+        return response;
+    } catch (error) {
+        return thunkAPI.rejectWithValue(`${error}`);
+    }
+});
+
+export const deleteCon = createAsyncThunk('conversation/delete', async (args, thunkAPI) => {
+    try {
+        const response = await ChatAPI.deleteCon(args);
+        return response;
+    } catch (error) {
+        return thunkAPI.rejectWithValue(`${error}`);
+    }
+});
+
 const chatSlice = createSlice({
     name: 'chat',
     initialState: {
@@ -53,8 +71,24 @@ const chatSlice = createSlice({
         loading: false,
         error: false,
         userFollowing: [],
+        tags: [],
     },
-    reducers: {},
+    reducers: {
+        createTag: (state, action) => {
+            state.tags.push(action.payload);
+        },
+        deleteTag: (state, action) => {
+            state.tags = state.tags.filter((tag) => {
+                if (tag._id !== action.payload) {
+                    return tag;
+                }
+                return;
+            });
+        },
+        resetTag: (state, action) => {
+            state.tags = [];
+        },
+    },
     extraReducers: {
         [getAllConversations.pending]: (state, action) => {
             state.loading = true;
@@ -107,7 +141,20 @@ const chatSlice = createSlice({
             state.loading = false;
             state.error = true;
         },
+        [getMessageInCons.pending]: (state, action) => {
+            state.loading = true;
+            state.error = false;
+        },
+        [getMessageInCons.fulfilled]: (state, action) => {
+            state.loading = false;
+            state.error = false;
+        },
+        [getMessageInCons.rejected]: (state, action) => {
+            state.loading = false;
+            state.error = true;
+        },
     },
 });
 
 export default chatSlice;
+export const { createTag, deleteTag, resetTag } = chatSlice.actions;

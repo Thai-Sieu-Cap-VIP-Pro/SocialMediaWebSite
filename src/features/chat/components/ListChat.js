@@ -6,10 +6,12 @@ import { useDispatch, useSelector } from 'react-redux';
 import SingleChat from './SingleChat';
 import { getAllConversations } from '../ChatSlice';
 import './Chat.scss';
-import { Link, NavLink, useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
+import MessagePopup from './MessagePopup';
 import { socket } from '../pages/ChatPage';
 
 const ListChat = () => {
+    const [isShowPopup, setIsShowPopup] = useState(false);
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const conversations = useSelector((state) => state.chat.conversations);
@@ -25,6 +27,19 @@ const ListChat = () => {
     };
 
     useEffect(() => {
+        socket.on('recieveMessage', (mess) => {
+            dispatch(getAllConversations())
+                .unwrap()
+                .then((resultValue) => console.log(resultValue))
+                .catch((rejectedValue) => console.log(rejectedValue));
+        });
+        return () => {
+            socket.off('recieveMessage');
+            console.log('client Off');
+        };
+    }, [socket]);
+
+    useEffect(() => {
         dispatch(getAllConversations())
             .unwrap()
             .then((resultValue) => console.log(resultValue))
@@ -35,20 +50,23 @@ const ListChat = () => {
         <div className="leftPanel">
             <div className="leftPanel__title">
                 <h6>{currentUser.name}</h6>
-                <FontAwesomeIcon icon={faPenToSquare} cursor="pointer" size="lg" />
+                <FontAwesomeIcon icon={faPenToSquare} cursor="pointer" size="lg" onClick={() => setIsShowPopup(true)} />
             </div>
             <ListGroup className="leftPanel__listChat">
                 {conversations.map((conversation) => {
                     return (
                         <SingleChat
-                            {...conversation}
+                            conversation={conversation}
                             handleClick={handleClick}
                             setId={setId}
                             activeChat={id === conversation._id ? true : false}
+                            key={conversation._id}
+                            currentUser={currentUser}
                         />
                     );
                 })}
             </ListGroup>
+            {isShowPopup && <MessagePopup setIsShowPopup={setIsShowPopup} />}
         </div>
     );
 };
