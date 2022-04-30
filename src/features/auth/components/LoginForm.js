@@ -2,12 +2,13 @@ import React from "react";
 import { Formik, Form } from "formik";
 import * as Yup from "yup";
 import "./auth.scss";
-import { Button } from "react-bootstrap";
+import { Button, Spinner } from "react-bootstrap";
 import FormikControl from "../../../shareComponents/formikCustom/FormikControl";
 import { Link, useNavigate, Navigate } from "react-router-dom";
 import IMAGES from "../../../assets/images/imageStore";
 import { useDispatch, useSelector } from "react-redux";
 import { LoginUser } from "../authSlice";
+import { getListRecommendFriends } from "../../home/homeSlice";
 
 const initialValues = {
   email: "thai@gmail.com",
@@ -25,15 +26,13 @@ const validationSchema = Yup.object({
 
 const LoginForm = () => {
   let navigate = useNavigate();
-  const { isLogin } = useSelector((state) => state.auth);
+  const { loading } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
 
   const onSubmit = async (values) => {
-    console.log(values);
     const action = LoginUser(values);
     await dispatch(action);
     navigate("/");
-    console.log("Login successfull");
   };
 
   return (
@@ -75,7 +74,22 @@ const LoginForm = () => {
                     type="submit"
                     disabled={!formik.isValid}
                   >
-                    Login
+                    {loading ? (
+                      <div>
+                        {" "}
+                        <Spinner
+                          as="span"
+                          animation="grow"
+                          size="sm"
+                          role="status"
+                          aria-hidden="true"
+                          style={{ marginRight: "10px" }}
+                        />
+                        Loading...
+                      </div>
+                    ) : (
+                      "Login"
+                    )}
                   </Button>
                 </Form>
               );

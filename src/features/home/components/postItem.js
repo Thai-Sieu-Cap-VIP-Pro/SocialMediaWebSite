@@ -1,49 +1,81 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import React from "react";
-import { Col, Row } from "react-bootstrap";
+import React, { useEffect } from "react";
+import { Carousel, Col, Row } from "react-bootstrap";
 import "./post.scss";
 import IMAGES from "../../../assets/images/imageStore";
 import { useDispatch } from "react-redux";
-import { ShowDetail, ShowReportModal } from "../homeSlice";
+import { getCommentsByPostID, ShowDetail } from "../homeSlice";
 import ReactIcon from "./reactIcon";
 import AddComment from "./addComment";
 import PostHeader from "./postHeader";
+import { format } from "timeago.js";
+import {
+  faCircleChevronLeft,
+  faCircleChevronRight,
+} from "@fortawesome/free-solid-svg-icons";
 
-const PostItem = () => {
+import io from "socket.io-client";
+export const socket = io.connect("http://localhost:3002");
+
+const PostItem = ({ postId, content }) => {
   const dispatch = useDispatch();
 
   //hàm xử lý show phần comment khi show tất cả phần comment
-  const showDetail = () => {
-    console.log("Vào hàm Show chi tiết comment");
-    const action = ShowDetail();
+  const showDetail = (a) => {
+    const action1 = getCommentsByPostID(postId);
+    dispatch(action1);
+
+    const action = ShowDetail(postId);
     dispatch(action);
+
+    const message = { room: a };
+    socket.emit("joinRoom", message);
   };
 
   return (
     <Row className="postItem">
       <Col md={12} className="postItem__header">
-        <PostHeader />
+        <PostHeader postId={postId} postUser={content.user} />
       </Col>
       <Col md={12} className="postItem__slide">
-        <img src={IMAGES.avatar} alt="" />
+        <Carousel
+          prevIcon={<FontAwesomeIcon icon={faCircleChevronLeft} />}
+          nextIcon={<FontAwesomeIcon icon={faCircleChevronRight} />}
+        >
+          {content.images.map((contenItem, index) => {
+            return (
+              <Carousel.Item key={index}>
+                <img
+                  className="d-block w-100"
+                  src={contenItem}
+                  alt="First slide"
+                />
+              </Carousel.Item>
+            );
+          })}
+        </Carousel>
       </Col>
       <Col className="postItem__react">
-        <ReactIcon />
+        <ReactIcon postId={postId} />
       </Col>
 
       <Col md={12} className="postItem__content">
-        <div className="postItem__content__likes">123,457 lượt thích</div>
-        <div className="postItem__content__caption">
-          Lorem Ipsum has been the industry's standard dummy text ever since the
-          1500s, when an unknown printer took a galley of type and scrambled it
+        <div className="postItem__content__likes">
+          {content.likes.length} lượt thích
         </div>
-        <div className="postItem__content__allCmt" onClick={showDetail}>
+        <div className="postItem__content__caption">{content.content}</div>
+        <div
+          className="postItem__content__allCmt"
+          onClick={() => showDetail(postId)}
+        >
           Xem tất cả 100 bình luận
         </div>
-        <div className="postItem__content__time">1 ngày trước</div>
+        <div className="postItem__content__time">
+          {format(content.createdAt)}
+        </div>
       </Col>
       <Col md={12} style={{ padding: "0" }}>
-        <AddComment />
+        <AddComment postId={postId} />
       </Col>
     </Row>
   );

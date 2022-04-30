@@ -131,10 +131,9 @@
 }
 
 //class
-.active {
-  // border: 1px solid black;
-  background-color: #0fa8f9;
-  box-shadow: 0 0 5px #0fa8f9;
+.header__icons .active {
+  background-color: $primaryColor;
+  box-shadow: 0 0 5px $primaryColor;
   filter: blur(3p);
   svg {
     color: white;

@@ -1,18 +1,18 @@
-import React from 'react';
-import { Routes, Route, Outlet } from 'react-router-dom';
-import Auth from './features/auth';
-import IndexHome from './features/home';
-import PrivateRout from './shareComponents/privateRout/privateRout';
-import IndexChat from './features/chat';
+import React from "react";
+import { Routes, Route, Outlet } from "react-router-dom";
+import Auth from "./features/auth";
+import IndexHome from "./features/home";
+import PrivateRout from "./shareComponents/privateRout/privateRout";
+import IndexChat from "./features/chat";
+import NotFound from "./shareComponents/notfound/NotFound";
+import NewIndex from "./features/newpost/newIndex";
 
 function App() {
-
   return (
     <div className="App">
       <Routes>
         <Route
           path="/*"
-
           element={
             <PrivateRout>
               <IndexHome />
@@ -27,7 +27,14 @@ function App() {
               <IndexChat />
             </PrivateRout>
           }
-
+        ></Route>
+        <Route
+          path="/new/*"
+          element={
+            <PrivateRout>
+              <NewIndex />
+            </PrivateRout>
+          }
         ></Route>
         {/* <Route path="/*" element={<IndexHome />}></Route> */}
         {/* <Route path="/messenger/*" element={<IndexChat />}></Route> */}
@@ -36,7 +43,6 @@ function App() {
       <Outlet></Outlet>
     </div>
   );
-
 }
 
 export default App;

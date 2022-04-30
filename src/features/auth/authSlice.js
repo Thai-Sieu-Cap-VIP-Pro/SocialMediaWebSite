@@ -10,59 +10,45 @@ export const LoginUser = createAsyncThunk(
   }
 );
 
-export const Logout = createAsyncThunk("auth/logout", async () => {
-  console.log("dô trong create async logout");
-  await authAPI.logout();
-  return 0;
-});
-
-export const getPosts = createAsyncThunk("post/getPosts", async () => {
-  console.log("Lấy post của thái");
-  const listPosts = await postAPI.getPosts();
-  return listPosts;
-});
+// export const Logout = createAsyncThunk("auth/logout", async () => {
+//   console.log("dô trong create async logout");
+//   await authAPI.logout();
+//   return 0;
+// });
 
 const AuthSlice = createSlice({
   name: "auth",
   initialState: {
+    loginUser: "625283db28644968034d08a3",
     current: {},
     loading: false,
     error: "",
     isLogin: false,
   },
-  reducers: {},
+  reducers: {
+    Logout: (state, action) => {
+      localStorage.removeItem("authTokens");
+    },
+  },
   extraReducers: {
     [LoginUser.pending]: (state) => {
       state.loading = true;
-      console.log("Đang load");
     },
 
     [LoginUser.rejected]: (state, action) => {
       state.loading = false;
-      console.log("Đăng nhập thất bại");
       state.error = "Đăng nhập thất bại !";
     },
 
     [LoginUser.fulfilled]: (state, action) => {
-      console.log(action.payload);
       state.loading = false;
-      console.log(action.payload.tokens.accessToken);
       localStorage.setItem("authTokens", JSON.stringify(action.payload.tokens));
       state.current = action.payload;
       state.isLogin = true;
-      console.log("Đăng nhập thành công");
-    },
-
-    [Logout.fulfilled]: (state, action) => {
-      state.isLogin = false;
-      localStorage.removeItem("authTokens");
-    },
-    [getPosts.fulfilled]: (state, action) => {
-      console.log(action.payload);
     },
   },
 });
 
-export const { reducer: AuthReducer } = AuthSlice;
-
+export const { reducer: AuthReducer, actions } = AuthSlice;
+export const { Logout } = actions;
 export default AuthReducer;

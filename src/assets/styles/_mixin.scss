@@ -6,6 +6,7 @@
   height: 100%;
   opacity: 0.9;
   cursor: pointer;
+  background-color: gray;
 }
 
 @mixin ModalContent {
@@ -23,4 +24,15 @@
   left: 0;
   bottom: 0;
   right: 0;
+}
+
+@mixin ScrollBarCustom {
+  &::-webkit-scrollbar {
+    width: 4px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: #0fa8f9;
+    border-radius: 2px;
+  }
 }

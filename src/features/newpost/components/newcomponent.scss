@@ -1,0 +1,83 @@
+@import "../../../assets/styles/variable.scss";
+
+//phần header
+
+.newHeader {
+  height: 50px;
+  position: relative;
+  border-bottom: 1px solid $borderColor;
+
+  p {
+    position: absolute;
+    top: 50%;
+    right: 20px;
+    transform: translateY(-50%);
+    font-size: 15px;
+    font-weight: bold;
+    color: $primaryColor;
+    cursor: pointer;
+  }
+
+  h6 {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+  }
+}
+
+//phần postcontent
+.newContent {
+  padding: 30px 0;
+  height: calc(80vh - 50px);
+
+  .row {
+    padding: 0;
+  }
+
+  img {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+  }
+
+  textarea {
+    width: 100%;
+    margin: 20px 0;
+    border: none;
+    outline: none;
+  }
+
+  svg {
+    color: rgb(224, 214, 214);
+    cursor: pointer;
+  }
+}
+
+//phần add img
+.newImg {
+  &_add {
+    position: relative;
+    input {
+      display: none;
+    }
+
+    label {
+      background-color: $primaryColor;
+      width: fit-content;
+      padding: 5px 30px;
+      border-radius: 10px;
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      margin-top: 20px;
+      svg {
+        color: white;
+      }
+    }
+  }
+}
+
+#emojiIcon {
+  color: red;
+}
