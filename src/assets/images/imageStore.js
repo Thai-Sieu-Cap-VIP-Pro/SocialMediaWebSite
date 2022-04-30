@@ -12,6 +12,8 @@ const IMAGES = {
     jenni: require("./homeImg/jeni.webp"),
     rose: require("./homeImg/rose.jpg"),
   },
+  notfound: require("./notfound.png"),
+  error: require("./error.png"),
 };
 
 export default IMAGES;

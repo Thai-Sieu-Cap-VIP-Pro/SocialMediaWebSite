@@ -6,19 +6,57 @@ import {
   BookmarkBorderOutlined,
 } from "@material-ui/icons";
 import React, { useState } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { Col, Row } from "react-bootstrap";
-import { ShowDetail } from "../homeSlice";
+import { handleLike, handleUnLike, ShowDetail } from "../homeSlice";
 
-const ReactIcon = () => {
-  const [isLike, setisLike] = useState(false);
+const ReactIcon = ({ postId }) => {
+  const { listPosts } = useSelector((state) => state.home);
+  const { loginUser } = useSelector((state) => state.auth);
+
+  //get list like of the post
+  const activePost = listPosts.find((post) => post._id == postId);
+  const likes = activePost.likes;
+
+  const [isLike, setisLike] = useState(likes.includes(loginUser));
 
   const dispatch = useDispatch();
 
   //hàm xử lý show phần comment khi show tất cả phần comment
-  const showDetail = () => {
-    const action = ShowDetail();
+  const showDetail = (id) => {
+    const action = ShowDetail(id);
     dispatch(action);
+  };
+
+  //hàm xử lý like hay không like bài post
+  const HandleLikePost = async (id) => {
+    if (isLike) {
+      const action1 = handleUnLike(id);
+      dispatch(action1);
+    } else {
+      const action1 = handleLike(id);
+      dispatch(action1);
+
+      // //xử lý phần hiển thị lên giao diện
+      // console.log("sơn");
+
+      // listPosts.map((post) =>
+      // {
+      //   // if (post._id == id)
+      //   // {
+      //   //   console.log(post.likes);
+      //   //   // post.likes.push(loginUser);
+      //   //   // console.log(post.likes);
+      //   //   return post;
+      //   // }
+      //   //  else
+      //   // {
+      //   //   return post;
+      //   // }
+      // }
+    }
+
+    setisLike(!isLike);
   };
 
   return (
@@ -27,13 +65,13 @@ const ReactIcon = () => {
         {isLike === true ? (
           <Favorite
             style={{ color: "#ed4956" }}
-            onClick={() => setisLike(!isLike)}
+            onClick={() => HandleLikePost(postId)}
           />
         ) : (
-          <FavoriteBorderOutlined onClick={() => setisLike(!isLike)} />
+          <FavoriteBorderOutlined onClick={() => HandleLikePost(postId)} />
         )}
 
-        <AddCommentOutlined onClick={showDetail} />
+        <AddCommentOutlined onClick={() => showDetail(postId)} />
 
         <SendOutlined />
       </Col>

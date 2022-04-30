@@ -34,9 +34,32 @@ body {
 
   &__slide {
     padding: 0;
+    height: 600px;
 
-    img {
+    .slide {
       width: 100%;
+      height: 100%;
+
+      .carousel-indicators {
+        bottom: -45px;
+        z-index: 0;
+        button {
+          background-color: gray;
+        }
+      }
+
+      .carousel-inner {
+        height: 100%;
+
+        .carousel-item {
+          height: 100%;
+
+          img {
+            object-fit: cover;
+            height: 100%;
+          }
+        }
+      }
     }
   }
 
@@ -69,6 +92,7 @@ body {
 .recommend {
   margin-top: 50px;
   position: fixed;
+  width: 400px;
 
   &__account {
     display: flex;
@@ -128,6 +152,7 @@ body {
     display: flex;
     align-items: center;
     margin: 20px 0;
+    position: relative;
   }
 
   &__img {
@@ -142,6 +167,12 @@ body {
   }
 
   &__name {
+    &:hover {
+      .recommend__expand {
+        display: block;
+      }
+    }
+
     margin-right: 50px;
     a {
       text-decoration: none;
@@ -159,7 +190,18 @@ body {
   &__folo {
     font-size: 12px;
     font-weight: bold;
-    color: #0f9bf7;
+    color: $primaryColor;
+    position: absolute;
+    right: 10px;
+  }
+
+  &__expand {
+    position: absolute;
+    margin: 20px;
+    top: 5px;
+    left: 5%;
+    display: none;
+    z-index: 1;
   }
 }
 //end
@@ -209,13 +251,22 @@ body {
       position: relative;
 
       &__header {
-        height: fit-content;
+        height: 50px;
         border-bottom: 1px solid $borderColor;
       }
 
       &__body {
-        background-color: palevioletred;
         overflow-y: scroll;
+        height: calc(100% - 110px);
+        @include ScrollBarCustom;
+        position: relative;
+
+        #load {
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+        }
       }
 
       &__footer {
@@ -223,8 +274,9 @@ body {
         bottom: 0;
         left: 0;
         width: 100%;
-        height: fit-content;
+        height: 60px;
         border-top: 1px solid $borderColor;
+        background-color: white;
 
         .info {
           padding: 10px;
@@ -268,6 +320,13 @@ body {
   align-items: center;
   height: 50px;
   padding: 0 3%;
+  position: relative;
+
+  aside.emoji-picker-react {
+    z-index: 1;
+    position: absolute;
+    bottom: 100%;
+  }
 
   input {
     border: none;
@@ -277,12 +336,42 @@ body {
 
   svg {
     font-size: 24px;
+    cursor: pointer;
+    color: gray;
   }
 
   p {
-    color: #3baef8;
+    color: $primaryColor;
     font-weight: bold;
     margin: 0;
+    cursor: pointer;
+  }
+  .reply {
+    display: flex;
+  }
+
+  .replyName {
+    background-color: red;
+    padding: 2px 8px;
+    position: relative;
+    height: fit-content;
+    border-radius: 10px;
+    color: white;
+    background-color: $primaryColor;
+    user-select: none;
+
+    span {
+      white-space: nowrap;
+    }
+
+    svg {
+      position: absolute;
+      top: 0px;
+      right: 0px;
+      transform: translate(50%, -30%);
+      font-size: 18px;
+      color: rgb(165, 165, 165);
+    }
   }
 }
 //end
@@ -295,7 +384,7 @@ body {
     cursor: pointer;
 
     &:hover {
-      opacity: 0.7;
+      transform: scale(1.2);
     }
   }
 }
@@ -333,4 +422,10 @@ body {
 .carousel-control-next,
 .carousel-control-prev {
   width: 8%;
+}
+
+.carousel-indicators [data-bs-target] {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
 }
