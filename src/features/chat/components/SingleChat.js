@@ -1,17 +1,83 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { ListGroup } from 'react-bootstrap';
+import { useDispatch, useSelector } from 'react-redux';
+import { getMembersInCon, getMessageInCons } from '../ChatSlice';
+import TimeAgo from 'javascript-time-ago';
+import en from 'javascript-time-ago/locale/en.json';
+import { socket } from '../pages/ChatPage';
 
-const SingleChat = () => {
+TimeAgo.addLocale(en);
+const SingleChat = ({ conversation = [], handleClick = null, setId = null, currentUser = null }) => {
+    const [active, setActive] = useState(false);
+    const [messages, setMessages] = useState([]);
+    const conversations = useSelector((state) => state.chat.conversations);
+    const [chatUsers, setChatUsers] = useState([]);
+    const timeAgo = new TimeAgo('en-US');
+    const dispatch = useDispatch();
+    const handleClickSingleChat = () => {
+        setId(conversation._id);
+        handleClick(conversation._id);
+    };
+    useEffect(() => {
+        socket.on('recieveMessage', (mess) => {
+            dispatch(getMessageInCons(conversation._id))
+                .unwrap()
+                .then((resultValue) => {
+                    setMessages(resultValue.messages);
+                    console.log('running');
+                })
+                .catch((rejectedValue) => console.log(rejectedValue));
+        });
+        return () => {
+            socket.off('recieveMessage');
+            console.log('client Off');
+        };
+    }, [socket]);
+
+    useEffect(() => {
+        dispatch(getMessageInCons(conversation._id))
+            .unwrap()
+            .then((resultValue) => {
+                setMessages(resultValue.messages);
+                console.log('running');
+            })
+            .catch((rejectedValue) => console.log(rejectedValue));
+        dispatch(getMembersInCon(conversation._id))
+            .unwrap()
+            .then((resultValue) => {
+                const temp = resultValue.members.filter((member) => member._id !== currentUser._id);
+                console.log(temp);
+                setChatUsers(temp);
+            })
+            .catch((rejectedValue) => console.log(rejectedValue));
+    }, []);
+
     return (
-        <ListGroup.Item className="singleChat">
+        <ListGroup.Item className="singleChat" onClick={handleClickSingleChat}>
             <div className="singleChat__image">
-                <img src="https://source.unsplash.com/random/50×50" alt="unsplash" />
+                <img
+                    src={`${
+                        chatUsers.length === 1
+                            ? chatUsers[0]?.avatar
+                            : 'https://res.cloudinary.com/wjbucloud/image/upload/v1651308420/j2team_girl_8_btpoep.jpg'
+                    }`}
+                    alt="unsplash"
+                />
             </div>
             <div className="singleChat__user">
-                <h6 className="singleChat__user__name">Người lạ từng quennnnnnnnnnnnnnnnnnnn:3</h6>
+                <h6 className="singleChat__user__name">
+                    {conversation.name ? conversation.name : chatUsers.map((user) => user.name).join(', ')}
+                </h6>
                 <div className="singleChat__user__content">
-                    <p className="singleChat__user__content__summary">Chào cậu! Lâu rồi không gặppppp </p>
-                    <span className="singleChat__user__content__time">•1m</span>
+                    <p className="singleChat__user__content__summary">
+                        {messages[messages.length - 1]?.content.isImage === true
+                            ? 'Đã gửi hình ảnh'
+                            : messages[messages.length - 1]?.content.text}{' '}
+                    </p>
+                    <span className="singleChat__user__content__time">
+                        {messages[messages.length - 1] &&
+                            '•' + timeAgo.format(Date.parse(messages[messages.length - 1]?.createdAt), 'mini-now')}
+                    </span>
                 </div>
             </div>
         </ListGroup.Item>

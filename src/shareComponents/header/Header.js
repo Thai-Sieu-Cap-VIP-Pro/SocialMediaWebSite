@@ -17,12 +17,12 @@ import { useDispatch } from "react-redux";
 import { Logout } from "../../features/auth/authSlice";
 
 const Header = () => {
-  const dispatch = useDispatch();
-  let navigate = useNavigate();
+    const dispatch = useDispatch();
+    let navigate = useNavigate();
 
-  const handleSearch = () => {
-    console.log("Thay đổi trong ô search");
-  };
+    const handleSearch = () => {
+        console.log('Thay đổi trong ô search');
+    };
 
   const handleLogout = async () => {
     const action = Logout();
