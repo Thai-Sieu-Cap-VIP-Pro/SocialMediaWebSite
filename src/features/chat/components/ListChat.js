@@ -10,7 +10,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import MessagePopup from './MessagePopup';
 import { socket } from '../pages/ChatPage';
 
-const ListChat = () => {
+const ListChat = ({ setIsOpenSetting }) => {
     const [isShowPopup, setIsShowPopup] = useState(false);
     const dispatch = useDispatch();
     const navigate = useNavigate();
@@ -22,6 +22,7 @@ const ListChat = () => {
     const handleClick = (id) => {
         // socket.emit('disconnect', params.id);
         // socket.emit('leaveRoom', params['*']);
+        setIsOpenSetting(false);
         navigate(`${id}`);
         console.log(params);
     };
@@ -59,7 +60,6 @@ const ListChat = () => {
                             conversation={conversation}
                             handleClick={handleClick}
                             setId={setId}
-                            activeChat={id === conversation._id ? true : false}
                             key={conversation._id}
                             currentUser={currentUser}
                         />

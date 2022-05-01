@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFaceGrinWide, faImage, faHeart, faPaperPlane } from '@fortawesome/free-regular-svg-icons';
-import { Reply, InfoOutlined, FavoriteBorder, Favorite, DeleteOutline } from '@material-ui/icons';
+import { Reply, InfoOutlined, FavoriteBorder, Favorite, DeleteOutline, Call } from '@material-ui/icons';
 import { createMessage, getMessageInCons } from '../ChatSlice';
 import { useDispatch, useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
@@ -15,19 +15,19 @@ import ChatSetting from './ChatSetting';
 import ImagePopup from './ImagePopup';
 import useImageUpload from '../../../hooks/useImageUpload';
 
-const ChatContent = () => {
+const ChatContent = ({ isOpenSetting, setIsOpenSetting }) => {
     const [text, setText] = useState('');
     const [isTyping, setIsTyping] = useState(false);
     const [isOpenEmojiPicker, setIsOpenEmojiPicker] = useState(false);
     const [openImagePopup, setOpenImagePopup] = useState(false);
-    const [image, setImage] = useState(null);
+    const conversations = useSelector((state) => state.chat.conversations);
+    const [currentConversation, setCurrentConversation] = useState(null);
     const [data, setData] = useState([]);
     const [isTymMsg, setIsTymMsg] = useState(false);
-    const [isOpenSetting, setIsOpenSetting] = useState(false);
     const [srcPopup, setSrcPopup] = useState('');
-    const dispatch = useDispatch();
     const currentUser = useSelector((state) => state.auth.current);
     const params = useParams();
+    const dispatch = useDispatch();
     const uploadImage = useImageUpload();
 
     const ref = useRef();
@@ -150,6 +150,7 @@ const ChatContent = () => {
 
     useEffect(() => {
         getMessagesInCons();
+        setCurrentConversation(conversations.find((conversation) => conversation._id === params.id));
         return () => {
             socket.emit('leaveRoom', params.id);
         };
@@ -199,23 +200,36 @@ const ChatContent = () => {
     };
 
     if (isOpenSetting) {
-        return <ChatSetting setIsOpenSetting={setIsOpenSetting} />;
+        return <ChatSetting setIsOpenSetting={setIsOpenSetting} currentConversation={currentConversation} />;
     } else {
         return (
             <div className="rightPanel">
                 <div className="rightPanel__title">
                     <div className="rightPanel__title__user">
                         <div className="rightPanel__title__user__image">
-                            <img src="https://source.unsplash.com/random/50×50" alt="unsplash" />
+                            <img
+                                src={
+                                    currentConversation?.members.length === 2
+                                        ? currentConversation?.members.find((item) => item._id !== currentUser._id)
+                                              .avatar
+                                        : 'https://res.cloudinary.com/wjbucloud/image/upload/v1651308420/j2team_girl_8_btpoep.jpg'
+                                }
+                                alt="unsplash"
+                            />
                         </div>
-                        <h6 className="rightPanel__title__user__name">HoangKhang0410</h6>
+                        <h6 className="rightPanel__title__user__name">
+                            {currentConversation?.members.length === 2
+                                ? currentConversation?.members.find((item) => item._id !== currentUser._id).name
+                                : currentConversation?.members
+                                      .filter((item) => item._id !== currentUser._id)
+                                      .map((member) => member.name)
+                                      .join(', ')}
+                        </h6>
                     </div>
-                    <button>Call</button>
-                    <InfoOutlined
-                        fontSize="medium"
-                        style={{ cursor: 'pointer' }}
-                        onClick={() => setIsOpenSetting(true)}
-                    />
+                    <div className="rightPanel__title__call">
+                        <Call cursor="pointer" />
+                    </div>
+                    <InfoOutlined fontSize="medium" cursor="pointer" onClick={() => setIsOpenSetting(true)} />
                 </div>
                 <div className="rightPanel__conversation" ref={ref}>
                     {data.map((item, index) => {
