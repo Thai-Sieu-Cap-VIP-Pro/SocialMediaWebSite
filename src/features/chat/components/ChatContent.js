@@ -13,6 +13,7 @@ import { socket } from '../pages/ChatPage';
 import axios from 'axios';
 import ChatSetting from './ChatSetting';
 import ImagePopup from './ImagePopup';
+import useImageUpload from '../../../hooks/useImageUpload';
 
 const ChatContent = () => {
     const [text, setText] = useState('');
@@ -27,11 +28,9 @@ const ChatContent = () => {
     const dispatch = useDispatch();
     const currentUser = useSelector((state) => state.auth.current);
     const params = useParams();
-    // const [isShow, setIsShow] = useState(false);
-    // const target = useRef(null);
-    const ref = useRef();
-    console.log('Hello');
+    const uploadImage = useImageUpload();
 
+    const ref = useRef();
     // dummy thingssssssssssssssssssssssss
 
     // const [me, setMe] = useState('');
@@ -186,19 +185,7 @@ const ChatContent = () => {
     };
 
     const handleFileChange = async (e) => {
-        setImage(e.target.files[0]);
-        const imageData = new FormData();
-        imageData.append('api_key', '711435673899525');
-        imageData.append('file', image);
-        imageData.append('upload_preset', 'socialnetwork');
-        imageData.append('cloud_name', 'wjbucloud');
-        const url = (
-            await axios.post('https://api.cloudinary.com/v1_1/wjbucloud/image/upload', imageData, {
-                headers: {
-                    'content-type': 'multipart/form-data',
-                },
-            })
-        ).data.url;
+        const url = await uploadImage(e.target.files[0]);
         const result = await dispatch(
             createMessage({ content: url, conversationId: params.id, isImage: true })
         ).unwrap();
