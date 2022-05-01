@@ -1,15 +1,32 @@
 import { Info } from '@material-ui/icons';
-import React from 'react';
-import { useSelector } from 'react-redux';
-import { useParams } from 'react-router-dom';
+import React, { useState } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import { useNavigate, useParams } from 'react-router-dom';
+import WarningPopup from '../../../shareComponents/WarningPopup/WarningPopup';
+import { deleteCon } from '../ChatSlice';
 import ChatMember from './ChatMember';
 
-const ChatSetting = ({ setIsOpenSetting }) => {
+const ChatSetting = ({ setIsOpenSetting, currentConversation }) => {
     const params = useParams();
-    const conversation = useSelector((state) =>
-        state.chat.conversations.filter((conversation) => conversation._id === params.id)
-    );
-    console.log(conversation);
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
+    const [isClosePopup, setIsClosePopup] = useState(true);
+    const handleDeleteCon = async () => {
+        try {
+            await dispatch(deleteCon({ conversationId: params.id })).unwrap();
+            navigate('/messenger');
+        } catch (error) {
+            console.log({ error });
+        }
+    };
+
+    const handleClosePopup = () => {
+        setIsClosePopup(true);
+    };
+    const handleOpenPopup = () => {
+        setIsClosePopup(false);
+    };
+
     return (
         <div className="rightPanel">
             <div className="rightPanel__titleSetting">
@@ -23,14 +40,27 @@ const ChatSetting = ({ setIsOpenSetting }) => {
             <div className="rightPanel__mainSetting">
                 <div className="rightPanel__mainSetting__listMember">
                     <h4>Members</h4>
-                    <ChatMember />
+                    {currentConversation?.members.map((member) => {
+                        return <ChatMember member={member} />;
+                    })}
                 </div>
                 <div className="rightPanel__mainSetting__control">
-                    <button className="rightPanel__mainSetting__control__button">Delete Chat</button> <br />
+                    <button className="rightPanel__mainSetting__control__button" onClick={handleOpenPopup}>
+                        Delete Chat
+                    </button>{' '}
+                    <br />
                     <button className="rightPanel__mainSetting__control__button">Block</button> <br />
                     <button className="rightPanel__mainSetting__control__button">Report</button> <br />
                 </div>
             </div>
+            {!isClosePopup && (
+                <WarningPopup
+                    title="Xóa cuộc trò chuyện?"
+                    content="Việc này sẽ khiến bạn và người khác không thể xem lại nội dung cuộc trò chuyện này nữa"
+                    handleOK={handleDeleteCon}
+                    handleCANCEL={handleClosePopup}
+                />
+            )}
         </div>
     );
 };

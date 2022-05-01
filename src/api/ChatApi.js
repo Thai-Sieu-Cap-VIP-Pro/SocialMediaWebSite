@@ -28,7 +28,7 @@ const ChatAPI = {
     },
     deleteCon: (params) => {
         const url = `http://localhost:3001/api/chat/remove`;
-        return axiosClient.delete(url, params);
+        return axiosClient.delete(url, { data: params });
     },
 };
 

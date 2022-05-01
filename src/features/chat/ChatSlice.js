@@ -110,7 +110,7 @@ const chatSlice = createSlice({
         [createConversation.fulfilled]: (state, action) => {
             state.loading = false;
             state.error = false;
-            state.conversations.push(action.payload.newConversation);
+            state.conversations.unshift(action.payload.conversation);
         },
         [createConversation.rejected]: (state, action) => {
             state.loading = false;
@@ -150,6 +150,19 @@ const chatSlice = createSlice({
             state.error = false;
         },
         [getMessageInCons.rejected]: (state, action) => {
+            state.loading = false;
+            state.error = true;
+        },
+        [deleteCon.pending]: (state, action) => {
+            state.loading = true;
+            state.error = false;
+        },
+        [deleteCon.fulfilled]: (state, action) => {
+            state.loading = false;
+            state.error = false;
+            state.conversations = state.conversations.filter((item) => item._id !== action.payload.conversation._id);
+        },
+        [deleteCon.rejected]: (state, action) => {
             state.loading = false;
             state.error = true;
         },

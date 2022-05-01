@@ -42,14 +42,8 @@ const SingleChat = ({ conversation = [], handleClick = null, setId = null, curre
                 console.log('running');
             })
             .catch((rejectedValue) => console.log(rejectedValue));
-        dispatch(getMembersInCon(conversation._id))
-            .unwrap()
-            .then((resultValue) => {
-                const temp = resultValue.members.filter((member) => member._id !== currentUser._id);
-                console.log(temp);
-                setChatUsers(temp);
-            })
-            .catch((rejectedValue) => console.log(rejectedValue));
+        const temp = conversation.members.filter((member) => member._id !== currentUser._id);
+        setChatUsers(temp);
     }, []);
 
     return (

@@ -145,6 +145,7 @@ h5,
         &__user {
             display: flex;
             align-items: center;
+            flex: 1;
             cursor: pointer;
             &__image {
                 width: 30px;
@@ -157,6 +158,20 @@ h5,
                     object-fit: cover;
                     border-radius: 50%;
                 }
+            }
+        }
+        &__call {
+            display: grid;
+            place-items: center;
+            margin-right: 15px;
+            position: relative;
+            &::before {
+                content: '';
+                position: absolute;
+                border: 1px solid black;
+                animation: ringing 1s infinite ease-out;
+                border-radius: 50%;
+                z-index: -1;
             }
         }
     }
@@ -512,5 +527,20 @@ h5,
     }
     100% {
         transform: scale(1);
+    }
+}
+
+@keyframes ringing {
+    0% {
+        opacity: 0;
+        padding: 13px;
+    }
+    30% {
+        opacity: 1;
+        padding: 15px;
+    }
+    100% {
+        opacity: 0;
+        padding: 20px;
     }
 }
