@@ -1,32 +1,36 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCircleInfo } from '@fortawesome/free-solid-svg-icons';
 import { faFaceGrinWide, faImage, faHeart, faPaperPlane } from '@fortawesome/free-regular-svg-icons';
-import { EmojiEmotionsOutlined, Reply, MoreHoriz, InfoOutlined } from '@material-ui/icons';
+import { Reply, InfoOutlined, FavoriteBorder, Favorite, DeleteOutline } from '@material-ui/icons';
 import { createMessage, getMessageInCons } from '../ChatSlice';
 import { useDispatch, useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
 import { checkText } from 'smile2emoji';
-import Peer from 'simple-peer';
-import Picker from 'emoji-picker-react';
+// import Peer from 'simple-peer';
+// import Picker from 'emoji-picker-react';
 import './Chat.scss';
 import { socket } from '../pages/ChatPage';
 import axios from 'axios';
 import ChatSetting from './ChatSetting';
+import ImagePopup from './ImagePopup';
 
 const ChatContent = () => {
     const [text, setText] = useState('');
     const [isTyping, setIsTyping] = useState(false);
     const [isOpenEmojiPicker, setIsOpenEmojiPicker] = useState(false);
+    const [openImagePopup, setOpenImagePopup] = useState(false);
     const [image, setImage] = useState(null);
     const [data, setData] = useState([]);
+    const [isTymMsg, setIsTymMsg] = useState(false);
     const [isOpenSetting, setIsOpenSetting] = useState(false);
+    const [srcPopup, setSrcPopup] = useState('');
     const dispatch = useDispatch();
     const currentUser = useSelector((state) => state.auth.current);
     const params = useParams();
     // const [isShow, setIsShow] = useState(false);
     // const target = useRef(null);
     const ref = useRef();
+    console.log('Hello');
 
     // dummy thingssssssssssssssssssssssss
 
@@ -202,6 +206,11 @@ const ChatContent = () => {
         socket.emit('sendMessage', result.newMessage);
     };
 
+    const handleImagePopup = (src) => {
+        setSrcPopup(src);
+        setOpenImagePopup(true);
+    };
+
     if (isOpenSetting) {
         return <ChatSetting setIsOpenSetting={setIsOpenSetting} />;
     } else {
@@ -240,6 +249,7 @@ const ChatContent = () => {
                                         src={item.content.text}
                                         alt="pictureChat"
                                         className="rightPanel__conversation__content__textImage"
+                                        onClick={() => handleImagePopup(item.content.text)}
                                     />
                                 ) : (
                                     <p
@@ -250,23 +260,33 @@ const ChatContent = () => {
                                         {item.content.text}
                                     </p>
                                 )}
+                                {isTymMsg && (
+                                    <div
+                                        className={`rightPanel__conversation__content__react ${
+                                            item.sender._id === currentUser._id ? 'mine' : ''
+                                        }`}
+                                    >
+                                        <Favorite
+                                            htmlColor="red"
+                                            fontSize="small"
+                                            className="rightPanel__conversation__content__react__tym"
+                                        />
+                                    </div>
+                                )}
 
                                 <div
                                     className={`rightPanel__conversation__content__options ${
                                         item.sender._id === currentUser._id ? 'mine' : ''
                                     }`}
                                 >
-                                    <EmojiEmotionsOutlined onClick={handleClickEmoji} />
+                                    {!isTymMsg ? (
+                                        <FavoriteBorder onClick={() => setIsTymMsg(true)} />
+                                    ) : (
+                                        <Favorite htmlColor="red" onClick={() => setIsTymMsg(false)} />
+                                    )}
                                     <Reply />
-                                    <MoreHoriz />
+                                    <DeleteOutline />
                                 </div>
-                                {/* <div
-                            className={`rightPanel__conversation__content__options__emojiPicker mine ${
-                                isOpenEmojiPicker ? 'active' : ''
-                            }`}
-                        >
-                            <Picker />
-                        </div> */}
                             </div>
                         );
                     })}
@@ -309,17 +329,7 @@ const ChatContent = () => {
                     )}
                 </div>
 
-                {/* <div
-                    style={{
-                        position: 'fixed',
-                        top: 0,
-                        left: 0,
-                        bottom: 0,
-                        right: 0,
-                        backgroundColor: 'rgba(0, 0, 0, 0.9)',
-                        zIndex: 997,
-                    }}
-                ></div> */}
+                {openImagePopup && <ImagePopup src={srcPopup} setOpen={setOpenImagePopup} />}
             </div>
         );
     }
