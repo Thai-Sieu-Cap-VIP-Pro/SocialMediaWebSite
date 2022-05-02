@@ -19,7 +19,7 @@ const SingleChat = ({ conversation = [], handleClick = null, setId = null, curre
         handleClick(conversation._id);
     };
     useEffect(() => {
-        socket.on('recieveMessage', (mess) => {
+        socket.on('recieveNotice', (mess) => {
             dispatch(getMessageInCons(conversation._id))
                 .unwrap()
                 .then((resultValue) => {
@@ -29,7 +29,7 @@ const SingleChat = ({ conversation = [], handleClick = null, setId = null, curre
                 .catch((rejectedValue) => console.log(rejectedValue));
         });
         return () => {
-            socket.off('recieveMessage');
+            socket.off('recieveNotice');
             console.log('client Off');
         };
     }, [socket]);

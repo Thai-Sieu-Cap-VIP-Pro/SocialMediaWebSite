@@ -178,6 +178,7 @@ const ChatContent = ({ isOpenSetting, setIsOpenSetting }) => {
             const result = await dispatch(createMessage({ content: text, conversationId: params.id })).unwrap();
             console.log(result);
             socket.emit('sendMessage', result.newMessage);
+            socket.emit('sendNotice', currentConversation.members);
             setText('');
             setIsTyping(false);
         } catch (error) {
