@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Col, Container, Row } from 'react-bootstrap';
 import { Route, Routes } from 'react-router-dom';
 import Header from '../../../shareComponents/header/Header';
@@ -6,11 +6,16 @@ import ChatContent from '../components/ChatContent';
 import DefaultContent from '../components/DefaultContent';
 import ListChat from '../components/ListChat';
 import io from 'socket.io-client';
+import { useSelector } from 'react-redux';
 
 export const socket = io.connect('http://localhost:3002');
 
 const ChatPage = () => {
     const [isOpenSetting, setIsOpenSetting] = useState(false);
+    const currentUser = useSelector((state) => state.auth.current);
+    useEffect(() => {
+        socket.emit('joinMessenger', currentUser._id);
+    }, []);
     return (
         <>
             <Container fluid>

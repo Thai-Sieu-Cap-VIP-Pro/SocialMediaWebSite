@@ -3,17 +3,18 @@ import React, { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
 import WarningPopup from '../../../shareComponents/WarningPopup/WarningPopup';
-import { deleteCon } from '../ChatSlice';
+import { removeUserInCon } from '../ChatSlice';
 import ChatMember from './ChatMember';
 
 const ChatSetting = ({ setIsOpenSetting, currentConversation }) => {
     const params = useParams();
     const dispatch = useDispatch();
     const navigate = useNavigate();
+    const currentUser = useSelector((state) => state.auth.current);
     const [isClosePopup, setIsClosePopup] = useState(true);
     const handleDeleteCon = async () => {
         try {
-            await dispatch(deleteCon({ conversationId: params.id })).unwrap();
+            await dispatch(removeUserInCon({ conversationId: params.id, userId: currentUser._id })).unwrap();
             navigate('/messenger');
         } catch (error) {
             console.log({ error });

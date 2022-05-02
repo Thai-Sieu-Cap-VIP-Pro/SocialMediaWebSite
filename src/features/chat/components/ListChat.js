@@ -28,14 +28,14 @@ const ListChat = ({ setIsOpenSetting }) => {
     };
 
     useEffect(() => {
-        socket.on('recieveMessage', (mess) => {
+        socket.on('recieveNotice', (member) => {
             dispatch(getAllConversations())
                 .unwrap()
                 .then((resultValue) => console.log(resultValue))
                 .catch((rejectedValue) => console.log(rejectedValue));
         });
         return () => {
-            socket.off('recieveMessage');
+            socket.off('reieveNotice');
             console.log('client Off');
         };
     }, [socket]);

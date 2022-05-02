@@ -64,6 +64,24 @@ export const deleteCon = createAsyncThunk('conversation/delete', async (args, th
     }
 });
 
+export const removeUserInCon = createAsyncThunk('conversation/removeUser', async (args, thunkAPI) => {
+    try {
+        const response = await ChatAPI.removeUserInCon(args);
+        return response;
+    } catch (error) {
+        return thunkAPI.rejectWithValue(`${error}`);
+    }
+});
+
+export const addUserInCon = createAsyncThunk('conversation/addUser', async (args, thunkAPI) => {
+    try {
+        const response = await ChatAPI.addUserInCon(args);
+        return response;
+    } catch (error) {
+        return thunkAPI.rejectWithValue(`${error}`);
+    }
+});
+
 const chatSlice = createSlice({
     name: 'chat',
     initialState: {
@@ -153,16 +171,18 @@ const chatSlice = createSlice({
             state.loading = false;
             state.error = true;
         },
-        [deleteCon.pending]: (state, action) => {
+        [removeUserInCon.pending]: (state, action) => {
             state.loading = true;
             state.error = false;
         },
-        [deleteCon.fulfilled]: (state, action) => {
+        [removeUserInCon.fulfilled]: (state, action) => {
             state.loading = false;
             state.error = false;
-            state.conversations = state.conversations.filter((item) => item._id !== action.payload.conversation._id);
+            state.conversations
+                .filter((conversation) => conversation._id !== action.payload.newConversation._id)
+                .unshift(action.payload.newConversation);
         },
-        [deleteCon.rejected]: (state, action) => {
+        [removeUserInCon.rejected]: (state, action) => {
             state.loading = false;
             state.error = true;
         },
