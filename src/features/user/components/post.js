@@ -28,7 +28,7 @@ const Post = (props) => {
                 <img className='img' src={props.src} />
                 <div className='overlay' onClick={showDetail}>
                     <div className='overlay__info' >
-                        <span> <FavoriteBorderOutlined /> 20 </span> &ensp;
+                        <span > <FavoriteBorderOutlined style={{color:'white'}}/> 20 </span> &ensp;
                         <span><    AddCommentOutlined /> 20</span>
                     </div>
                 </div>

@@ -1,6 +1,9 @@
 import React from 'react'
-
+import useImageUpload from '../../../hooks/useImageUpload'
 const ChangePhoto = (props) => {
+
+  const handleFileChange = useImageUpload();
+
   return (
     <div className="report" >
       <div className="report__layout" onClick={props.handlePopup}></div>
@@ -9,7 +12,7 @@ const ChangePhoto = (props) => {
           <li style={{padding:30 , fontWeight:700}}>Change Profile Photo</li>
           <li style={{color:'green'}}>
             <label  for='files' >
-              <input type="file" id="files"/> Update Photo 
+              <input type="file" id="files" onChange={handleFileChange}/> Update Photo 
             </label>
             </li>
           <li style={{color:'red'}}> Remove Current Photo</li>
