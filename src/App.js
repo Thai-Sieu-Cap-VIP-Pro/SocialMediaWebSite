@@ -4,13 +4,14 @@ import Auth from './features/auth';
 import IndexHome from './features/home';
 import PrivateRout from './shareComponents/privateRout/privateRout';
 import IndexChat from './features/chat';
+import IndexUser from './features/user';
 
 function App() {
 
   return (
     <div className="App">
       <Routes>
-        <Route
+        {/* <Route
           path="/*"
 
           element={
@@ -28,9 +29,10 @@ function App() {
             </PrivateRout>
           }
 
-        ></Route>
-        {/* <Route path="/*" element={<IndexHome />}></Route> */}
+        ></Route> */}
+        <Route path="/*" element={<IndexHome />}></Route>
         {/* <Route path="/messenger/*" element={<IndexChat />}></Route> */}
+        <Route path="/messenger/*" element={<IndexUser />}></Route>
         <Route path="/auth/*" element={<Auth />}></Route>
       </Routes>
       <Outlet></Outlet>
