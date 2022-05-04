@@ -178,11 +178,22 @@ const chatSlice = createSlice({
         [removeUserInCon.fulfilled]: (state, action) => {
             state.loading = false;
             state.error = false;
-            state.conversations
-                .filter((conversation) => conversation._id !== action.payload.newConversation._id)
-                .unshift(action.payload.newConversation);
+            state.conversations = state.conversations.filter((conversation) => conversation._id !== action.payload.newConversation._id);
         },
         [removeUserInCon.rejected]: (state, action) => {
+            state.loading = false;
+            state.error = true;
+        },
+        [deleteCon.pending]: (state, action) => {
+            state.loading = true;
+            state.error = false;
+        },
+        [deleteCon.fulfilled]: (state, action) => {
+            state.loading = false;
+            state.error = false;
+            state.conversations = state.conversations.filter((conversation) => conversation._id !== action.payload.conversation._id);
+        },
+        [deleteCon.rejected]: (state, action) => {
             state.loading = false;
             state.error = true;
         },
