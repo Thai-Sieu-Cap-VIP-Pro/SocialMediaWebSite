@@ -60,7 +60,11 @@ const SingleChat = ({ conversation = [], handleClick = null, setId = null, curre
             </div>
             <div className="singleChat__user">
                 <h6 className="singleChat__user__name">
-                    {conversation.name ? conversation.name : chatUsers.map((user) => user.name).join(', ')}
+                    {conversation.name
+                        ? conversation.name
+                        : chatUsers.length === 0
+                        ? 'Không còn ai muốn trò chuyện với bạn nữa '
+                        : chatUsers.map((user) => user.name).join(', ')}
                 </h6>
                 <div className="singleChat__user__content">
                     <p className="singleChat__user__content__summary">
