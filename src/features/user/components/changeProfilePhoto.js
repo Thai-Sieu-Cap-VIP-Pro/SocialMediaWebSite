@@ -1,8 +1,15 @@
 import React from 'react'
 import useImageUpload from '../../../hooks/useImageUpload'
-const ChangePhoto = (props) => {
 
-  const handleFileChange = useImageUpload();
+
+const ChangePhoto = (props) => {
+  const urlImg = useImageUpload();
+
+  const handleFileChange = ()=>{
+    console.log('alo');
+    console.log('urlImg là:', urlImg);
+    
+  }
 
   return (
     <div className="report" >
