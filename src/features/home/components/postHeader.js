@@ -4,18 +4,14 @@ import { Col, Row } from "react-bootstrap";
 import IMAGES from "../../../assets/images/imageStore";
 import { faEllipsis } from "@fortawesome/free-solid-svg-icons";
 import { useDispatch } from "react-redux";
-import { HideDetailReducer, ShowReportModal } from "../homeSlice";
+import { ShowReportModal } from "../homeSlice";
 
-const PostHeader = () => {
+const PostHeader = ({ postId, postUser }) => {
   const dispatch = useDispatch();
 
-  const HideDetail = () => {
-    console.log("HIde đi các popup");
-    const action = HideDetailReducer();
-    dispatch(action);
-  };
-
-  const showModal = () => {
+  //show report modal
+  const showModal = (id) => {
+    console.log(id);
     const action = ShowReportModal();
     dispatch(action);
   };
@@ -23,13 +19,17 @@ const PostHeader = () => {
   return (
     <Row>
       <Col md={1}>
-        <img src={IMAGES.avatar} alt="" />
+        <img src={postUser?.avatar} alt="" />
       </Col>
       <Col md={10}>
-        <h6>Ngô Gia Thái</h6>
+        <h6>{postUser?.name}</h6>
       </Col>
       <Col md={1}>
-        <FontAwesomeIcon icon={faEllipsis} id="more" onClick={showModal} />
+        <FontAwesomeIcon
+          icon={faEllipsis}
+          id="more"
+          onClick={() => showModal(postId)}
+        />
       </Col>
     </Row>
   );

@@ -1,8 +1,14 @@
 import React from "react";
-import { Row } from "react-bootstrap";
+import { Button, Row } from "react-bootstrap";
+import { useSelector } from "react-redux";
 import IMAGES from "../../../assets/images/imageStore";
+import UserSumary from "./commons/userSumary";
 
 const Category = () => {
+  const { listRecommend } = useSelector((state) => state.home);
+
+  console.log(listRecommend);
+
   return (
     <Row>
       <div className="recommend">
@@ -18,36 +24,23 @@ const Category = () => {
           <a href="">Xem tất cả</a>
         </div>
         <ul>
-          <li>
-            <div className="recommend__img">
-              <img src={IMAGES.logo} alt="" />
-            </div>
-            <div className="recommend__name">
-              <a href="">Ngô Gia Thái</a>
-              <p className="recommend__name_desc">Gợi ý cho bạn</p>
-            </div>
-            <p className="recommend__folo">Theo dõi</p>
-          </li>
-          <li>
-            <div className="recommend__img">
-              <img src={IMAGES.login.avatar2} alt="" />
-            </div>
-            <div className="recommend__name">
-              <a href="">Ngô Gia Thái</a>
-              <p className="recommend__name_desc">Gợi ý cho bạn</p>
-            </div>
-            <p className="recommend__folo">Theo dõi</p>
-          </li>
-          <li>
-            <div className="recommend__img">
-              <img src={IMAGES.login.phone} alt="" />
-            </div>
-            <div className="recommend__name">
-              <a href="">Ngô Gia Thái</a>
-              <p className="recommend__name_desc">Gợi ý cho bạn</p>
-            </div>
-            <p className="recommend__folo">Theo dõi</p>
-          </li>
+          {listRecommend.map((user) => {
+            return (
+              <li key={user._id}>
+                <div className="recommend__img">
+                  <img src={IMAGES.logo} alt="" />
+                </div>
+                <div className="recommend__name">
+                  <a href="">{user.email}</a>
+                  <p className="recommend__name_desc">Gợi ý cho bạn</p>
+                  <div className="recommend__expand">
+                    <UserSumary user={user}></UserSumary>
+                  </div>
+                </div>
+                <p className="recommend__folo">Theo dõi</p>
+              </li>
+            );
+          })}
         </ul>
       </div>
     </Row>

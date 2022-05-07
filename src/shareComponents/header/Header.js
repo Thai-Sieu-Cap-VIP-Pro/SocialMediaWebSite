@@ -1,4 +1,3 @@
-
 import React from "react";
 import "./Header.scss";
 import {
@@ -10,23 +9,25 @@ import {
   AccountCircleOutlined,
   LocalDiningOutlined,
   SearchOutlined,
+  NotificationsOutlined,
 } from "@material-ui/icons";
 import IMAGES from "../../assets/images/imageStore";
 import { useNavigate, NavLink } from "react-router-dom";
-import { getPosts, Logout } from "../../features/auth/authSlice";
 import { useDispatch } from "react-redux";
+import { Logout } from "../../features/auth/authSlice";
 
 const Header = () => {
-  const dispatch = useDispatch();
-  let navigate = useNavigate();
+    const dispatch = useDispatch();
+    let navigate = useNavigate();
 
-  const handleSearch = () => {
-    console.log("Thay đổi trong ô search");
-  };
+    const handleSearch = () => {
+        console.log('Thay đổi trong ô search');
+    };
 
   const handleLogout = async () => {
-    const action = getPosts();
+    const action = Logout();
     await dispatch(action);
+    navigate("/auth/login");
   };
 
   return (
@@ -49,7 +50,7 @@ const Header = () => {
           <AddCircleOutline />
         </NavLink>
         <NavLink to="/liked">
-          <FavoriteBorderOutlined />
+          <NotificationsOutlined />
         </NavLink>
       </div>
       <div className="header__profile">

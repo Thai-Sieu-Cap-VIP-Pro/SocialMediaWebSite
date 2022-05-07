@@ -1,0 +1,11 @@
+@import "../../assets/styles/mixin";
+
+.errorWrap {
+  position: relative;
+  left: 50%;
+  top: 200px;
+  transform: translateX(-50px);
+  img {
+    width: 100px;
+  }
+}
