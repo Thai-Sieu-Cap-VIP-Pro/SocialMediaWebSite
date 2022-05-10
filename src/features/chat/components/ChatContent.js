@@ -4,8 +4,9 @@ import { faFaceGrinWide, faImage, faHeart, faPaperPlane } from '@fortawesome/fre
 import { Reply, InfoOutlined, FavoriteBorder, Favorite, DeleteOutline, Call } from '@material-ui/icons';
 import { createMessage, getMessageInCons } from '../ChatSlice';
 import { useDispatch, useSelector } from 'react-redux';
-import { useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import { checkText } from 'smile2emoji';
+import { v1 as uuid } from 'uuid';
 // import Peer from 'simple-peer';
 // import Picker from 'emoji-picker-react';
 import './Chat.scss';
@@ -14,9 +15,12 @@ import axios from 'axios';
 import ChatSetting from './ChatSetting';
 import ImagePopup from './ImagePopup';
 import useImageUpload from '../../../hooks/useImageUpload';
+import WarningPopup from '../../../shareComponents/WarningPopup/WarningPopup';
 
 const ChatContent = ({ isOpenSetting, setIsOpenSetting }) => {
     const [text, setText] = useState('');
+    const [uploading, setUploading] = useState(false);
+    const [image, setImage] = useState('');
     const [isTyping, setIsTyping] = useState(false);
     const [isOpenEmojiPicker, setIsOpenEmojiPicker] = useState(false);
     const [openImagePopup, setOpenImagePopup] = useState(false);
@@ -25,96 +29,17 @@ const ChatContent = ({ isOpenSetting, setIsOpenSetting }) => {
     const [data, setData] = useState([]);
     const [isTymMsg, setIsTymMsg] = useState(false);
     const [srcPopup, setSrcPopup] = useState('');
+    const [videoId, setVideoId] = useState(uuid());
+    const [isCalling, setIsCalling] = useState(false);
     const currentUser = useSelector((state) => state.auth.current);
     const params = useParams();
     const dispatch = useDispatch();
+    const navigate = useNavigate();
     const uploadImage = useImageUpload();
 
     const ref = useRef();
     // dummy thingssssssssssssssssssssssss
 
-    // const [me, setMe] = useState('');
-    // const [stream, setStream] = useState();
-    // const [receivingCall, setReceivingCall] = useState(false);
-    // const [caller, setCaller] = useState('');
-    // const [callerSignal, setCallerSignal] = useState();
-    // const [callAccepted, setCallAccepted] = useState(false);
-    // const [idToCall, setIdToCall] = useState('');
-    // const [callEnded, setCallEnded] = useState(false);
-    // const [name, setName] = useState('');
-    // const myVideo = useRef();
-    // const userVideo = useRef();
-    // const connectionRef = useRef();
-
-    // useEffect(() => {
-    //     navigator.mediaDevices.getUserMedia({ video: true, audio: true }).then((stream) => {
-    //         setStream(stream);
-    //         myVideo.current.srcObject = stream;
-    //         console.log(myVideo.current.srcObject);
-    //         // console.log(stream);
-    //     });
-
-    //     socket.on('me', (id) => {
-    //         setMe(currentUser._id);
-    //     });
-
-    //     socket.on('callUser', (data) => {
-    //         setReceivingCall(true);
-    //         setCaller(data.from);
-    //         setName(data.name);
-    //         setCallerSignal(data.signal);
-    //     });
-    // }, []);
-
-    // const callUser = (id) => {
-    //     const peer = new Peer({
-    //         initiator: true,
-    //         trickle: false,
-    //         stream: stream,
-    //     });
-    //     peer.on('signal', (data) => {
-    //         socket.emit('callUser', {
-    //             userToCall: id,
-    //             signalData: data,
-    //             from: me,
-    //             name: name,
-    //         });
-    //     });
-    //     peer.on('stream', (stream) => {
-    //         userVideo.current.srcObject = stream;
-    //     });
-    //     socket.on('callAccepted', (signal) => {
-    //         setCallAccepted(true);
-    //         peer.signal(signal);
-    //     });
-
-    //     connectionRef.current = peer;
-    // };
-
-    // const answerCall = () => {
-    //     setCallAccepted(true);
-    //     const peer = new Peer({
-    //         initiator: false,
-    //         trickle: false,
-    //         stream: stream,
-    //     });
-    //     peer.on('signal', (data) => {
-    //         socket.emit('answerCall', { signal: data, to: caller });
-    //     });
-    //     peer.on('stream', (stream) => {
-    //         userVideo.current.srcObject = stream;
-    //     });
-
-    //     peer.signal(callerSignal);
-    //     connectionRef.current = peer;
-    // };
-
-    // const leaveCall = () => {
-    //     setCallEnded(true);
-    //     connectionRef.current.destroy();
-    // };
-
-    // sndbjsahdjasbdjbasjdbasjdbjasbdjsabdjsbdjbasjdbjas
 
     const handleClickEmoji = () => {
         setIsOpenEmojiPicker(!isOpenEmojiPicker);
@@ -135,13 +60,13 @@ const ChatContent = ({ isOpenSetting, setIsOpenSetting }) => {
         if (ref.current) {
             ref.current.scrollTop = ref.current.scrollHeight;
         }
-    }, [data, socket]);
+    }, [data, socket, image]);
 
     const getMessagesInCons = async () => {
         try {
             socket.emit('joinRoom', params.id);
             const result = await dispatch(getMessageInCons(params.id)).unwrap();
-            console.log(result.messages);
+            //console.log(result.messages);
             setData(result.messages);
         } catch (error) {
             console.log(error);
@@ -150,8 +75,14 @@ const ChatContent = ({ isOpenSetting, setIsOpenSetting }) => {
 
     useEffect(() => {
         getMessagesInCons();
-        setCurrentConversation(conversations.find((conversation) => conversation._id === params.id));
+        const temp = conversations.find((conversation) => conversation._id === params.id);
+        setCurrentConversation(temp);
+        console.log(params.id)
+        console.log(temp)
+        console.log(currentConversation)
+
         return () => {
+            console.log(params.id)
             socket.emit('leaveRoom', params.id);
         };
     }, [params.id]);
@@ -177,6 +108,7 @@ const ChatContent = ({ isOpenSetting, setIsOpenSetting }) => {
         try {
             const result = await dispatch(createMessage({ content: text, conversationId: params.id })).unwrap();
             console.log(result);
+            console.log(currentConversation)
             socket.emit('sendMessage', result.newMessage);
             socket.emit('sendNotice', currentConversation.members);
             setText('');
@@ -187,18 +119,44 @@ const ChatContent = ({ isOpenSetting, setIsOpenSetting }) => {
     };
 
     const handleFileChange = async (e) => {
+        setUploading(true);
+        setImage(window.URL.createObjectURL(e.target.files[0]));
         const url = await uploadImage(e.target.files[0]);
         const result = await dispatch(
             createMessage({ content: url, conversationId: params.id, isImage: true })
         ).unwrap();
+        setUploading(false);
         console.log(result);
         socket.emit('sendMessage', result.newMessage);
+        socket.emit('sendNotice', currentConversation.members);
     };
 
     const handleImagePopup = (src) => {
         setSrcPopup(src);
         setOpenImagePopup(true);
     };
+
+    const handleCall = () => {
+        socket.emit('IamCalling', { members: currentConversation.members, videoId });
+    };
+
+    const handleAcceptCall = (id) => {
+        navigate(`/video_call/${videoId}`);
+    };
+    const handleDeny = () => {
+        setIsCalling(false);
+    };
+
+    useEffect(() => {
+        socket.on('recieveCalling', (videoId) => {
+            setIsCalling(true);
+            setVideoId(videoId);
+        });
+        return () => {
+            socket.off('recieveCalling');
+            console.log('End Call');
+        };
+    }, [socket]);
 
     if (isOpenSetting) {
         return <ChatSetting setIsOpenSetting={setIsOpenSetting} currentConversation={currentConversation} />;
@@ -221,6 +179,8 @@ const ChatContent = ({ isOpenSetting, setIsOpenSetting }) => {
                         <h6 className="rightPanel__title__user__name">
                             {currentConversation?.members.length === 2
                                 ? currentConversation?.members.find((item) => item._id !== currentUser._id).name
+                                : currentConversation?.members.length === 1
+                                ? 'Không còn ai muốn trò chuyện với bạn nữa'
                                 : currentConversation?.members
                                       .filter((item) => item._id !== currentUser._id)
                                       .map((member) => member.name)
@@ -228,7 +188,9 @@ const ChatContent = ({ isOpenSetting, setIsOpenSetting }) => {
                         </h6>
                     </div>
                     <div className="rightPanel__title__call">
-                        <Call cursor="pointer" />
+                        <Link target="_blank" to={`/video_call/${videoId}`}>
+                            <Call cursor="pointer" onClick={handleCall} />
+                        </Link>
                     </div>
                     <InfoOutlined fontSize="medium" cursor="pointer" onClick={() => setIsOpenSetting(true)} />
                 </div>
@@ -292,6 +254,13 @@ const ChatContent = ({ isOpenSetting, setIsOpenSetting }) => {
                             </div>
                         );
                     })}
+                    {uploading && (
+                        <img
+                            src={image}
+                            alt="collections"
+                            style={{ opacity: 0.5, maxWidth: '40%', alignSelf: 'flex-end', borderRadius: '10px' }}
+                        />
+                    )}
                 </div>
                 <div className="rightPanel__inputContainer">
                     <FontAwesomeIcon
@@ -330,7 +299,14 @@ const ChatContent = ({ isOpenSetting, setIsOpenSetting }) => {
                         />
                     )}
                 </div>
-
+                {isCalling && (
+                    <WarningPopup
+                        title="Video Call"
+                        content={`Ai đó đang muốn gọi cho bạn`}
+                        handleOK={handleAcceptCall}
+                        handleCANCEL={handleDeny}
+                    />
+                )}
                 {openImagePopup && <ImagePopup src={srcPopup} setOpen={setOpenImagePopup} />}
             </div>
         );

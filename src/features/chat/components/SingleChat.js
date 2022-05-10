@@ -18,32 +18,30 @@ const SingleChat = ({ conversation = [], handleClick = null, setId = null, curre
         setId(conversation._id);
         handleClick(conversation._id);
     };
+
     useEffect(() => {
         socket.on('recieveNotice', (mess) => {
             dispatch(getMessageInCons(conversation._id))
                 .unwrap()
                 .then((resultValue) => {
                     setMessages(resultValue.messages);
-                    console.log('running');
                 })
                 .catch((rejectedValue) => console.log(rejectedValue));
+
+            
         });
         return () => {
-            socket.off('recieveNotice');
-            console.log('client Off');
+            //socket.off('recieveNotice');
         };
-    }, [socket]);
+    },[socket]);
 
     useEffect(() => {
         dispatch(getMessageInCons(conversation._id))
             .unwrap()
             .then((resultValue) => {
                 setMessages(resultValue.messages);
-                console.log('running');
             })
             .catch((rejectedValue) => console.log(rejectedValue));
-        const temp = conversation.members.filter((member) => member._id !== currentUser._id);
-        setChatUsers(temp);
     }, []);
 
     return (
@@ -60,7 +58,14 @@ const SingleChat = ({ conversation = [], handleClick = null, setId = null, curre
             </div>
             <div className="singleChat__user">
                 <h6 className="singleChat__user__name">
-                    {conversation.name ? conversation.name : chatUsers.map((user) => user.name).join(', ')}
+                    {conversation?.members.length === 2
+                                    ? conversation?.members.find((item) => item._id !== currentUser._id).name
+                                    : conversation?.members.length === 1
+                                    ? 'Không còn ai muốn trò chuyện với bạn nữa'
+                                    : conversation?.members
+                                        .filter((item) => item._id !== currentUser._id)
+                                        .map((member) => member.name)
+                                        .join(', ')}
                 </h6>
                 <div className="singleChat__user__content">
                     <p className="singleChat__user__content__summary">

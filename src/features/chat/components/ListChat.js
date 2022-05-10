@@ -24,7 +24,6 @@ const ListChat = ({ setIsOpenSetting }) => {
         // socket.emit('leaveRoom', params['*']);
         setIsOpenSetting(false);
         navigate(`${id}`);
-        console.log(params);
     };
 
     useEffect(() => {
@@ -35,7 +34,7 @@ const ListChat = ({ setIsOpenSetting }) => {
                 .catch((rejectedValue) => console.log(rejectedValue));
         });
         return () => {
-            socket.off('reieveNotice');
+            //socket.off('reieveNotice');
             console.log('client Off');
         };
     }, [socket]);

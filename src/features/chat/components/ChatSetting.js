@@ -15,9 +15,10 @@ const ChatSetting = ({ setIsOpenSetting, currentConversation }) => {
     const [isClosePopup, setIsClosePopup] = useState(true);
     const handleDeleteCon = async () => {
         try {
-            currentConversation.members.length>1 
-            ? await dispatch(removeUserInCon({ conversationId: params.id, userId: currentUser._id })).unwrap()
-            : await dispatch(deleteCon({conversationId: params.id})).unwrap()
+
+            currentConversation.members.length > 1
+                ? await dispatch(removeUserInCon({ conversationId: params.id, userId: currentUser._id })).unwrap()
+                : await dispatch(deleteCon({ conversationId: params.id })).unwrap();
             socket.emit('sendNotice', currentConversation.members)
             navigate('/messenger');
         } catch (error) {
