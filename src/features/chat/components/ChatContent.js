@@ -157,6 +157,7 @@ const ChatContent = ({ isOpenSetting, setIsOpenSetting }) => {
 
     useEffect(() => {
         getMessagesInCons();
+        setIsOpenSetting(false);
         setCurrentConversation(conversations.find((conversation) => conversation._id === params.id));
         return () => {
             socket.emit('leaveRoom', params.id);
