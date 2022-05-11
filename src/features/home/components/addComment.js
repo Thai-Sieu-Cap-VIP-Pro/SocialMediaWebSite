@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Col, Row } from "react-bootstrap";
+import { Col, Row, Spinner } from "react-bootstrap";
 import {
   InsertEmoticonOutlined,
   HighlightOffOutlined,
@@ -10,12 +10,20 @@ import { addNewComment, CancelReplyCmd } from "../homeSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCircleXmark } from "@fortawesome/free-solid-svg-icons";
+import useCloseOutSideToClose from "../../../hooks/useCloseOutSideToClose";
+import ErrToast from "../../../shareComponents/errorToast/errToast";
 
 const AddComment = ({ postId }) => {
-  const { replingCmt } = useSelector((state) => state.home);
+  const { replingCmt, isLoadingAddCmt, editingCmt } = useSelector(
+    (state) => state.home
+  );
+
+  useEffect(() => {
+    console.log(editingCmt);
+  }, [editingCmt]);
   const dispatch = useDispatch();
   const [showEmoji, setshowEmoji] = useState(false);
-  const [inputValue, setinputValue] = useState("");
+  const [inputValue, setinputValue] = useState(editingCmt?.content);
 
   const submitComment = async () => {
     const message = {
@@ -41,6 +49,7 @@ const AddComment = ({ postId }) => {
 
     socket.emit("send_message", message);
     setinputValue("");
+    setshowEmoji(false);
   };
 
   const handleEmojiClick = (event, emojiObject) => {
@@ -53,26 +62,30 @@ const AddComment = ({ postId }) => {
     dispatch(action);
   };
 
-  // useEffect(() => {
-  //   const closeEmojiPanel = (e) => {
-  //     if (e.path[0].tagName !== "SVG") {
-  //       setshowEmoji(false);
-  //     }
-  //   };
+  const handleKeyDown = (e) => {
+    if (e.keyCode === 13) {
+      submitComment();
+    }
+  };
 
-  //   document.body.addEventListener("click", closeEmojiPanel);
-  //   return () => {
-  //     document.body.addEventListener("click", closeEmojiPanel);
-  //   };
-  // }, []);
+  let domNode = useCloseOutSideToClose(() => {
+    setshowEmoji(false);
+  });
 
   return (
     <Row className="addComment">
+      <div
+        className="load"
+        style={{ display: isLoadingAddCmt == true ? "" : "none" }}
+      >
+        <Spinner animation="border" variant="primary" size="sm" />
+      </div>
       <Col md={1}>
         <InsertEmoticonOutlined onClick={() => setshowEmoji(!showEmoji)} />
       </Col>
       {showEmoji && (
         <Picker
+          ref={domNode}
           className="addComment_emoji"
           onEmojiClick={handleEmojiClick}
           pickerStyle={{
@@ -96,6 +109,7 @@ const AddComment = ({ postId }) => {
           type="text"
           value={inputValue}
           onChange={(e) => setinputValue(e.target.value)}
+          onKeyDown={(e) => handleKeyDown(e)}
           placeholder="Thêm bình luận..."
         ></input>
       </Col>
@@ -108,6 +122,7 @@ const AddComment = ({ postId }) => {
           Đăng
         </p>
       </Col>
+      {/* <ErrToast /> */}
     </Row>
   );
 };

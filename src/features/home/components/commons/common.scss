@@ -99,7 +99,7 @@
             }
           }
           li.disabledd {
-            background-color: red;
+            display: none;
           }
         }
       }
@@ -174,7 +174,7 @@
       }
     }
     &_content {
-      height: 300px;
+      height: fit-content;
       overflow-y: scroll;
       @include ScrollBarCustom;
     }

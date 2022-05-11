@@ -1,9 +1,10 @@
 import React, { useState } from "react";
 import { AddAPhotoOutlined } from "@material-ui/icons";
 import axios from "axios";
+import { Image } from "cloudinary-react";
 
 const NewpostImage = () => {
-  const [listImg, setlistImg] = useState([]);
+  const [listImg, setlistImg] = useState();
 
   const imgHandleChange = async (e) => {
     console.log(e.target.files);
@@ -25,6 +26,8 @@ const NewpostImage = () => {
       )
     ).data.url;
 
+    setlistImg(url);
+
     console.log(url);
   };
 
@@ -45,7 +48,9 @@ const NewpostImage = () => {
         </form>
       </div>
 
-      <div className="newImg_listImg"></div>
+      <div className="newImg_listImg">
+        <Image cloudName="wjbucloud" publicId={listImg} />
+      </div>
     </div>
   );
 };
