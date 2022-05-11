@@ -5,30 +5,29 @@ import { InsertEmoticonOutlined } from "@material-ui/icons";
 
 import '../components/style.scss'
 
-import Header from "../../../shareComponents/header/Header";
+import Header from '../../../shareComponents/header/Header';
 import UserHeader from '../components/userHeader'
 import Postnav from '../components/postNav'
-import PostComment from "../../home/components/postComment";
+import PostComment from '../../home/components/postComment';
 
 const Userpage = () => {
   return (
     <div>
-
-    <Container fluid>
+        <Container fluid>
             <Row>
-            <Header></Header>
+                <Header></Header>
             </Row>
-    </Container>
+        </Container>
+      
 
-    <Container>
+
         <UserHeader />
 
         <Postnav />
 
-        <PostComment></PostComment>
-    </Container>
+        {/* <PostComment /> */}
+  
 
-        
 
 
         <footer> &copy;2022 from IE213.M22</footer>
