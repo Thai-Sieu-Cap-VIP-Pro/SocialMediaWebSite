@@ -12,7 +12,6 @@ const SingleChat = ({ conversation = null, handleClick = null, setId = null, cur
     const [active, setActive] = useState(false);
     const [messages, setMessages] = useState([]);
     const conversations = useSelector((state) => state.chat.conversations);
-    const [chatUsers, setChatUsers] = useState(conversation.members.filter((member) => member._id !== currentUser._id));
     const timeAgo = new TimeAgo('en-US');
     const dispatch = useDispatch();
     const handleClickSingleChat = () => {
@@ -25,17 +24,8 @@ const SingleChat = ({ conversation = null, handleClick = null, setId = null, cur
                 .unwrap()
                 .then((resultValue) => {
                     setMessages(resultValue.messages);
-                    console.log('nguu');
                 })
                 .catch((rejectedValue) => console.log(rejectedValue));
-            // const temp = conversations
-            //     .find((con) => con._id === conversation._id)
-            //     .members.filter((member) => member._id !== currentUser._id);
-            // console.log('new here', temp);
-            // const temp = conversation.members
-            //     .filter((member) => member._id !== currentUser._id)
-            //     .filter((mem) => mem._id !== leaved);
-            // setChatUsers(temp);
         });
         return () => {
             // socket.off('recieveNotice');
@@ -53,12 +43,12 @@ const SingleChat = ({ conversation = null, handleClick = null, setId = null, cur
     }, []);
 
     return (
-        <ListGroup.Item className="singleChat" onClick={handleClickSingleChat}>
+        <div className="singleChat" onClick={handleClickSingleChat}>
             <div className="singleChat__image">
                 <img
                     src={`${
-                        chatUsers?.length === 1
-                            ? chatUsers[0]?.avatar
+                        conversation?.members.length === 2
+                            ? conversation?.members.find((item) => item._id !== currentUser._id).avatar
                             : 'https://res.cloudinary.com/wjbucloud/image/upload/v1651308420/j2team_girl_8_btpoep.jpg'
                     }`}
                     alt="unsplash"
@@ -66,11 +56,14 @@ const SingleChat = ({ conversation = null, handleClick = null, setId = null, cur
             </div>
             <div className="singleChat__user">
                 <h6 className="singleChat__user__name">
-                    {conversation.name
-                        ? conversation.name
-                        : chatUsers?.length === 0
-                        ? 'Không còn ai muốn trò chuyện với bạn nữa '
-                        : chatUsers?.map((user) => user.name).join(', ')}
+                    {conversation?.members.length === 2
+                        ? conversation?.members.find((item) => item._id !== currentUser._id).name
+                        : conversation?.members.length === 1
+                        ? 'Không còn ai muốn trò chuyện với bạn nữa'
+                        : conversation?.members
+                              .filter((item) => item._id !== currentUser._id)
+                              .map((member) => member.name)
+                              .join(', ')}
                 </h6>
                 <div className="singleChat__user__content">
                     <p className="singleChat__user__content__summary">
@@ -84,7 +77,7 @@ const SingleChat = ({ conversation = null, handleClick = null, setId = null, cur
                     </span>
                 </div>
             </div>
-        </ListGroup.Item>
+        </div>
     );
 };
 

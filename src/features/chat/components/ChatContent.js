@@ -1,21 +1,19 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFaceGrinWide, faImage, faHeart, faPaperPlane } from '@fortawesome/free-regular-svg-icons';
-import { Reply, InfoOutlined, FavoriteBorder, Favorite, DeleteOutline, Call } from '@material-ui/icons';
+import { InfoOutlined, Call } from '@material-ui/icons';
 import { createMessage, getMessageInCons } from '../ChatSlice';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { checkText } from 'smile2emoji';
 import { v1 as uuid } from 'uuid';
-// import Peer from 'simple-peer';
-// import Picker from 'emoji-picker-react';
 import './Chat.scss';
 import { socket } from '../pages/ChatPage';
-import axios from 'axios';
 import ChatSetting from './ChatSetting';
 import ImagePopup from './ImagePopup';
 import useImageUpload from '../../../hooks/useImageUpload';
 import WarningPopup from '../../../shareComponents/WarningPopup/WarningPopup';
+import Message from './Message';
 
 const ChatContent = ({ isOpenSetting, setIsOpenSetting }) => {
     const [text, setText] = useState('');
@@ -38,90 +36,6 @@ const ChatContent = ({ isOpenSetting, setIsOpenSetting }) => {
     const uploadImage = useImageUpload();
 
     const ref = useRef();
-    // dummy thingssssssssssssssssssssssss
-
-    // const [me, setMe] = useState('');
-    // const [stream, setStream] = useState();
-    // const [receivingCall, setReceivingCall] = useState(false);
-    // const [caller, setCaller] = useState('');
-    // const [callerSignal, setCallerSignal] = useState();
-    // const [callAccepted, setCallAccepted] = useState(false);
-    // const [idToCall, setIdToCall] = useState('');
-    // const [callEnded, setCallEnded] = useState(false);
-    // const [name, setName] = useState('');
-    // const myVideo = useRef();
-    // const userVideo = useRef();
-    // const connectionRef = useRef();
-
-    // useEffect(() => {
-    //     navigator.mediaDevices.getUserMedia({ video: true, audio: true }).then((stream) => {
-    //         setStream(stream);
-    //         myVideo.current.srcObject = stream;
-    //         console.log(myVideo.current.srcObject);
-    //         // console.log(stream);
-    //     });
-
-    //     socket.on('me', (id) => {
-    //         setMe(currentUser._id);
-    //     });
-
-    //     socket.on('callUser', (data) => {
-    //         setReceivingCall(true);
-    //         setCaller(data.from);
-    //         setName(data.name);
-    //         setCallerSignal(data.signal);
-    //     });
-    // }, []);
-
-    // const callUser = (id) => {
-    //     const peer = new Peer({
-    //         initiator: true,
-    //         trickle: false,
-    //         stream: stream,
-    //     });
-    //     peer.on('signal', (data) => {
-    //         socket.emit('callUser', {
-    //             userToCall: id,
-    //             signalData: data,
-    //             from: me,
-    //             name: name,
-    //         });
-    //     });
-    //     peer.on('stream', (stream) => {
-    //         userVideo.current.srcObject = stream;
-    //     });
-    //     socket.on('callAccepted', (signal) => {
-    //         setCallAccepted(true);
-    //         peer.signal(signal);
-    //     });
-
-    //     connectionRef.current = peer;
-    // };
-
-    // const answerCall = () => {
-    //     setCallAccepted(true);
-    //     const peer = new Peer({
-    //         initiator: false,
-    //         trickle: false,
-    //         stream: stream,
-    //     });
-    //     peer.on('signal', (data) => {
-    //         socket.emit('answerCall', { signal: data, to: caller });
-    //     });
-    //     peer.on('stream', (stream) => {
-    //         userVideo.current.srcObject = stream;
-    //     });
-
-    //     peer.signal(callerSignal);
-    //     connectionRef.current = peer;
-    // };
-
-    // const leaveCall = () => {
-    //     setCallEnded(true);
-    //     connectionRef.current.destroy();
-    // };
-
-    // sndbjsahdjasbdjbasjdbasjdbjasbdjsabdjsbdjbasjdbjas
 
     const handleClickEmoji = () => {
         setIsOpenEmojiPicker(!isOpenEmojiPicker);
@@ -134,6 +48,24 @@ const ChatContent = ({ isOpenSetting, setIsOpenSetting }) => {
         });
         return () => {
             socket.off('recieveMessage');
+            console.log('client Off');
+        };
+    }, [socket]);
+
+    useEffect(() => {
+        socket.on('recieveTym', (newMess) => {
+            // setData((prev) => {
+            //     return prev.map((item) => {
+            //         return item._id === newMess._id ? newMess : item;
+            //     });
+            // });
+            // console.log(newMess);
+            // console.log(data);
+            getMessageInCons();
+            console.log('Đã tim');
+        });
+        return () => {
+            socket.off('recieveTym');
             console.log('client Off');
         };
     }, [socket]);
@@ -272,63 +204,8 @@ const ChatContent = ({ isOpenSetting, setIsOpenSetting }) => {
                 </div>
                 <div className="rightPanel__conversation" ref={ref}>
                     {data.map((item, index) => {
-                        return (
-                            <div
-                                className={`rightPanel__conversation__content ${
-                                    item.sender._id === currentUser._id ? 'mine' : ''
-                                }`}
-                                key={index}
-                            >
-                                {item.sender._id !== currentUser._id && (
-                                    <div className="rightPanel__conversation__content__image">
-                                        <img src={item.sender.avatar} alt="unsplash" />
-                                    </div>
-                                )}
-                                {item.content.isImage === true ? (
-                                    <img
-                                        src={item.content.text}
-                                        alt="pictureChat"
-                                        className="rightPanel__conversation__content__textImage"
-                                        onClick={() => handleImagePopup(item.content.text)}
-                                    />
-                                ) : (
-                                    <p
-                                        className={`rightPanel__conversation__content__text ${
-                                            item.sender._id === currentUser._id ? 'mine' : ''
-                                        }`}
-                                    >
-                                        {item.content.text}
-                                    </p>
-                                )}
-                                {isTymMsg && (
-                                    <div
-                                        className={`rightPanel__conversation__content__react ${
-                                            item.sender._id === currentUser._id ? 'mine' : ''
-                                        }`}
-                                    >
-                                        <Favorite
-                                            htmlColor="red"
-                                            fontSize="small"
-                                            className="rightPanel__conversation__content__react__tym"
-                                        />
-                                    </div>
-                                )}
-
-                                <div
-                                    className={`rightPanel__conversation__content__options ${
-                                        item.sender._id === currentUser._id ? 'mine' : ''
-                                    }`}
-                                >
-                                    {!isTymMsg ? (
-                                        <FavoriteBorder onClick={() => setIsTymMsg(true)} />
-                                    ) : (
-                                        <Favorite htmlColor="red" onClick={() => setIsTymMsg(false)} />
-                                    )}
-                                    <Reply />
-                                    <DeleteOutline />
-                                </div>
-                            </div>
-                        );
+                        console.log({ item });
+                        return <Message message={item} key={index} handleImagePopup={handleImagePopup} />;
                     })}
                     {uploading && (
                         <img

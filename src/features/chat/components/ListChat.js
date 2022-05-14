@@ -53,7 +53,7 @@ const ListChat = ({ setIsOpenSetting }) => {
                 <h6>{currentUser.name}</h6>
                 <FontAwesomeIcon icon={faPenToSquare} cursor="pointer" size="lg" onClick={() => setIsShowPopup(true)} />
             </div>
-            <ListGroup className="leftPanel__listChat">
+            <div className="leftPanel__listChat">
                 {conversations.map((conversation) => {
                     return (
                         <SingleChat
@@ -65,7 +65,7 @@ const ListChat = ({ setIsOpenSetting }) => {
                         />
                     );
                 })}
-            </ListGroup>
+            </div>
             {isShowPopup && <MessagePopup setIsShowPopup={setIsShowPopup} />}
         </div>
     );

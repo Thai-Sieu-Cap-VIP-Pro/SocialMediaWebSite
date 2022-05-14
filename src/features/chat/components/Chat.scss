@@ -2,11 +2,13 @@
 @import '../../../assets/styles/variable';
 p,
 h6,
-h5,
-* {
-    margin: 0;
+h5 {
+    margin: 0 !important;
     padding: 0;
     box-sizing: border-box;
+}
+h6 {
+    line-height: normal;
 }
 
 .leftPanel {
@@ -53,7 +55,7 @@ h5,
 
 .singleChat {
     display: flex;
-    align-items: center;
+    padding: 15px;
     border: none;
     cursor: pointer;
     &:hover {
@@ -75,6 +77,7 @@ h5,
         margin-left: 20px;
         display: flex;
         flex-direction: column;
+        justify-content: space-around;
         &__name {
             overflow: hidden;
             text-overflow: ellipsis;
@@ -146,18 +149,28 @@ h5,
             display: flex;
             align-items: center;
             flex: 1;
+            margin-right: 10px;
             cursor: pointer;
             &__image {
-                width: 30px;
-                height: 30px;
+                width: 35px;
+                height: 35px;
                 border-radius: 50%;
                 margin-right: 10px;
+                flex-shrink: 0;
                 & img {
                     width: 100%;
                     height: 100%;
                     object-fit: cover;
                     border-radius: 50%;
                 }
+            }
+            &__name {
+                overflow: hidden;
+                text-overflow: ellipsis;
+                display: -webkit-box;
+                -webkit-line-clamp: 1;
+                -webkit-box-orient: vertical;
+                word-break: break-all;
             }
         }
         &__call {
@@ -418,10 +431,10 @@ h5,
             }
         }
         &__tags {
-            display: flex;
+            display: flex !important;
             width: 100%;
             &__singleTag {
-                width: auto;
+                width: auto !important;
                 background-color: rgb(190, 225, 247);
                 color: rgb(11, 131, 251);
                 display: flex;
