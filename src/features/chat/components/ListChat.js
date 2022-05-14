@@ -11,6 +11,7 @@ import MessagePopup from './MessagePopup';
 import { socket } from '../pages/ChatPage';
 
 const ListChat = ({ setIsOpenSetting }) => {
+    console.log('render list again');
     const [isShowPopup, setIsShowPopup] = useState(false);
     const dispatch = useDispatch();
     const navigate = useNavigate();
@@ -24,18 +25,17 @@ const ListChat = ({ setIsOpenSetting }) => {
         // socket.emit('leaveRoom', params['*']);
         setIsOpenSetting(false);
         navigate(`${id}`);
-        console.log(params);
     };
 
     useEffect(() => {
         socket.on('recieveNotice', (member) => {
             dispatch(getAllConversations())
                 .unwrap()
-                .then((resultValue) => console.log(resultValue))
-                .catch((rejectedValue) => console.log(rejectedValue));
+                .then((resultValue) => {})
+                .catch((rejectedValue) => {});
         });
         return () => {
-            socket.off('reieveNotice');
+            // socket.off('reieveNotice');
             console.log('client Off');
         };
     }, [socket]);
@@ -43,8 +43,8 @@ const ListChat = ({ setIsOpenSetting }) => {
     useEffect(() => {
         dispatch(getAllConversations())
             .unwrap()
-            .then((resultValue) => console.log(resultValue))
-            .catch((rejectedValue) => console.log(rejectedValue));
+            .then((resultValue) => {})
+            .catch((rejectedValue) => {});
     }, []);
 
     return (
@@ -53,7 +53,7 @@ const ListChat = ({ setIsOpenSetting }) => {
                 <h6>{currentUser.name}</h6>
                 <FontAwesomeIcon icon={faPenToSquare} cursor="pointer" size="lg" onClick={() => setIsShowPopup(true)} />
             </div>
-            <ListGroup className="leftPanel__listChat">
+            <div className="leftPanel__listChat">
                 {conversations.map((conversation) => {
                     return (
                         <SingleChat
@@ -65,7 +65,7 @@ const ListChat = ({ setIsOpenSetting }) => {
                         />
                     );
                 })}
-            </ListGroup>
+            </div>
             {isShowPopup && <MessagePopup setIsShowPopup={setIsShowPopup} />}
         </div>
     );
