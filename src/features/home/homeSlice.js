@@ -140,7 +140,7 @@ const HomeSlice = createSlice({
     [getListRecommendFriends.rejected]: (state, action) => {},
     [getListRecommendFriends.fulfilled]: (state, action) => {
       console.log(action.payload);
-      state.listRecommend = action.payload.finalOfFinalUsers;
+      state.listRecommend = action.payload.relateUser;
     },
 
     //create comment
