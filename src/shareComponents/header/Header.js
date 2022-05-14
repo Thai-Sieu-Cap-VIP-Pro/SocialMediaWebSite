@@ -52,15 +52,16 @@ const Header = () => {
         <NavLink to="/liked">
           <NotificationsOutlined />
         </NavLink>
+        
       </div>
       <div className="header__profile">
         <img src={IMAGES.avatar} alt="" />
         <div className="header__profile__list" id="header__profile__list">
           <ul>
-            <li>
+            <NavLink to="/user">
               <AccountCircleOutlined />
               <i>Trang cá nhân</i>
-            </li>
+            </NavLink>
             <li>
               <SettingsOutlined />
               <i>Cài đặt</i>
