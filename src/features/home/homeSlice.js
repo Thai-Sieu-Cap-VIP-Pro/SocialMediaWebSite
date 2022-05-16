@@ -1,5 +1,7 @@
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import postAPI from '../../api/PostApi';
+
+import { createSlice, createAsyncThunk, current } from "@reduxjs/toolkit";
+import postAPI from "../../api/PostApi";
+
 
 //hàm lấy tất cả bài post khi vào trang chủ
 export const getPosts = createAsyncThunk('post/getPosts', async () => {
@@ -14,9 +16,12 @@ export const getCommentsByPostID = createAsyncThunk('post/getComments', async (p
 });
 
 //hàm xử lý like hay bỏ like bài post
-export const handleLike = createAsyncThunk('post/Like', async (params) => {
-    console.log('Đang like bài ' + params);
-    const listComment = await postAPI.likePost(params);
+
+export const handleLike = createAsyncThunk("post/Like", async (params) => {
+  console.log("Đang like bài " + params);
+  const listComment = await postAPI.likePost(params);
+  return params;
+
 });
 
 export const handleUnLike = createAsyncThunk('post/UnLike', async (params) => {
@@ -35,130 +40,245 @@ export const addNewComment = createAsyncThunk('home/addNewComments', async (para
     return listRecommend;
 });
 
+//like or unlike comment
+export const likeOrUnlikeCmt = createAsyncThunk(
+  "comment/likeOrUnlikeCmt",
+  async (params) => {
+    const listRecommend = await postAPI.handleLikeCmt(params);
+    return listRecommend;
+  }
+);
+
+//editcomment
+export const editComment = createAsyncThunk("comment/edit", async (params) => {
+  const listRecommend = await postAPI.editCmt(params);
+  return listRecommend;
+});
+
+//delete comment
+export const deleteComment = createAsyncThunk(
+  "comment/delete",
+  async (params) => {
+    const listRecommend = await postAPI.deleteCmt(params);
+    return listRecommend;
+  }
+);
+
+//unfollow
+export const unFollow = createAsyncThunk("user/unfollow", async (params) => {
+  const listRecommend = await postAPI.unnFollowFriends(params);
+});
+//unfollow
+export const follow = createAsyncThunk("user/follow", async (params) => {
+  const listRecommend = await postAPI.followFriends(params);
+});
+
+//getListLike
+export const getListUser = createAsyncThunk(
+  "user/getlistLike",
+  async (params) => {
+    const listRecommend = await postAPI.getlistLike(params);
+    return listRecommend;
+  }
+);
+
 const HomeSlice = createSlice({
-    name: 'home',
-    initialState: {
-        replingCmt: {
-            CmtID: null,
-            CmtUserName: '',
-        },
-        listPosts: [],
-        listComment: [],
-        listRecommend: [],
-        activePostId: '',
-        isShowDetail: false,
-        isShowReportModal: false,
+
+  name: "home",
+  initialState: {
+    replingCmt: {
+      CmtID: null,
+      CmtUserName: "",
+    },
+    editingCmt: {},
+    listLikeCmt: {
+      isShowAlllikeModal: false,
+      listUsers: [],
+    },
+    isLoadingAddCmt: false,
+    likepost: false,
+    listPosts: [],
+    listComment: [],
+    listRecommend: [],
+    activePostId: "",
+    isShowDetail: false,
+    isShowReportModal: false,
+
+    isLoading: false,
+    isLoadCmt: false,
+    loadListPostFail: false,
+  },
+  reducers: {
+    ShowDetail: (state, action) => {
+      state.isShowDetail = true;
+      state.activePostId = action.payload;
+    },
+    HideDetailReducer: (state, action) => {
+      state.isShowDetail = false;
+      state.activePostId = "";
+    },
+    ShowReportModal: (state, action) => {
+      state.isShowReportModal = true;
+    },
+    HideReportModal: (state, action) => {
+      state.isShowReportModal = false;
+    },
+    ShowAllLikesModal: (state, action) => {
+      state.isShowAlllikeModal = true;
+    },
+    HideAllLikesModal: (state, action) => {
+      state.listLikeCmt = {
         isShowAlllikeModal: false,
-        isLoading: false,
-        isLoadCmt: false,
-        loadListPostFail: false,
+        listUsers: [],
+      };
     },
-    reducers: {
-        ShowDetail: (state, action) => {
-            state.isShowDetail = true;
-            state.activePostId = action.payload;
-            console.log('xong hàm show detail');
-        },
-        HideDetailReducer: (state, action) => {
-            state.isShowDetail = false;
-            state.activePostId = '';
-        },
-        ShowReportModal: (state, action) => {
-            state.isShowReportModal = true;
-        },
-        HideReportModal: (state, action) => {
-            state.isShowReportModal = false;
-        },
-        ShowAllLikesModal: (state, action) => {
-            state.isShowAlllikeModal = true;
-        },
-        HideAllLikesModal: (state, action) => {
-            state.isShowAlllikeModal = false;
-        },
-        SetReplyCmd: (state, action) => {
-            state.replingCmt.CmtID = action.payload.cmtId;
-            state.replingCmt.CmtUserName = action.payload.userName;
-        },
-        CancelReplyCmd: (state, action) => {
-            state.replingCmt = {
-                CmtID: null,
-                CmtUserName: '',
-            };
-        },
+    SetReplyCmd: (state, action) => {
+      state.replingCmt.CmtID = action.payload.cmtId;
+      state.replingCmt.CmtUserName = action.payload.userName;
     },
-    extraReducers: {
-        //get all post when login successful
-        [getPosts.pending]: (state) => {
-            state.isLoading = true;
-        },
-        [getPosts.rejected]: (state) => {
-            console.log('Lỗi không lấy được post');
-            state.isLoading = false;
-            state.loadListPostFail = true;
-        },
-        [getPosts.fulfilled]: (state, action) => {
-            state.listPosts = action.payload.posts;
-            state.isLoading = false;
-            state.loadListPostFail = false;
-        },
-        //get all comment of post
-        [getCommentsByPostID.pending]: (state, action) => {
-            state.isLoadCmt = true;
-        },
-        [getCommentsByPostID.rejected]: (state, action) => {
-            console.log('Lấy comment thất bại');
-            state.isLoadCmt = false;
-        },
-        [getCommentsByPostID.fulfilled]: (state, action) => {
-            state.listComment = action.payload.cmts;
-            state.isLoadCmt = false;
-        },
+    CancelReplyCmd: (state, action) => {
+      state.replingCmt = {
+        CmtID: null,
+        CmtUserName: "",
+      };
+    },
 
-        //handlelike
-        [handleLike.pending]: (state, action) => {
-            console.log('Đang like');
-        },
-        [handleLike.rejected]: (state, action) => {
-            console.log('like thất bại');
-        },
-        [handleLike.fulfilled]: (state, action) => {
-            console.log('like thành công');
-            console.log(state.listPosts);
-        },
+    editCmt: (state, action) => {
+      state.editingCmt = action.payload;
+    },
+  },
+  extraReducers: {
+    //get all post when login successful
+    [getPosts.pending]: (state) => {
+      state.isLoading = true;
+    },
+    [getPosts.rejected]: (state) => {
+      console.log("Lỗi không lấy được post");
+      state.isLoading = false;
+      state.loadListPostFail = true;
+    },
+    [getPosts.fulfilled]: (state, action) => {
+      state.listPosts = action.payload.posts;
+      state.isLoading = false;
+      state.loadListPostFail = false;
+      console.log(action.payload);
+    },
+    //get all comment of post
+    [getCommentsByPostID.pending]: (state, action) => {
+      state.isLoadCmt = true;
+    },
+    [getCommentsByPostID.rejected]: (state, action) => {
+      state.isLoadCmt = false;
+    },
+    [getCommentsByPostID.fulfilled]: (state, action) => {
+      state.listComment = action.payload.cmts;
+      state.isLoadCmt = false;
+    },
 
-        //get list recommend frieds
-        [getListRecommendFriends.pending]: (state, action) => {},
-        [getListRecommendFriends.rejected]: (state, action) => {},
-        [getListRecommendFriends.fulfilled]: (state, action) => {
-            console.log(action.payload);
-            state.listRecommend = action.payload.relateUser;
-        },
+    //handlelike
+    [handleLike.pending]: (state, action) => {
+      console.log("Đang like");
+    },
+    [handleLike.rejected]: (state, action) => {
+      console.log("like thất bại");
+    },
+    [handleLike.fulfilled]: (state, action) => {
+      const loginId = JSON.parse(localStorage.getItem("LoginUser"));
+      const index = current(state).listPosts.find(
+        (item) => item._id == action.payload
+      );
 
-        //create comment
-        [addNewComment.pending]: (state, action) => {},
-        [addNewComment.rejected]: (state, action) => {},
-        [addNewComment.fulfilled]: (state, action) => {
-            console.log('thành công');
-            state.replingCmt = {
-                CmtID: null,
-                CmtUserName: '',
-            };
-            //state.listComment = action.payload;
-        },
+      current(state).listPosts.forEach((item) => {
+        if (item._id === index._id) {
+          //  item.likes = [...item.likes, loginId._id];
+          item.likes.push(loginId._id);
+          console.log(item.likes);
+        }
+      });
+
+      console.log(current(state).listPosts.likes);
+    },
+
+    //get list recommend frieds
+    [getListRecommendFriends.pending]: (state, action) => {},
+    [getListRecommendFriends.rejected]: (state, action) => {},
+    [getListRecommendFriends.fulfilled]: (state, action) => {
+      console.log(action.payload);
+      state.listRecommend = action.payload.relateUser;
+    },
+
+    //create comment
+    [addNewComment.pending]: (state, action) => {
+      state.isLoadingAddCmt = true;
+    },
+    [addNewComment.rejected]: (state, action) => {
+      state.isLoadingAddCmt = false;
+    },
+    [addNewComment.fulfilled]: (state, action) => {
+      state.isLoadingAddCmt = false;
+      state.replingCmt = {
+        CmtID: null,
+        CmtUserName: "",
+      };
+      // state.listComment = action.payload;
+    },
+
+    [likeOrUnlikeCmt.pending]: (state, action) => {},
+    [likeOrUnlikeCmt.rejected]: (state, action) => {},
+    [likeOrUnlikeCmt.fulfilled]: (state, action) => {},
+
+    //edit comment
+    [editComment.pending]: (state, action) => {},
+    [editComment.rejected]: (state, action) => {},
+    [editComment.fulfilled]: (state, action) => {},
+
+    //delete comment
+    [deleteComment.pending]: (state, action) => {},
+    [deleteComment.rejected]: (state, action) => {
+      console.log("xóa thất bại");
+    },
+    [deleteComment.fulfilled]: (state, action) => {
+      console.log("Xóa thành công");
+    },
+
+    //unfollow
+    //delete comment
+    [unFollow.pending]: (state, action) => {},
+    [unFollow.rejected]: (state, action) => {
+      console.log("unfollow thất bại");
+    },
+    [unFollow.fulfilled]: (state, action) => {
+      console.log("Unfollow thành công");
+      state.isShowReportModal = false;
+    },
+
+    [follow.fulfilled]: (state, action) => {
+      //state.isShowReportModal = false;
+    },
+
+    [getListUser.fulfilled]: (state, action) => {
+      state.listLikeCmt = {
+        isShowAlllikeModal: true,
+        listUsers: action.payload.users,
+      };
+
     },
 });
 
 // Action creators are generated for each case reducer function
 const { reducer: HomeReducer, actions } = HomeSlice;
 export const {
-    ShowDetail,
-    HideDetailReducer,
-    ShowReportModal,
-    HideReportModal,
-    ShowAllLikesModal,
-    HideAllLikesModal,
-    SetReplyCmd,
-    CancelReplyCmd,
+
+  ShowDetail,
+  HideDetailReducer,
+  ShowReportModal,
+  HideReportModal,
+  ShowAllLikesModal,
+  HideAllLikesModal,
+  SetReplyCmd,
+  CancelReplyCmd,
+  editCmt,
+
 } = actions;
 
 export default HomeReducer;

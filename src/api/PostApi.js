@@ -43,6 +43,38 @@ class PostAPI {
     let content = params.content;
     return axiosClient.post(url, { content });
   };
+
+  handleLikeCmt = (params) => {
+    const url = "http://localhost:3001/api/comments/ul/" + params;
+    console.log(url);
+    return axiosClient.put(url, {});
+  };
+
+  deleteCmt = (params) => {
+    const url = "http://localhost:3001/api/comments/" + params.CmtId;
+    console.log(url);
+    return axiosClient.delete(url, {});
+  };
+
+  editCmt = (params) => {
+    const url = "http://localhost:3001/api/comments/" + params.CmtId;
+    return axiosClient.put(url, {});
+  };
+
+  unnFollowFriends = (params) => {
+    const url = "http://localhost:3001/api/user/user/" + params + "/unfollow";
+    return axiosClient.patch(url, { params });
+  };
+
+  followFriends = (params) => {
+    const url = "http://localhost:3001/api/user/user/" + params + "/follow";
+    return axiosClient.patch(url, { params });
+  };
+
+  getlistLike = (params) => {
+    const url = "http://localhost:3001/api/user/users";
+    return axiosClient.post(url, params);
+  };
 }
 
 const postAPI = new PostAPI();
