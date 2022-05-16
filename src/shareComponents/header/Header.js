@@ -59,7 +59,7 @@ const Header = () => {
           <ul>
             <li>
               <AccountCircleOutlined />
-              <i>Trang cá nhân</i>
+              <NavLink to="/account">Trang cá nhân</NavLink>
             </li>
             <li>
               <SettingsOutlined />

@@ -7,45 +7,54 @@ import IndexChat from './features/chat';
 import NotFound from './shareComponents/notfound/NotFound';
 import NewIndex from './features/newpost/newIndex';
 import VideoCall from './features/chat/components/VideoCall';
+import UserIndex from './features/user';
 
 function App() {
-    return (
-        <div className="App">
-            <Routes>
-                <Route
-                    path="/*"
-                    element={
-                        <PrivateRout>
-                            <IndexHome />
-                        </PrivateRout>
-                    }
-                ></Route>
+  return (
+    <div className="App">
+      <Routes>
+        <Route
+          path="/*"
+          element={
+            <PrivateRout>
+              <IndexHome />
+            </PrivateRout>
+          }
+        ></Route>
 
-                <Route
-                    path="/messenger/*"
-                    element={
-                        <PrivateRout>
-                            <IndexChat />
-                        </PrivateRout>
-                    }
-                ></Route>
-                <Route path="video_call/:id" element={<VideoCall />} />
+        <Route
+          path="/messenger/*"
+          element={
+            <PrivateRout>
+              <IndexChat />
+            </PrivateRout>
+          }
+        ></Route>
+        <Route
+          path="/account/*"
+          element={
+            <PrivateRout>
+              <UserIndex />
+            </PrivateRout>
+          }
+        ></Route>
+        <Route path="video_call/:id" element={<VideoCall />} />
 
-                <Route
-                    path="/new/*"
-                    element={
-                        <PrivateRout>
-                            <NewIndex />
-                        </PrivateRout>
-                    }
-                ></Route>
-                {/* <Route path="/*" element={<IndexHome />}></Route> */}
-                {/* <Route path="/messenger/*" element={<IndexChat />}></Route> */}
-                <Route path="/auth/*" element={<Auth />}></Route>
-            </Routes>
-            <Outlet></Outlet>
-        </div>
-    );
+        <Route
+          path="/new/*"
+          element={
+            <PrivateRout>
+              <NewIndex />
+            </PrivateRout>
+          }
+        ></Route>
+        {/* <Route path="/*" element={<IndexHome />}></Route> */}
+        {/* <Route path="/messenger/*" element={<IndexChat />}></Route> */}
+        <Route path="/auth/*" element={<Auth />}></Route>
+      </Routes>
+      <Outlet></Outlet>
+    </div>
+  );
 }
 
 export default App;
