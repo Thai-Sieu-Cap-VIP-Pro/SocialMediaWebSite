@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from 'react';
 import { Col, Container, Row } from 'react-bootstrap';
 import { Route, Routes } from 'react-router-dom';
@@ -8,9 +9,11 @@ import ListChat from '../components/ListChat';
 import io from 'socket.io-client';
 import { useSelector } from 'react-redux';
 
-export const socket = io.connect('http://localhost:3002');
+
+export const socket = io.connect("http://localhost:3003");
 
 const ChatPage = () => {
+
     const [isOpenSetting, setIsOpenSetting] = useState(false);
     const currentUser = useSelector((state) => state.auth.current);
     useEffect(() => {
@@ -44,6 +47,7 @@ const ChatPage = () => {
             </Container>
         </>
     );
+
 };
 
 export default ChatPage;

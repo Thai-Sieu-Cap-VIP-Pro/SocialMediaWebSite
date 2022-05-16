@@ -4,6 +4,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
 import WarningPopup from '../../../shareComponents/WarningPopup/WarningPopup';
 import { deleteCon, removeUserInCon } from '../ChatSlice';
+import { socket } from '../pages/ChatPage';
 import ChatMember from './ChatMember';
 
 const ChatSetting = ({ setIsOpenSetting, currentConversation }) => {
@@ -15,8 +16,15 @@ const ChatSetting = ({ setIsOpenSetting, currentConversation }) => {
     const handleDeleteCon = async () => {
         try {
             currentConversation.members.length > 1
-                ? await dispatch(removeUserInCon({ conversationId: params.id, userId: currentUser._id })).unwrap()
-                : await dispatch(deleteCon({ conversationId: params.id })).unwrap();
+                ? await dispatch(removeUserInCon({ conversationId: params.id, userId: currentUser._id }))
+                      .unwrap()
+                      .then((resultValue) => console.log(resultValue))
+                      .catch((rejectedValue) => console.log(rejectedValue))
+                : await dispatch(deleteCon({ conversationId: params.id }))
+                      .unwrap()
+                      .then((resultValue) => console.log(resultValue))
+                      .catch((rejectedValue) => console.log(rejectedValue));
+            await socket.emit('sendNotice', currentConversation.members);
             navigate('/messenger');
         } catch (error) {
             console.log({ error });
@@ -44,7 +52,7 @@ const ChatSetting = ({ setIsOpenSetting, currentConversation }) => {
                 <div className="rightPanel__mainSetting__listMember">
                     <h4>Members</h4>
                     {currentConversation?.members.map((member) => {
-                        return <ChatMember member={member} />;
+                        return <ChatMember member={member} key={member._id} />;
                     })}
                 </div>
                 <div className="rightPanel__mainSetting__control">

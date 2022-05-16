@@ -1,14 +1,20 @@
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { HideReportModal } from "../homeSlice";
+import { HideReportModal, unFollow } from "../homeSlice";
 import "./post.scss";
 
-const ReportModal = () => {
+const ReportModal = ({ userPostId }) => {
   const dispatch = useDispatch();
   const isShow = useSelector((state) => state.home.isShowReportModal);
 
   const HideModal = () => {
     const action = HideReportModal();
+    dispatch(action);
+  };
+
+  const handleUnfollow = (id) => {
+    console.log(id);
+    const action = unFollow(id);
     dispatch(action);
   };
 
@@ -18,7 +24,7 @@ const ReportModal = () => {
       <div className="report__content">
         <ul>
           <li>Report</li>
-          <li>Unfollow</li>
+          <li onClick={() => handleUnfollow(userPostId)}>Unfollow</li>
         </ul>
       </div>
     </div>

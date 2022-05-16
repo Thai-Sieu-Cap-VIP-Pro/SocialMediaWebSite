@@ -13,16 +13,17 @@ import {
 } from "@material-ui/icons";
 import IMAGES from "../../assets/images/imageStore";
 import { useNavigate, NavLink } from "react-router-dom";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { Logout } from "../../features/auth/authSlice";
 
 const Header = () => {
-    const dispatch = useDispatch();
-    let navigate = useNavigate();
+  const current = JSON.parse(localStorage.getItem("LoginUser"));
+  const dispatch = useDispatch();
+  let navigate = useNavigate();
 
-    const handleSearch = () => {
-        console.log('Thay đổi trong ô search');
-    };
+  const handleSearch = () => {
+    console.log("Thay đổi trong ô search");
+  };
 
   const handleLogout = async () => {
     const action = Logout();
@@ -52,12 +53,14 @@ const Header = () => {
         <NavLink to="/liked">
           <NotificationsOutlined />
         </NavLink>
+        
       </div>
       <div className="header__profile">
-        <img src={IMAGES.avatar} alt="" />
+        <span>{current.name}</span>
+        <img src={current.avatar} alt="" />
         <div className="header__profile__list" id="header__profile__list">
           <ul>
-            <li>
+            <NavLink to="/user">
               <AccountCircleOutlined />
               <NavLink to="/account">Trang cá nhân</NavLink>
             </li>

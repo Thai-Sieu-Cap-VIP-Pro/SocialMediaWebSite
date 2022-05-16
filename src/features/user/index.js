@@ -5,6 +5,7 @@ import UserPage from "./page/userPage";
 
 const UserIndex = () => {
   return (
+    
     <div>
       <Routes>
         <Route index element={<UserPage />}></Route>

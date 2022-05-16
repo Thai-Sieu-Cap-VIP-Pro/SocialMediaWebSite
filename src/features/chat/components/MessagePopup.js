@@ -25,7 +25,9 @@ const MessagePopup = ({ setIsShowPopup }) => {
                 if (condition1) {
                     const tagIds = tags.map((tag) => tag._id);
                     const condition2 = tagIds.every((tagId) => {
-                        return conversation.members.includes(tagId);
+                        return conversation.members.some((member) => {
+                            return member._id === tagId;
+                        });
                     });
                     if (condition2) {
                         return true;

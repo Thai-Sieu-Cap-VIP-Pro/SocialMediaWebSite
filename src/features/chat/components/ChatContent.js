@@ -1,21 +1,19 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFaceGrinWide, faImage, faHeart, faPaperPlane } from '@fortawesome/free-regular-svg-icons';
-import { Reply, InfoOutlined, FavoriteBorder, Favorite, DeleteOutline, Call } from '@material-ui/icons';
-import { createMessage, getMessageInCons } from '../ChatSlice';
+import { InfoOutlined, Call } from '@material-ui/icons';
+import { createMessage, getMessageInCons, tymMessage, unTymMessage } from '../ChatSlice';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { checkText } from 'smile2emoji';
 import { v1 as uuid } from 'uuid';
-// import Peer from 'simple-peer';
-// import Picker from 'emoji-picker-react';
 import './Chat.scss';
 import { socket } from '../pages/ChatPage';
-import axios from 'axios';
 import ChatSetting from './ChatSetting';
 import ImagePopup from './ImagePopup';
 import useImageUpload from '../../../hooks/useImageUpload';
 import WarningPopup from '../../../shareComponents/WarningPopup/WarningPopup';
+import Message from './Message';
 
 const ChatContent = ({ isOpenSetting, setIsOpenSetting }) => {
     const [text, setText] = useState('');
@@ -27,7 +25,6 @@ const ChatContent = ({ isOpenSetting, setIsOpenSetting }) => {
     const conversations = useSelector((state) => state.chat.conversations);
     const [currentConversation, setCurrentConversation] = useState(null);
     const [data, setData] = useState([]);
-    const [isTymMsg, setIsTymMsg] = useState(false);
     const [srcPopup, setSrcPopup] = useState('');
     const [videoId, setVideoId] = useState(uuid());
     const [isCalling, setIsCalling] = useState(false);
@@ -38,94 +35,22 @@ const ChatContent = ({ isOpenSetting, setIsOpenSetting }) => {
     const uploadImage = useImageUpload();
 
     const ref = useRef();
-    // dummy thingssssssssssssssssssssssss
 
-    // const [me, setMe] = useState('');
-    // const [stream, setStream] = useState();
-    // const [receivingCall, setReceivingCall] = useState(false);
-    // const [caller, setCaller] = useState('');
-    // const [callerSignal, setCallerSignal] = useState();
-    // const [callAccepted, setCallAccepted] = useState(false);
-    // const [idToCall, setIdToCall] = useState('');
-    // const [callEnded, setCallEnded] = useState(false);
-    // const [name, setName] = useState('');
-    // const myVideo = useRef();
-    // const userVideo = useRef();
-    // const connectionRef = useRef();
+    // useEffect
+    useEffect(() => {
+        if (ref.current) {
+            ref.current.scrollTop = ref.current.scrollTopMax;
+        }
+    }, [data, socket, image]);
 
-    // useEffect(() => {
-    //     navigator.mediaDevices.getUserMedia({ video: true, audio: true }).then((stream) => {
-    //         setStream(stream);
-    //         myVideo.current.srcObject = stream;
-    //         console.log(myVideo.current.srcObject);
-    //         // console.log(stream);
-    //     });
-
-    //     socket.on('me', (id) => {
-    //         setMe(currentUser._id);
-    //     });
-
-    //     socket.on('callUser', (data) => {
-    //         setReceivingCall(true);
-    //         setCaller(data.from);
-    //         setName(data.name);
-    //         setCallerSignal(data.signal);
-    //     });
-    // }, []);
-
-    // const callUser = (id) => {
-    //     const peer = new Peer({
-    //         initiator: true,
-    //         trickle: false,
-    //         stream: stream,
-    //     });
-    //     peer.on('signal', (data) => {
-    //         socket.emit('callUser', {
-    //             userToCall: id,
-    //             signalData: data,
-    //             from: me,
-    //             name: name,
-    //         });
-    //     });
-    //     peer.on('stream', (stream) => {
-    //         userVideo.current.srcObject = stream;
-    //     });
-    //     socket.on('callAccepted', (signal) => {
-    //         setCallAccepted(true);
-    //         peer.signal(signal);
-    //     });
-
-    //     connectionRef.current = peer;
-    // };
-
-    // const answerCall = () => {
-    //     setCallAccepted(true);
-    //     const peer = new Peer({
-    //         initiator: false,
-    //         trickle: false,
-    //         stream: stream,
-    //     });
-    //     peer.on('signal', (data) => {
-    //         socket.emit('answerCall', { signal: data, to: caller });
-    //     });
-    //     peer.on('stream', (stream) => {
-    //         userVideo.current.srcObject = stream;
-    //     });
-
-    //     peer.signal(callerSignal);
-    //     connectionRef.current = peer;
-    // };
-
-    // const leaveCall = () => {
-    //     setCallEnded(true);
-    //     connectionRef.current.destroy();
-    // };
-
-    // sndbjsahdjasbdjbasjdbasjdbjasbdjsabdjsbdjbasjdbjas
-
-    const handleClickEmoji = () => {
-        setIsOpenEmojiPicker(!isOpenEmojiPicker);
-    };
+    useEffect(() => {
+        getMessagesInCons();
+        setIsOpenSetting(false);
+        setCurrentConversation(conversations.find((conversation) => conversation._id === params.id));
+        return () => {
+            socket.emit('leaveRoom', params.id);
+        };
+    }, [params.id]);
 
     useEffect(() => {
         socket.on('recieveMessage', (mess) => {
@@ -139,10 +64,50 @@ const ChatContent = ({ isOpenSetting, setIsOpenSetting }) => {
     }, [socket]);
 
     useEffect(() => {
-        if (ref.current) {
-            ref.current.scrollTop = ref.current.scrollTopMax;
+        socket.on('recieveTym', (mess) => {
+            setData((prev) => {
+                return prev.map((item) => {
+                    if (item._id === mess._id) {
+                        return mess;
+                    }
+                    return item;
+                });
+            });
+        });
+        return () => {
+            socket.off('recieveTym');
+            console.log('client Off');
+        };
+    }, [socket]);
+
+    useEffect(() => {
+        socket.on('recieveCalling', (videoId) => {
+            setIsCalling(true);
+            setVideoId(videoId);
+        });
+        return () => {
+            socket.off('recieveCalling');
+            console.log('End Call');
+        };
+    }, [socket]);
+
+    const handleTymMessage = async (messageId, userId) => {
+        try {
+            const result = await dispatch(tymMessage({ messageId, userId })).unwrap();
+            socket.emit('sendTym', result.newMessage);
+        } catch (error) {
+            throw error;
         }
-    }, [data, socket, image]);
+    };
+
+    const handleUnTymMessage = async (messageId, userId) => {
+        try {
+            const result = await dispatch(unTymMessage({ messageId, userId })).unwrap();
+            socket.emit('sendTym', result.newMessage);
+        } catch (error) {
+            throw error;
+        }
+    };
 
     const getMessagesInCons = async () => {
         try {
@@ -155,13 +120,9 @@ const ChatContent = ({ isOpenSetting, setIsOpenSetting }) => {
         }
     };
 
-    useEffect(() => {
-        getMessagesInCons();
-        setCurrentConversation(conversations.find((conversation) => conversation._id === params.id));
-        return () => {
-            socket.emit('leaveRoom', params.id);
-        };
-    }, [params.id]);
+    const handleClickEmoji = () => {
+        setIsOpenEmojiPicker(!isOpenEmojiPicker);
+    };
 
     const handleChange = (e) => {
         if (!e.target.value) {
@@ -222,17 +183,6 @@ const ChatContent = ({ isOpenSetting, setIsOpenSetting }) => {
         setIsCalling(false);
     };
 
-    useEffect(() => {
-        socket.on('recieveCalling', (videoId) => {
-            setIsCalling(true);
-            setVideoId(videoId);
-        });
-        return () => {
-            socket.off('recieveCalling');
-            console.log('End Call');
-        };
-    }, [socket]);
-
     if (isOpenSetting) {
         return <ChatSetting setIsOpenSetting={setIsOpenSetting} currentConversation={currentConversation} />;
     } else {
@@ -252,12 +202,16 @@ const ChatContent = ({ isOpenSetting, setIsOpenSetting }) => {
                             />
                         </div>
                         <h6 className="rightPanel__title__user__name">
-                            {currentConversation?.members.length === 2
-                                ? currentConversation?.members.find((item) => item._id !== currentUser._id).name
-                                : currentConversation?.members.length === 1
+                            {conversations.find((conversation) => conversation._id === params.id)?.members.length === 2
+                                ? conversations
+                                      .find((conversation) => conversation._id === params.id)
+                                      ?.members.find((item) => item._id !== currentUser._id).name
+                                : conversations.find((conversation) => conversation._id === params.id)?.members
+                                      .length === 1
                                 ? 'Không còn ai muốn trò chuyện với bạn nữa'
-                                : currentConversation?.members
-                                      .filter((item) => item._id !== currentUser._id)
+                                : conversations
+                                      .find((conversation) => conversation._id === params.id)
+                                      ?.members.filter((item) => item._id !== currentUser._id)
                                       .map((member) => member.name)
                                       .join(', ')}
                         </h6>
@@ -271,62 +225,15 @@ const ChatContent = ({ isOpenSetting, setIsOpenSetting }) => {
                 </div>
                 <div className="rightPanel__conversation" ref={ref}>
                     {data.map((item, index) => {
+                        console.log({ item });
                         return (
-                            <div
-                                className={`rightPanel__conversation__content ${
-                                    item.sender._id === currentUser._id ? 'mine' : ''
-                                }`}
+                            <Message
+                                message={item}
                                 key={index}
-                            >
-                                {item.sender._id !== currentUser._id && (
-                                    <div className="rightPanel__conversation__content__image">
-                                        <img src={item.sender.avatar} alt="unsplash" />
-                                    </div>
-                                )}
-                                {item.content.isImage === true ? (
-                                    <img
-                                        src={item.content.text}
-                                        alt="pictureChat"
-                                        className="rightPanel__conversation__content__textImage"
-                                        onClick={() => handleImagePopup(item.content.text)}
-                                    />
-                                ) : (
-                                    <p
-                                        className={`rightPanel__conversation__content__text ${
-                                            item.sender._id === currentUser._id ? 'mine' : ''
-                                        }`}
-                                    >
-                                        {item.content.text}
-                                    </p>
-                                )}
-                                {isTymMsg && (
-                                    <div
-                                        className={`rightPanel__conversation__content__react ${
-                                            item.sender._id === currentUser._id ? 'mine' : ''
-                                        }`}
-                                    >
-                                        <Favorite
-                                            htmlColor="red"
-                                            fontSize="small"
-                                            className="rightPanel__conversation__content__react__tym"
-                                        />
-                                    </div>
-                                )}
-
-                                <div
-                                    className={`rightPanel__conversation__content__options ${
-                                        item.sender._id === currentUser._id ? 'mine' : ''
-                                    }`}
-                                >
-                                    {!isTymMsg ? (
-                                        <FavoriteBorder onClick={() => setIsTymMsg(true)} />
-                                    ) : (
-                                        <Favorite htmlColor="red" onClick={() => setIsTymMsg(false)} />
-                                    )}
-                                    <Reply />
-                                    <DeleteOutline />
-                                </div>
-                            </div>
+                                handleImagePopup={handleImagePopup}
+                                handleTymMessage={handleTymMessage}
+                                handleUnTymMessage={handleUnTymMessage}
+                            />
                         );
                     })}
                     {uploading && (

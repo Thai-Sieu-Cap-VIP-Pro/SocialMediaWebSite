@@ -1,63 +1,109 @@
-import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+
+import { createSlice, createAsyncThunk, current } from "@reduxjs/toolkit";
 import postAPI from "../../api/PostApi";
 
+
 //hàm lấy tất cả bài post khi vào trang chủ
-export const getPosts = createAsyncThunk("post/getPosts", async () => {
-  const listPosts = await postAPI.getPosts();
-  return listPosts;
+export const getPosts = createAsyncThunk('post/getPosts', async () => {
+    const listPosts = await postAPI.getPosts();
+    return listPosts;
 });
 
 //hàm lấy tất cả comment của bài post
-export const getCommentsByPostID = createAsyncThunk(
-  "post/getComments",
-  async (params) => {
+export const getCommentsByPostID = createAsyncThunk('post/getComments', async (params) => {
     const listComment = await postAPI.getCommentByPostID(params);
     return listComment;
-  }
-);
+});
 
 //hàm xử lý like hay bỏ like bài post
+
 export const handleLike = createAsyncThunk("post/Like", async (params) => {
   console.log("Đang like bài " + params);
   const listComment = await postAPI.likePost(params);
+  return params;
+
 });
 
-export const handleUnLike = createAsyncThunk("post/UnLike", async (params) => {
-  const listComment = await postAPI.unLikePost(params);
+export const handleUnLike = createAsyncThunk('post/UnLike', async (params) => {
+    const listComment = await postAPI.unLikePost(params);
 });
 
 //hàm lấy danh sách gợi ý kết bạn
-export const getListRecommendFriends = createAsyncThunk(
-  "home/getListRecommendFriends",
-  async () => {
+export const getListRecommendFriends = createAsyncThunk('home/getListRecommendFriends', async () => {
     const listRecommend = await postAPI.recommendFriends();
+    return listRecommend;
+});
+
+//hàm add comment
+export const addNewComment = createAsyncThunk('home/addNewComments', async (params) => {
+    const listRecommend = await postAPI.addComment(params);
+    return listRecommend;
+});
+
+//like or unlike comment
+export const likeOrUnlikeCmt = createAsyncThunk(
+  "comment/likeOrUnlikeCmt",
+  async (params) => {
+    const listRecommend = await postAPI.handleLikeCmt(params);
     return listRecommend;
   }
 );
 
-//hàm add comment
-export const addNewComment = createAsyncThunk(
-  "home/addNewComments",
+//editcomment
+export const editComment = createAsyncThunk("comment/edit", async (params) => {
+  const listRecommend = await postAPI.editCmt(params);
+  return listRecommend;
+});
+
+//delete comment
+export const deleteComment = createAsyncThunk(
+  "comment/delete",
   async (params) => {
-    const listRecommend = await postAPI.addComment(params);
+    const listRecommend = await postAPI.deleteCmt(params);
+    return listRecommend;
+  }
+);
+
+//unfollow
+export const unFollow = createAsyncThunk("user/unfollow", async (params) => {
+  const listRecommend = await postAPI.unnFollowFriends(params);
+});
+//unfollow
+export const follow = createAsyncThunk("user/follow", async (params) => {
+  const listRecommend = await postAPI.followFriends(params);
+});
+
+//getListLike
+export const getListUser = createAsyncThunk(
+  "user/getlistLike",
+  async (params) => {
+    const listRecommend = await postAPI.getlistLike(params);
     return listRecommend;
   }
 );
 
 const HomeSlice = createSlice({
+
   name: "home",
   initialState: {
     replingCmt: {
       CmtID: null,
       CmtUserName: "",
     },
+    editingCmt: {},
+    listLikeCmt: {
+      isShowAlllikeModal: false,
+      listUsers: [],
+    },
+    isLoadingAddCmt: false,
+    likepost: false,
     listPosts: [],
     listComment: [],
     listRecommend: [],
     activePostId: "",
     isShowDetail: false,
     isShowReportModal: false,
-    isShowAlllikeModal: false,
+
     isLoading: false,
     isLoadCmt: false,
     loadListPostFail: false,
@@ -66,7 +112,6 @@ const HomeSlice = createSlice({
     ShowDetail: (state, action) => {
       state.isShowDetail = true;
       state.activePostId = action.payload;
-      console.log("xong hàm show detail");
     },
     HideDetailReducer: (state, action) => {
       state.isShowDetail = false;
@@ -82,7 +127,10 @@ const HomeSlice = createSlice({
       state.isShowAlllikeModal = true;
     },
     HideAllLikesModal: (state, action) => {
-      state.isShowAlllikeModal = false;
+      state.listLikeCmt = {
+        isShowAlllikeModal: false,
+        listUsers: [],
+      };
     },
     SetReplyCmd: (state, action) => {
       state.replingCmt.CmtID = action.payload.cmtId;
@@ -93,6 +141,10 @@ const HomeSlice = createSlice({
         CmtID: null,
         CmtUserName: "",
       };
+    },
+
+    editCmt: (state, action) => {
+      state.editingCmt = action.payload;
     },
   },
   extraReducers: {
@@ -109,13 +161,13 @@ const HomeSlice = createSlice({
       state.listPosts = action.payload.posts;
       state.isLoading = false;
       state.loadListPostFail = false;
+      console.log(action.payload);
     },
     //get all comment of post
     [getCommentsByPostID.pending]: (state, action) => {
       state.isLoadCmt = true;
     },
     [getCommentsByPostID.rejected]: (state, action) => {
-      console.log("Lấy comment thất bại");
       state.isLoadCmt = false;
     },
     [getCommentsByPostID.fulfilled]: (state, action) => {
@@ -131,8 +183,20 @@ const HomeSlice = createSlice({
       console.log("like thất bại");
     },
     [handleLike.fulfilled]: (state, action) => {
-      console.log("like thành công");
-      console.log(state.listPosts);
+      const loginId = JSON.parse(localStorage.getItem("LoginUser"));
+      const index = current(state).listPosts.find(
+        (item) => item._id == action.payload
+      );
+
+      current(state).listPosts.forEach((item) => {
+        if (item._id === index._id) {
+          //  item.likes = [...item.likes, loginId._id];
+          item.likes.push(loginId._id);
+          console.log(item.likes);
+        }
+      });
+
+      console.log(current(state).listPosts.likes);
     },
 
     //get list recommend frieds
@@ -140,26 +204,71 @@ const HomeSlice = createSlice({
     [getListRecommendFriends.rejected]: (state, action) => {},
     [getListRecommendFriends.fulfilled]: (state, action) => {
       console.log(action.payload);
-      state.listRecommend = action.payload.finalOfFinalUsers;
+      state.listRecommend = action.payload.relateUser;
     },
 
     //create comment
-    [addNewComment.pending]: (state, action) => {},
-    [addNewComment.rejected]: (state, action) => {},
+    [addNewComment.pending]: (state, action) => {
+      state.isLoadingAddCmt = true;
+    },
+    [addNewComment.rejected]: (state, action) => {
+      state.isLoadingAddCmt = false;
+    },
     [addNewComment.fulfilled]: (state, action) => {
-      console.log("thành công");
+      state.isLoadingAddCmt = false;
       state.replingCmt = {
         CmtID: null,
         CmtUserName: "",
       };
-      //state.listComment = action.payload;
+      // state.listComment = action.payload;
     },
-  },
+
+    [likeOrUnlikeCmt.pending]: (state, action) => {},
+    [likeOrUnlikeCmt.rejected]: (state, action) => {},
+    [likeOrUnlikeCmt.fulfilled]: (state, action) => {},
+
+    //edit comment
+    [editComment.pending]: (state, action) => {},
+    [editComment.rejected]: (state, action) => {},
+    [editComment.fulfilled]: (state, action) => {},
+
+    //delete comment
+    [deleteComment.pending]: (state, action) => {},
+    [deleteComment.rejected]: (state, action) => {
+      console.log("xóa thất bại");
+    },
+    [deleteComment.fulfilled]: (state, action) => {
+      console.log("Xóa thành công");
+    },
+
+    //unfollow
+    //delete comment
+    [unFollow.pending]: (state, action) => {},
+    [unFollow.rejected]: (state, action) => {
+      console.log("unfollow thất bại");
+    },
+    [unFollow.fulfilled]: (state, action) => {
+      console.log("Unfollow thành công");
+      state.isShowReportModal = false;
+    },
+
+    [follow.fulfilled]: (state, action) => {
+      //state.isShowReportModal = false;
+    },
+
+    [getListUser.fulfilled]: (state, action) => {
+      state.listLikeCmt = {
+        isShowAlllikeModal: true,
+        listUsers: action.payload.users,
+      };
+
+    },
 });
 
 // Action creators are generated for each case reducer function
 const { reducer: HomeReducer, actions } = HomeSlice;
 export const {
+
   ShowDetail,
   HideDetailReducer,
   ShowReportModal,
@@ -168,6 +277,8 @@ export const {
   HideAllLikesModal,
   SetReplyCmd,
   CancelReplyCmd,
+  editCmt,
+
 } = actions;
 
 export default HomeReducer;

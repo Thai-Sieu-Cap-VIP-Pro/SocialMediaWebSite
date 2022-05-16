@@ -82,6 +82,24 @@ export const addUserInCon = createAsyncThunk('conversation/addUser', async (args
     }
 });
 
+export const tymMessage = createAsyncThunk('message/tym', async (args, thunkAPI) => {
+    try {
+        const response = await ChatAPI.tymMessage(args);
+        return response;
+    } catch (error) {
+        return thunkAPI.rejectWithValue(`${error}`);
+    }
+});
+
+export const unTymMessage = createAsyncThunk('message/tym', async (args, thunkAPI) => {
+    try {
+        const response = await ChatAPI.unTymMessage(args);
+        return response;
+    } catch (error) {
+        return thunkAPI.rejectWithValue(`${error}`);
+    }
+});
+
 const chatSlice = createSlice({
     name: 'chat',
     initialState: {
@@ -198,6 +216,30 @@ const chatSlice = createSlice({
             );
         },
         [deleteCon.rejected]: (state, action) => {
+            state.loading = false;
+            state.error = true;
+        },
+        [tymMessage.pending]: (state, action) => {
+            state.loading = true;
+            state.error = false;
+        },
+        [tymMessage.fulfilled]: (state, action) => {
+            state.loading = false;
+            state.error = false;
+        },
+        [tymMessage.rejected]: (state, action) => {
+            state.loading = false;
+            state.error = true;
+        },
+        [unTymMessage.pending]: (state, action) => {
+            state.loading = true;
+            state.error = false;
+        },
+        [unTymMessage.fulfilled]: (state, action) => {
+            state.loading = false;
+            state.error = false;
+        },
+        [unTymMessage.rejected]: (state, action) => {
             state.loading = false;
             state.error = true;
         },

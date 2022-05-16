@@ -37,35 +37,22 @@ const PostComment = () => {
             prevIcon={<FontAwesomeIcon icon={faCircleChevronLeft} />}
             nextIcon={<FontAwesomeIcon icon={faCircleChevronRight} />}
           >
-            <Carousel.Item>
-              <img
-                className="d-block w-100"
-                src={IMAGES.honme.jisoo}
-                alt="First slide"
-              />
-            </Carousel.Item>
-            <Carousel.Item>
-              <img
-                className="d-block w-100"
-                src={IMAGES.honme.jenni}
-                alt="Second slide"
-              />
-            </Carousel.Item>
-            <Carousel.Item>
-              <img
-                className="d-block w-100"
-                src={IMAGES.honme.rose}
-                alt="Third slide"
-              />
-            </Carousel.Item>
+            {activePost.images.map((contenItem, index) => {
+              return (
+                <Carousel.Item key={index}>
+                  <img
+                    className="d-block w-100"
+                    src={contenItem}
+                    alt="First slide"
+                  />
+                </Carousel.Item>
+              );
+            })}
           </Carousel>
         </div>
         <div className="detail__content__comment">
           <div className="detail__content__comment__header postItem__header">
-            <PostHeader
-              postId={activePostId}
-              postUser={activePost.user.email}
-            />
+            <PostHeader postId={activePostId} postUser={activePost.user} />
           </div>
           <div className="detail__content__comment__body">
             {!isLoadCmt ? (

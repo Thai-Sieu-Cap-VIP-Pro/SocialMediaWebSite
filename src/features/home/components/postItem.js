@@ -1,11 +1,23 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Carousel, Col, Row } from "react-bootstrap";
 import "./post.scss";
 import IMAGES from "../../../assets/images/imageStore";
-import { useDispatch } from "react-redux";
-import { getCommentsByPostID, ShowDetail } from "../homeSlice";
-import ReactIcon from "./reactIcon";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  getCommentsByPostID,
+  handleLike,
+  handleUnLike,
+  ShowDetail,
+} from "../homeSlice";
+
+import {
+  FavoriteBorderOutlined,
+  SendOutlined,
+  AddCommentOutlined,
+  Favorite,
+  BookmarkBorderOutlined,
+} from "@material-ui/icons";
 import AddComment from "./addComment";
 import PostHeader from "./postHeader";
 import { format } from "timeago.js";
@@ -15,12 +27,19 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 
 import io from "socket.io-client";
+import ReportModal from "./reportModal";
 export const socket = io.connect("http://localhost:3002");
 
 const PostItem = ({ postId, content }) => {
   const dispatch = useDispatch();
+  let [numLikes, setnumLikes] = useState(content.likes.length);
+
+  const current = JSON.parse(localStorage.getItem("LoginUser"));
+
+  const [isLike, setisLike] = useState(content.likes.includes(current._id));
 
   //hàm xử lý show phần comment khi show tất cả phần comment
+
   const showDetail = (a) => {
     const action1 = getCommentsByPostID(postId);
     dispatch(action1);
@@ -28,8 +47,31 @@ const PostItem = ({ postId, content }) => {
     const action = ShowDetail(postId);
     dispatch(action);
 
-    const message = { room: a };
-    socket.emit("joinRoom", message);
+    // const message = { room: a };
+    socket.emit("joinRoom", a);
+  };
+  //phần react
+  const { listPosts } = useSelector((state) => state.home);
+
+  //get list like of the post
+  const activePost = listPosts.find((post) => post._id == postId);
+  const likes = activePost.likes;
+
+  //hàm xử lý show phần comment khi show tất cả phần comment
+
+  //hàm xử lý like hay không like bài post
+  const HandleLikePost = async (id) => {
+    if (isLike) {
+      setnumLikes(--numLikes);
+      const action1 = handleUnLike(id);
+      dispatch(action1);
+    } else {
+      setnumLikes(++numLikes);
+      const action1 = handleLike(id);
+      dispatch(action1);
+    }
+
+    setisLike(!isLike);
   };
 
   return (
@@ -56,13 +98,29 @@ const PostItem = ({ postId, content }) => {
         </Carousel>
       </Col>
       <Col className="postItem__react">
-        <ReactIcon postId={postId} />
+        <Row className="reactIcon">
+          <Col md={9}>
+            {isLike === true ? (
+              <Favorite
+                style={{ color: "#ed4956" }}
+                onClick={() => HandleLikePost(postId)}
+              />
+            ) : (
+              <FavoriteBorderOutlined onClick={() => HandleLikePost(postId)} />
+            )}
+
+            <AddCommentOutlined onClick={() => showDetail(postId)} />
+
+            <SendOutlined />
+          </Col>
+          <Col md={3} style={{ textAlign: "right" }}>
+            <BookmarkBorderOutlined />
+          </Col>
+        </Row>
       </Col>
 
       <Col md={12} className="postItem__content">
-        <div className="postItem__content__likes">
-          {content.likes.length} lượt thích
-        </div>
+        <div className="postItem__content__likes">{numLikes} lượt thích</div>
         <div className="postItem__content__caption">{content.content}</div>
         <div
           className="postItem__content__allCmt"
@@ -74,9 +132,10 @@ const PostItem = ({ postId, content }) => {
           {format(content.createdAt)}
         </div>
       </Col>
-      <Col md={12} style={{ padding: "0" }}>
+      {/* <Col md={12} style={{ padding: "0" }}>
         <AddComment postId={postId} />
-      </Col>
+      </Col> */}
+      <ReportModal userPostId={content.user._id} />
     </Row>
   );
 };
