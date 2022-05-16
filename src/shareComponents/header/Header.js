@@ -62,8 +62,8 @@ const Header = () => {
           <ul>
             <NavLink to="/user">
               <AccountCircleOutlined />
-              <i>Trang cá nhân</i>
-            </NavLink>
+              <NavLink to="/account">Trang cá nhân</NavLink>
+            </li>
             <li>
               <SettingsOutlined />
               <i>Cài đặt</i>

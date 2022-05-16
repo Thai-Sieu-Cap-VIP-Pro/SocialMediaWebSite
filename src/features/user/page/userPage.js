@@ -1,38 +1,20 @@
-import React from 'react'
-import { Routes, Route, Link} from 'react-router-dom'
-import { Col, Container, Row } from "react-bootstrap";
-import { InsertEmoticonOutlined } from "@material-ui/icons";
+import React, { useState } from 'react';
+import { Routes, Route, Link } from 'react-router-dom';
+import { Col, Container, Row } from 'react-bootstrap';
+import { InsertEmoticonOutlined } from '@material-ui/icons';
 
-import '../components/style.scss'
+import '../components/style.scss';
 
-import Header from '../../../shareComponents/header/Header';
-import UserHeader from '../components/userHeader'
-import Postnav from '../components/postNav'
-import PostComment from '../../home/components/postComment';
+import UserProfile from '../components/UserProfile';
+import UserPost from '../components/UserPost';
 
-const Userpage = () => {
+const UserPage = () => {
   return (
-    <div>
-        <Container fluid>
-            <Row>
-                <Header></Header>
-            </Row>
-        </Container>
-      
-
-
-        <UserHeader />
-
-        <Postnav />
-
-        {/* <PostComment /> */}
-  
-
-
-
-        <footer> &copy;2022 from IE213.M22</footer>
+    <div className="">
+      <UserProfile />
+      <UserPost />
     </div>
-  )
-}
+  );
+};
 
-export default Userpage
+export default UserPage;
