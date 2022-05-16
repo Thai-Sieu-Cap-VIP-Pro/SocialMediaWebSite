@@ -261,9 +261,8 @@ const HomeSlice = createSlice({
         isShowAlllikeModal: true,
         listUsers: action.payload.users,
       };
-
-    },
-});
+    }
+}});
 
 // Action creators are generated for each case reducer function
 const { reducer: HomeReducer, actions } = HomeSlice;

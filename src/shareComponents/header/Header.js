@@ -60,7 +60,7 @@ const Header = () => {
         <img src={current.avatar} alt="" />
         <div className="header__profile__list" id="header__profile__list">
           <ul>
-            <NavLink to="/user">
+            <li>
               <AccountCircleOutlined />
               <NavLink to="/account">Trang cá nhân</NavLink>
             </li>
