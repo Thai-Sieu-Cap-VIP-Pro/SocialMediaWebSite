@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFaceGrinWide, faImage, faHeart, faPaperPlane } from '@fortawesome/free-regular-svg-icons';
 import { InfoOutlined, Call } from '@material-ui/icons';
-import { createMessage, getMessageInCons, tymMessage } from '../ChatSlice';
+import { createMessage, getMessageInCons, tymMessage, unTymMessage } from '../ChatSlice';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { checkText } from 'smile2emoji';
@@ -36,9 +36,21 @@ const ChatContent = ({ isOpenSetting, setIsOpenSetting }) => {
 
     const ref = useRef();
 
-    const handleClickEmoji = () => {
-        setIsOpenEmojiPicker(!isOpenEmojiPicker);
-    };
+    // useEffect
+    useEffect(() => {
+        if (ref.current) {
+            ref.current.scrollTop = ref.current.scrollTopMax;
+        }
+    }, [data, socket, image]);
+
+    useEffect(() => {
+        getMessagesInCons();
+        setIsOpenSetting(false);
+        setCurrentConversation(conversations.find((conversation) => conversation._id === params.id));
+        return () => {
+            socket.emit('leaveRoom', params.id);
+        };
+    }, [params.id]);
 
     useEffect(() => {
         socket.on('recieveMessage', (mess) => {
@@ -68,6 +80,17 @@ const ChatContent = ({ isOpenSetting, setIsOpenSetting }) => {
         };
     }, [socket]);
 
+    useEffect(() => {
+        socket.on('recieveCalling', (videoId) => {
+            setIsCalling(true);
+            setVideoId(videoId);
+        });
+        return () => {
+            socket.off('recieveCalling');
+            console.log('End Call');
+        };
+    }, [socket]);
+
     const handleTymMessage = async (messageId, userId) => {
         try {
             const result = await dispatch(tymMessage({ messageId, userId })).unwrap();
@@ -77,11 +100,14 @@ const ChatContent = ({ isOpenSetting, setIsOpenSetting }) => {
         }
     };
 
-    useEffect(() => {
-        if (ref.current) {
-            ref.current.scrollTop = ref.current.scrollTopMax;
+    const handleUnTymMessage = async (messageId, userId) => {
+        try {
+            const result = await dispatch(unTymMessage({ messageId, userId })).unwrap();
+            socket.emit('sendTym', result.newMessage);
+        } catch (error) {
+            throw error;
         }
-    }, [data, socket, image]);
+    };
 
     const getMessagesInCons = async () => {
         try {
@@ -94,14 +120,9 @@ const ChatContent = ({ isOpenSetting, setIsOpenSetting }) => {
         }
     };
 
-    useEffect(() => {
-        getMessagesInCons();
-        setIsOpenSetting(false);
-        setCurrentConversation(conversations.find((conversation) => conversation._id === params.id));
-        return () => {
-            socket.emit('leaveRoom', params.id);
-        };
-    }, [params.id]);
+    const handleClickEmoji = () => {
+        setIsOpenEmojiPicker(!isOpenEmojiPicker);
+    };
 
     const handleChange = (e) => {
         if (!e.target.value) {
@@ -162,17 +183,6 @@ const ChatContent = ({ isOpenSetting, setIsOpenSetting }) => {
         setIsCalling(false);
     };
 
-    useEffect(() => {
-        socket.on('recieveCalling', (videoId) => {
-            setIsCalling(true);
-            setVideoId(videoId);
-        });
-        return () => {
-            socket.off('recieveCalling');
-            console.log('End Call');
-        };
-    }, [socket]);
-
     if (isOpenSetting) {
         return <ChatSetting setIsOpenSetting={setIsOpenSetting} currentConversation={currentConversation} />;
     } else {
@@ -222,6 +232,7 @@ const ChatContent = ({ isOpenSetting, setIsOpenSetting }) => {
                                 key={index}
                                 handleImagePopup={handleImagePopup}
                                 handleTymMessage={handleTymMessage}
+                                handleUnTymMessage={handleUnTymMessage}
                             />
                         );
                     })}

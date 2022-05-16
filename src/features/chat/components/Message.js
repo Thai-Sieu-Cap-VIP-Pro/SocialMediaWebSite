@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
 
-const Message = ({ message, handleImagePopup, handleTymMessage }) => {
+const Message = ({ message, handleImagePopup, handleTymMessage, handleUnTymMessage }) => {
     const currentUser = useSelector((state) => state.auth.current);
     const params = useParams();
     const currentConversation = useSelector((state) => state.chat.conversations).find((item) => item._id === params.id);
@@ -68,7 +68,7 @@ const Message = ({ message, handleImagePopup, handleTymMessage }) => {
                     if (message.tym.includes(member._id)) {
                         return <p key={member._id}>{member.name}</p>;
                     }
-                    return;
+                    return null;
                 })}
             </div>
             <div
@@ -79,7 +79,7 @@ const Message = ({ message, handleImagePopup, handleTymMessage }) => {
                 {!message.tym.includes(currentUser._id) ? (
                     <FavoriteBorder onClick={() => handleTymMessage(message._id, currentUser._id)} />
                 ) : (
-                    <Favorite htmlColor="red" />
+                    <Favorite htmlColor="red" onClick={() => handleUnTymMessage(message._id, currentUser._id)} />
                 )}
                 <Reply />
                 <DeleteOutline />
