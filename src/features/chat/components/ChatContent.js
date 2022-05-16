@@ -8,6 +8,7 @@ import { Link, useNavigate, useParams } from 'react-router-dom';
 import { checkText } from 'smile2emoji';
 import { v1 as uuid } from 'uuid';
 import './Chat.scss';
+import Picker from 'emoji-picker-react';
 import { socket } from '../pages/ChatPage';
 import ChatSetting from './ChatSetting';
 import ImagePopup from './ImagePopup';
@@ -20,7 +21,7 @@ const ChatContent = ({ isOpenSetting, setIsOpenSetting }) => {
     const [uploading, setUploading] = useState(false);
     const [image, setImage] = useState('');
     const [isTyping, setIsTyping] = useState(false);
-    const [isOpenEmojiPicker, setIsOpenEmojiPicker] = useState(false);
+    const [showEmojiPicker, setShowEmojiPicker] = useState(false);
     const [openImagePopup, setOpenImagePopup] = useState(false);
     const conversations = useSelector((state) => state.chat.conversations);
     const [currentConversation, setCurrentConversation] = useState(null);
@@ -120,8 +121,9 @@ const ChatContent = ({ isOpenSetting, setIsOpenSetting }) => {
         }
     };
 
-    const handleClickEmoji = () => {
-        setIsOpenEmojiPicker(!isOpenEmojiPicker);
+    const handleEmojiClick = (event, emojiObject) => {
+        setText((a) => a + emojiObject.emoji);
+        //setshowEmoji(false);
     };
 
     const handleChange = (e) => {
@@ -187,7 +189,7 @@ const ChatContent = ({ isOpenSetting, setIsOpenSetting }) => {
         return <ChatSetting setIsOpenSetting={setIsOpenSetting} currentConversation={currentConversation} />;
     } else {
         return (
-            <div className="rightPanel">
+            <div className="rightPanel" style={{ position: 'relative' }}>
                 <div className="rightPanel__title">
                     <div className="rightPanel__title__user">
                         <div className="rightPanel__title__user__image">
@@ -244,12 +246,27 @@ const ChatContent = ({ isOpenSetting, setIsOpenSetting }) => {
                         />
                     )}
                 </div>
+                {showEmojiPicker && (
+                    // <Picker
+                    //     style={{ position: 'absolute', bottom: 0, left: 0, zIndex: 990 }}
+                    //     onEmojiClick={handleEmojiClick}
+                    //     // pickerStyle={{
+                    //     //     width: 'auto',
+                    //     //     outerHeight: '100%',
+                    //     //     innerHeight: '100px',
+                    //     // }}
+                    // ></Picker>
+                    <div style={{ position: 'absolute', bottom: '60px', left: '20px', zIndex: 990 }}>
+                        <Picker onEmojiClick={handleEmojiClick}></Picker>
+                    </div>
+                )}
                 <div className="rightPanel__inputContainer">
                     <FontAwesomeIcon
                         className="rightPanel__inputContainer__icon emoji"
                         icon={faFaceGrinWide}
                         size="lg"
                         cursor="pointer"
+                        onClick={() => setShowEmojiPicker(!showEmojiPicker)}
                     />
                     <input
                         type="text"
