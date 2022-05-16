@@ -44,7 +44,7 @@ const VideoCall = (props) => {
     const roomID = params.id;
 
     useEffect(() => {
-        socketRef.current = io.connect('http://localhost:3002');
+        socketRef.current = io.connect('http://localhost:3003');
         navigator.mediaDevices.getUserMedia({ video: videoConstraints, audio: true }).then((stream) => {
             userVideo.current.srcObject = stream;
             socketRef.current.emit('join room', roomID);
