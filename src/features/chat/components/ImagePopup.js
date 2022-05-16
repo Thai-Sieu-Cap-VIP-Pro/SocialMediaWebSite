@@ -1,5 +1,6 @@
 import { Close } from '@material-ui/icons';
 import React from 'react';
+import PopupOverlay from '../../../shareComponents/PopupOverlay/PopupOverlay';
 
 const ImagePopup = ({ src, setOpen }) => {
     return (
@@ -8,7 +9,7 @@ const ImagePopup = ({ src, setOpen }) => {
                 <img src={src} alt="popupImage" />
                 <Close id="imagePopup__icon" fontSize="large" onClick={() => setOpen(false)} />
             </div>
-            <div id="imagePopupOverlay" onClick={() => setOpen(false)}></div>
+            <PopupOverlay onClick={() => setOpen(false)} />
         </>
     );
 };

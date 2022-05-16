@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { Row } from "react-bootstrap";
 import { useSelector } from "react-redux";
@@ -32,6 +33,7 @@ const Category = () => {
       </div>
     </Row>
   );
+
 };
 
 export default Category;

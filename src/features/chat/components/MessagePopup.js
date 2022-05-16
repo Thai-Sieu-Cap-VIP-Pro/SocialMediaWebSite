@@ -7,6 +7,7 @@ import { createConversation, getUserContact } from '../ChatSlice';
 import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { resetTag } from '../ChatSlice';
+import PopupOverlay from '../../../shareComponents/PopupOverlay/PopupOverlay';
 
 const MessagePopup = ({ setIsShowPopup }) => {
     const currentUser = useSelector((state) => state.auth.current);
@@ -24,7 +25,9 @@ const MessagePopup = ({ setIsShowPopup }) => {
                 if (condition1) {
                     const tagIds = tags.map((tag) => tag._id);
                     const condition2 = tagIds.every((tagId) => {
-                        return conversation.members.includes(tagId);
+                        return conversation.members.some((member) => {
+                            return member._id === tagId;
+                        });
                     });
                     if (condition2) {
                         return true;
@@ -42,7 +45,7 @@ const MessagePopup = ({ setIsShowPopup }) => {
             dispatch(createConversation({ users: tags }))
                 .unwrap()
                 .then((resultValue) => {
-                    navigate(`${resultValue.newConversation._id}`);
+                    navigate(`${resultValue.conversation._id}`);
                 })
                 .catch((rejectedValue) => console.log(rejectedValue));
         }
@@ -65,7 +68,7 @@ const MessagePopup = ({ setIsShowPopup }) => {
 
     return (
         <>
-            <div className="messagePopupOverlay"></div>
+            <PopupOverlay onClick={handleClosePopup} />
             <div className="messagePopup">
                 <div className="messagePopup__titleContainer">
                     <Close onClick={handleClosePopup} fontSize="large" style={{ cursor: 'pointer' }} />

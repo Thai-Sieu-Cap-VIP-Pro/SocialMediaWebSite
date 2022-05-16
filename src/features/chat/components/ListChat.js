@@ -10,7 +10,8 @@ import { useNavigate, useParams } from 'react-router-dom';
 import MessagePopup from './MessagePopup';
 import { socket } from '../pages/ChatPage';
 
-const ListChat = () => {
+const ListChat = ({ setIsOpenSetting }) => {
+    console.log('render list again');
     const [isShowPopup, setIsShowPopup] = useState(false);
     const dispatch = useDispatch();
     const navigate = useNavigate();
@@ -22,19 +23,19 @@ const ListChat = () => {
     const handleClick = (id) => {
         // socket.emit('disconnect', params.id);
         // socket.emit('leaveRoom', params['*']);
+        setIsOpenSetting(false);
         navigate(`${id}`);
-        console.log(params);
     };
 
     useEffect(() => {
-        socket.on('recieveMessage', (mess) => {
+        socket.on('recieveNotice', (member) => {
             dispatch(getAllConversations())
                 .unwrap()
-                .then((resultValue) => console.log(resultValue))
-                .catch((rejectedValue) => console.log(rejectedValue));
+                .then((resultValue) => {})
+                .catch((rejectedValue) => {});
         });
         return () => {
-            socket.off('recieveMessage');
+            // socket.off('reieveNotice');
             console.log('client Off');
         };
     }, [socket]);
@@ -42,8 +43,8 @@ const ListChat = () => {
     useEffect(() => {
         dispatch(getAllConversations())
             .unwrap()
-            .then((resultValue) => console.log(resultValue))
-            .catch((rejectedValue) => console.log(rejectedValue));
+            .then((resultValue) => {})
+            .catch((rejectedValue) => {});
     }, []);
 
     return (
@@ -52,20 +53,19 @@ const ListChat = () => {
                 <h6>{currentUser.name}</h6>
                 <FontAwesomeIcon icon={faPenToSquare} cursor="pointer" size="lg" onClick={() => setIsShowPopup(true)} />
             </div>
-            <ListGroup className="leftPanel__listChat">
+            <div className="leftPanel__listChat">
                 {conversations.map((conversation) => {
                     return (
                         <SingleChat
                             conversation={conversation}
                             handleClick={handleClick}
                             setId={setId}
-                            activeChat={id === conversation._id ? true : false}
                             key={conversation._id}
                             currentUser={currentUser}
                         />
                     );
                 })}
-            </ListGroup>
+            </div>
             {isShowPopup && <MessagePopup setIsShowPopup={setIsShowPopup} />}
         </div>
     );

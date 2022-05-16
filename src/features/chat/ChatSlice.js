@@ -64,6 +64,42 @@ export const deleteCon = createAsyncThunk('conversation/delete', async (args, th
     }
 });
 
+export const removeUserInCon = createAsyncThunk('conversation/removeUser', async (args, thunkAPI) => {
+    try {
+        const response = await ChatAPI.removeUserInCon(args);
+        return response;
+    } catch (error) {
+        return thunkAPI.rejectWithValue(`${error}`);
+    }
+});
+
+export const addUserInCon = createAsyncThunk('conversation/addUser', async (args, thunkAPI) => {
+    try {
+        const response = await ChatAPI.addUserInCon(args);
+        return response;
+    } catch (error) {
+        return thunkAPI.rejectWithValue(`${error}`);
+    }
+});
+
+export const tymMessage = createAsyncThunk('message/tym', async (args, thunkAPI) => {
+    try {
+        const response = await ChatAPI.tymMessage(args);
+        return response;
+    } catch (error) {
+        return thunkAPI.rejectWithValue(`${error}`);
+    }
+});
+
+export const unTymMessage = createAsyncThunk('message/tym', async (args, thunkAPI) => {
+    try {
+        const response = await ChatAPI.unTymMessage(args);
+        return response;
+    } catch (error) {
+        return thunkAPI.rejectWithValue(`${error}`);
+    }
+});
+
 const chatSlice = createSlice({
     name: 'chat',
     initialState: {
@@ -110,7 +146,7 @@ const chatSlice = createSlice({
         [createConversation.fulfilled]: (state, action) => {
             state.loading = false;
             state.error = false;
-            state.conversations.push(action.payload.newConversation);
+            state.conversations.unshift(action.payload.conversation);
         },
         [createConversation.rejected]: (state, action) => {
             state.loading = false;
@@ -130,8 +166,8 @@ const chatSlice = createSlice({
             state.error = true;
         },
         [createMessage.pending]: (state, action) => {
-            state.loading = false;
-            state.error = true;
+            state.loading = true;
+            state.error = false;
         },
         [createMessage.fulfilled]: (state, action) => {
             state.loading = false;
@@ -150,6 +186,60 @@ const chatSlice = createSlice({
             state.error = false;
         },
         [getMessageInCons.rejected]: (state, action) => {
+            state.loading = false;
+            state.error = true;
+        },
+        [removeUserInCon.pending]: (state, action) => {
+            state.loading = true;
+            state.error = false;
+        },
+        [removeUserInCon.fulfilled]: (state, action) => {
+            state.loading = false;
+            state.error = false;
+            state.conversations = state.conversations.filter(
+                (conversation) => conversation._id !== action.payload.newConversation._id
+            );
+        },
+        [removeUserInCon.rejected]: (state, action) => {
+            state.loading = false;
+            state.error = true;
+        },
+        [deleteCon.pending]: (state, action) => {
+            state.loading = true;
+            state.error = false;
+        },
+        [deleteCon.fulfilled]: (state, action) => {
+            state.loading = false;
+            state.error = false;
+            state.conversations = state.conversations.filter(
+                (conversation) => conversation._id !== action.payload.conversation._id
+            );
+        },
+        [deleteCon.rejected]: (state, action) => {
+            state.loading = false;
+            state.error = true;
+        },
+        [tymMessage.pending]: (state, action) => {
+            state.loading = true;
+            state.error = false;
+        },
+        [tymMessage.fulfilled]: (state, action) => {
+            state.loading = false;
+            state.error = false;
+        },
+        [tymMessage.rejected]: (state, action) => {
+            state.loading = false;
+            state.error = true;
+        },
+        [unTymMessage.pending]: (state, action) => {
+            state.loading = true;
+            state.error = false;
+        },
+        [unTymMessage.fulfilled]: (state, action) => {
+            state.loading = false;
+            state.error = false;
+        },
+        [unTymMessage.rejected]: (state, action) => {
             state.loading = false;
             state.error = true;
         },

@@ -1,14 +1,14 @@
 import React from 'react';
 
-const ChatMember = () => {
+const ChatMember = ({ member }) => {
     return (
         <div className="rightPanel__mainSetting__listMember__member">
             <div className="rightPanel__mainSetting__listMember__member__image">
-                <img src="https://source.unsplash.com/random/50×50" alt="unsplash" />
+                <img src={member.avatar} alt="unsplash" />
             </div>
             <div className="rightPanel__mainSetting__listMember__member__info">
-                <h6 className="rightPanel__mainSetting__listMember__member__info__name">username</h6>
-                <h6 className="rightPanel__mainSetting__listMember__member__info__email">email</h6>
+                <h6 className="rightPanel__mainSetting__listMember__member__info__name">{member.name}</h6>
+                <h6 className="rightPanel__mainSetting__listMember__member__info__email">{member.email}</h6>
             </div>
         </div>
     );

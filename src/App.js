@@ -6,6 +6,8 @@ import PrivateRout from './shareComponents/privateRout/privateRout';
 import IndexChat from './features/chat';
 import NotFound from './shareComponents/notfound/NotFound';
 import NewIndex from './features/newpost/newIndex';
+import VideoCall from './features/chat/components/VideoCall';
+import IndexUser from './features/user';
 
 function App() {
     return (
@@ -28,6 +30,8 @@ function App() {
                         </PrivateRout>
                     }
                 ></Route>
+                <Route path="video_call/:id" element={<VideoCall />} />
+
                 <Route
                     path="/new/*"
                     element={
@@ -36,6 +40,17 @@ function App() {
                         </PrivateRout>
                     }
                 ></Route>
+
+                
+                <Route
+                    path="/user/*"
+                    element={
+                        <PrivateRout>
+                            <IndexUser />
+                        </PrivateRout>
+                    }
+                ></Route>
+
                 {/* <Route path="/*" element={<IndexHome />}></Route> */}
                 {/* <Route path="/messenger/*" element={<IndexChat />}></Route> */}
                 <Route path="/auth/*" element={<Auth />}></Route>
