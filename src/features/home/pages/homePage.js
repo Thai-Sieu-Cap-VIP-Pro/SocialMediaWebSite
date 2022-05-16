@@ -20,8 +20,6 @@ const HomePage = () => {
     listRecommend,
   } = useSelector((state) => state.home);
 
-  console.log(listPosts);
-
   useEffect(() => {
     let action = getPosts();
     dispatch(action);
@@ -73,7 +71,6 @@ const HomePage = () => {
           </Row>
         )}
         {activePostId == "" ? "" : <PostComment />}
-        <ReportModal />
       </Container>
     </>
   );
