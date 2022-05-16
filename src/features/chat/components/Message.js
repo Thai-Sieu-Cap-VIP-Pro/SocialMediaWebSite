@@ -1,25 +1,12 @@
 import { DeleteOutline, Favorite, FavoriteBorder, Reply } from '@material-ui/icons';
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { tymMessage } from '../ChatSlice';
-import { socket } from '../pages/ChatPage';
+import { useParams } from 'react-router-dom';
 
-const Message = ({ message, handleImagePopup }) => {
-    const [isTymMsg, setIsTymMsg] = useState(false);
-    const dispatch = useDispatch();
+const Message = ({ message, handleImagePopup, handleTymMessage }) => {
     const currentUser = useSelector((state) => state.auth.current);
-    const handleTymMessage = async (userId, messageId) => {
-        try {
-            const result = await dispatch(tymMessage({ userId, messageId })).unwrap();
-            socket.emit('sendTym', result.newMessage);
-            setIsTymMsg(true);
-        } catch (error) {
-            throw error;
-        }
-    };
-
-    console.log({ message });
-    console.log(message.sender._id === currentUser._id);
+    const params = useParams();
+    const currentConversation = useSelector((state) => state.chat.conversations).find((item) => item._id === params.id);
     return (
         <div className={`rightPanel__conversation__content ${message.sender._id === currentUser._id ? 'mine' : ''}`}>
             {message.sender._id !== currentUser._id && (
@@ -43,30 +30,56 @@ const Message = ({ message, handleImagePopup }) => {
                     {message.content.text}
                 </p>
             )}
-            {message.tym.length !== 0 && (
+
+            {message.tym.length > 1 ? (
                 <div
-                    className={`rightPanel__conversation__content__react ${
+                    className={`rightPanel__conversation__content__react multiple ${
                         message.sender._id === currentUser._id ? 'mine' : ''
                     }`}
                 >
-                    {message.tym.length}
                     <Favorite
                         htmlColor="red"
                         fontSize="small"
                         className="rightPanel__conversation__content__react__tym"
                     />
+                    <span>{message.tym.length}</span>
                 </div>
+            ) : (
+                message.tym.length !== 0 && (
+                    <div
+                        className={`rightPanel__conversation__content__react ${
+                            message.sender._id === currentUser._id ? 'mine' : ''
+                        }`}
+                    >
+                        <Favorite
+                            htmlColor="red"
+                            fontSize="small"
+                            className="rightPanel__conversation__content__react__tym"
+                        />
+                    </div>
+                )
             )}
-
+            <div
+                className={`rightPanel__conversation__content__whoTymToolTip ${
+                    message.sender._id === currentUser._id ? 'mine' : ''
+                }`}
+            >
+                {currentConversation.members.map((member) => {
+                    if (message.tym.includes(member._id)) {
+                        return <p key={member._id}>{member.name}</p>;
+                    }
+                    return;
+                })}
+            </div>
             <div
                 className={`rightPanel__conversation__content__options ${
                     message.sender._id === currentUser._id ? 'mine' : ''
                 }`}
             >
                 {!message.tym.includes(currentUser._id) ? (
-                    <FavoriteBorder onClick={() => handleTymMessage(currentUser._id, message._id)} />
+                    <FavoriteBorder onClick={() => handleTymMessage(message._id, currentUser._id)} />
                 ) : (
-                    <Favorite htmlColor="red" onClick={() => setIsTymMsg(false)} />
+                    <Favorite htmlColor="red" />
                 )}
                 <Reply />
                 <DeleteOutline />

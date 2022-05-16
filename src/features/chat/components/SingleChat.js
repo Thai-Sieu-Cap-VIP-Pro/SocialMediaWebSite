@@ -5,13 +5,16 @@ import { getMembersInCon, getMessageInCons } from '../ChatSlice';
 import TimeAgo from 'javascript-time-ago';
 import en from 'javascript-time-ago/locale/en.json';
 import { socket } from '../pages/ChatPage';
+import { useParams } from 'react-router-dom';
 
 TimeAgo.addLocale(en);
 const SingleChat = ({ conversation = null, handleClick = null, setId = null, currentUser = null }) => {
     console.log('render singleChat again');
     const [active, setActive] = useState(false);
     const [messages, setMessages] = useState([]);
-    const conversations = useSelector((state) => state.chat.conversations);
+    // const conversations = useSelector((state) => state.chat.conversations);
+    const params = useParams();
+    // console.log({ param: params }, { conId: conversation._id });
     const timeAgo = new TimeAgo('en-US');
     const dispatch = useDispatch();
     const handleClickSingleChat = () => {
@@ -42,8 +45,17 @@ const SingleChat = ({ conversation = null, handleClick = null, setId = null, cur
             .catch((rejectedValue) => {});
     }, []);
 
+    useEffect(() => {
+        console.log(params);
+        if (params['*'] === conversation._id) {
+            setActive(true);
+        } else {
+            setActive(false);
+        }
+    }, [params]);
+
     return (
-        <div className="singleChat" onClick={handleClickSingleChat}>
+        <div className={`singleChat ${active ? 'currentConversation' : ''}`} onClick={handleClickSingleChat}>
             <div className="singleChat__image">
                 <img
                     src={`${

@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFaceGrinWide, faImage, faHeart, faPaperPlane } from '@fortawesome/free-regular-svg-icons';
 import { InfoOutlined, Call } from '@material-ui/icons';
-import { createMessage, getMessageInCons } from '../ChatSlice';
+import { createMessage, getMessageInCons, tymMessage } from '../ChatSlice';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { checkText } from 'smile2emoji';
@@ -25,7 +25,6 @@ const ChatContent = ({ isOpenSetting, setIsOpenSetting }) => {
     const conversations = useSelector((state) => state.chat.conversations);
     const [currentConversation, setCurrentConversation] = useState(null);
     const [data, setData] = useState([]);
-    const [isTymMsg, setIsTymMsg] = useState(false);
     const [srcPopup, setSrcPopup] = useState('');
     const [videoId, setVideoId] = useState(uuid());
     const [isCalling, setIsCalling] = useState(false);
@@ -53,22 +52,30 @@ const ChatContent = ({ isOpenSetting, setIsOpenSetting }) => {
     }, [socket]);
 
     useEffect(() => {
-        socket.on('recieveTym', (newMess) => {
-            // setData((prev) => {
-            //     return prev.map((item) => {
-            //         return item._id === newMess._id ? newMess : item;
-            //     });
-            // });
-            // console.log(newMess);
-            // console.log(data);
-            getMessageInCons();
-            console.log('Đã tim');
+        socket.on('recieveTym', (mess) => {
+            setData((prev) => {
+                return prev.map((item) => {
+                    if (item._id === mess._id) {
+                        return mess;
+                    }
+                    return item;
+                });
+            });
         });
         return () => {
             socket.off('recieveTym');
             console.log('client Off');
         };
     }, [socket]);
+
+    const handleTymMessage = async (messageId, userId) => {
+        try {
+            const result = await dispatch(tymMessage({ messageId, userId })).unwrap();
+            socket.emit('sendTym', result.newMessage);
+        } catch (error) {
+            throw error;
+        }
+    };
 
     useEffect(() => {
         if (ref.current) {
@@ -185,12 +192,16 @@ const ChatContent = ({ isOpenSetting, setIsOpenSetting }) => {
                             />
                         </div>
                         <h6 className="rightPanel__title__user__name">
-                            {currentConversation?.members.length === 2
-                                ? currentConversation?.members.find((item) => item._id !== currentUser._id).name
-                                : currentConversation?.members.length === 1
+                            {conversations.find((conversation) => conversation._id === params.id)?.members.length === 2
+                                ? conversations
+                                      .find((conversation) => conversation._id === params.id)
+                                      ?.members.find((item) => item._id !== currentUser._id).name
+                                : conversations.find((conversation) => conversation._id === params.id)?.members
+                                      .length === 1
                                 ? 'Không còn ai muốn trò chuyện với bạn nữa'
-                                : currentConversation?.members
-                                      .filter((item) => item._id !== currentUser._id)
+                                : conversations
+                                      .find((conversation) => conversation._id === params.id)
+                                      ?.members.filter((item) => item._id !== currentUser._id)
                                       .map((member) => member.name)
                                       .join(', ')}
                         </h6>
@@ -205,7 +216,14 @@ const ChatContent = ({ isOpenSetting, setIsOpenSetting }) => {
                 <div className="rightPanel__conversation" ref={ref}>
                     {data.map((item, index) => {
                         console.log({ item });
-                        return <Message message={item} key={index} handleImagePopup={handleImagePopup} />;
+                        return (
+                            <Message
+                                message={item}
+                                key={index}
+                                handleImagePopup={handleImagePopup}
+                                handleTymMessage={handleTymMessage}
+                            />
+                        );
                     })}
                     {uploading && (
                         <img

@@ -8,7 +8,7 @@ h5 {
     box-sizing: border-box;
 }
 h6 {
-    line-height: normal;
+    line-height: normal !important;
 }
 
 .leftPanel {
@@ -47,10 +47,8 @@ h6 {
     }
 }
 
-.singleChat.list-group-item.active {
-    background-color: rgb(215, 215, 215);
-    border-color: whitesmoke;
-    box-shadow: none;
+.singleChat.currentConversation {
+    background-color: #eee;
 }
 
 .singleChat {
@@ -59,7 +57,7 @@ h6 {
     border: none;
     cursor: pointer;
     &:hover {
-        background-color: #eee;
+        background-color: whitesmoke;
     }
     &__image {
         width: 60px;
@@ -248,18 +246,43 @@ h6 {
 
             &__react {
                 position: absolute;
-                bottom: -15px;
+                bottom: -18px;
                 left: 43px;
                 background-color: #dddbdb;
                 padding: 3px;
-                display: grid;
+                display: flex;
+                align-items: center;
                 place-items: center;
                 border-radius: 50%;
                 border: 3px solid white;
                 animation: reactMessage 1s ease-in-out;
+
+                &.multiple {
+                    border-radius: 30px;
+                    bottom: -18px;
+                    &.mine {
+                        left: auto;
+                    }
+                }
+                & span {
+                    margin: 0 5px;
+                }
                 &.mine {
                     left: auto;
                 }
+            }
+            &__whoTymToolTip {
+                position: absolute;
+                background-color: #d6d6d6d6;
+                bottom: 20px;
+                transform: translateX(10px);
+                padding: 10px;
+                z-index: 999;
+                border-radius: 10px;
+                display: none;
+            }
+            &__react:hover ~ &__whoTymToolTip {
+                display: block;
             }
 
             &__options {
