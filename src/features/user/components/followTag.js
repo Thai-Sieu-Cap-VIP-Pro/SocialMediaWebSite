@@ -2,14 +2,13 @@ import React from 'react'
 import IMAGES from "../../../assets/images/imageStore";
 
 
-const FollowTag = (props) => {
+const FollowTag = ({user}) => {
     return (
         <div>
                 <div className="follow__tag">
-                    <img src={props.src} alt="" />
+                    <img src={user.avatar} alt="" />
                     <div className="follow__tag__name">
-                        <p>{props.name1}</p>
-                        <p>{props.name2}</p>
+                        <p>{user.name}</p>
                     </div>
                     <div className="follow__tag__button">
                         <button>remove</button>

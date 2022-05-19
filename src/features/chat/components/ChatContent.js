@@ -177,11 +177,11 @@ const ChatContent = ({ isOpenSetting, setIsOpenSetting }) => {
                             />
                         </div>
                         <h6 className="rightPanel__title__user__name">
-                            {currentConversation?.members.length === 2
-                                ? currentConversation?.members.find((item) => item._id !== currentUser._id).name
-                                : currentConversation?.members.length === 1
+                            {(conversations.find((conversation) => conversation._id === params.id))?.members.length === 2
+                                ? (conversations.find((conversation) => conversation._id === params.id))?.members.find((item) => item._id !== currentUser._id).name
+                                : (conversations.find((conversation) => conversation._id === params.id))?.members.length === 1
                                 ? 'Không còn ai muốn trò chuyện với bạn nữa'
-                                : currentConversation?.members
+                                : (conversations.find((conversation) => conversation._id === params.id))?.members
                                       .filter((item) => item._id !== currentUser._id)
                                       .map((member) => member.name)
                                       .join(', ')}

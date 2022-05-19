@@ -11,7 +11,7 @@ const ChatAPI = {
         return axiosClient.post(url, params);
     },
     getUserContact: () => {
-        const url = 'http://localhost:3001/api/user/contact';
+        const url = 'http://localhost:3001/api/user/chat/contact';
         return axiosClient.get(url);
     },
     createMessage: (params) => {
