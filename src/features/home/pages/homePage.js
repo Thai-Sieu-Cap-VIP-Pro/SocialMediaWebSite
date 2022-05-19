@@ -20,8 +20,6 @@ const HomePage = () => {
     listRecommend,
   } = useSelector((state) => state.home);
 
-  console.log(listPosts);
-
   useEffect(() => {
     let action = getPosts();
     dispatch(action);
@@ -37,7 +35,7 @@ const HomePage = () => {
           <Header></Header>
         </Row>
       </Container>
-      <Container style={{ marginTop: "80px" }}>
+      <Container style={{ marginTop: "100px" }}>
         {loadListPostFail ? (
           <Row>
             <ErrorFetch />
@@ -65,7 +63,7 @@ const HomePage = () => {
                     );
                   })}
                 </Col>
-                <Col md={{ span: 4 }}>
+                <Col md={{ span: 4, offset: 1 }}>
                   <Category />
                 </Col>
               </>
@@ -73,7 +71,6 @@ const HomePage = () => {
           </Row>
         )}
         {activePostId == "" ? "" : <PostComment />}
-        <ReportModal />
       </Container>
     </>
   );

@@ -7,15 +7,10 @@ import { getCommentsByPostID } from "../homeSlice";
 const ListComment = () => {
   const dispach = useDispatch();
   const { listComment, activePostId } = useSelector((state) => state.home);
-  console.log(activePostId);
-  console.log(listComment);
 
   useEffect(async () => {
-    console.log("chạy useeffect");
-    socket.off("receiveCmt").on("receiveCmt", (data) => {
-      console.log("Start");
-      console.log(data);
-      console.log("end");
+    socket.off("receive_message").on("receive_message", (data) => {
+      console.log("Đang chạy vào hàm load tất cả cmt by id");
 
       try {
         const action1 = getCommentsByPostID(activePostId);

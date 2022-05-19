@@ -5,6 +5,7 @@ import IMAGES from "../../../assets/images/imageStore";
 import { faEllipsis } from "@fortawesome/free-solid-svg-icons";
 import { useDispatch } from "react-redux";
 import { ShowReportModal } from "../homeSlice";
+import ReportModal from "./reportModal";
 
 const PostHeader = ({ postId, postUser }) => {
   const dispatch = useDispatch();

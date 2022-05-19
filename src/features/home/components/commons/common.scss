@@ -2,7 +2,7 @@
 @import "../../../../assets/styles/variable";
 
 .comment {
-  margin: 20px 0;
+  padding-top: 10px;
   align-items: center;
   font-size: 13px;
 
@@ -23,7 +23,7 @@
       font-size: 14px;
       cursor: pointer;
       position: absolute;
-      right: 10px;
+      right: 20px;
       &:hover {
         transform: scale(1.2);
       }
@@ -50,15 +50,17 @@
 
       &_time {
         font-weight: 300;
-        margin-right: 20px;
+        padding: 0 20px 0 0;
         color: #bfbfbf;
+        font-size: 11px;
       }
 
       &_luotthich {
         font-weight: 500;
-        margin-right: 20px;
+        padding: 0 20px 0 0;
         color: #bfbfbf;
         cursor: pointer;
+        font-size: 11px;
 
         &:hover {
           color: #e7e4e4;
@@ -69,6 +71,7 @@
         font-weight: 500;
         color: #bfbfbf;
         cursor: pointer;
+        font-size: 11px;
       }
 
       &_more {
@@ -99,13 +102,12 @@
             }
           }
           li.disabledd {
-            background-color: red;
+            display: none;
           }
         }
       }
     }
     &_caption {
-      margin-bottom: 10px;
       &_name {
         font-weight: 500;
       }
@@ -174,9 +176,10 @@
       }
     }
     &_content {
-      height: 300px;
+      height: fit-content;
       overflow-y: scroll;
       @include ScrollBarCustom;
+      overflow-x: hidden;
     }
   }
 }
@@ -234,4 +237,13 @@
       border: none;
     }
   }
+}
+
+.comment_childrenStatus.col-md-10.offset-md-2 {
+  font-size: 12px;
+  margin-top: 10px;
+}
+
+.accountItem.row {
+  margin: 10px;
 }

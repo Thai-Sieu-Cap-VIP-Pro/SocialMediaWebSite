@@ -16,11 +16,9 @@ import { useNavigate, NavLink } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { Logout } from "../../features/auth/authSlice";
 
-
 const Header = () => {
+  const current = JSON.parse(localStorage.getItem("LoginUser"));
   const dispatch = useDispatch();
-  const currentUser = useSelector((state)=> state.auth.current)
-
   let navigate = useNavigate();
 
   const handleSearch = () => {
@@ -58,13 +56,14 @@ const Header = () => {
         
       </div>
       <div className="header__profile">
-        <img src={IMAGES.avatar} alt="" />
+        <span>{current.name}</span>
+        <img src={current.avatar} alt="" />
         <div className="header__profile__list" id="header__profile__list">
           <ul>
-            <NavLink to={`/user/${currentUser._id}`}>
+            <li>
               <AccountCircleOutlined />
-              <i>Trang cá nhân</i>
-            </NavLink>
+              <NavLink to="/account">Trang cá nhân</NavLink>
+            </li>
             <li>
               <SettingsOutlined />
               <i>Cài đặt</i>

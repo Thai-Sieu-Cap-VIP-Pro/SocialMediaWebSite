@@ -5,27 +5,39 @@ import {
   Favorite,
   BookmarkBorderOutlined,
 } from "@material-ui/icons";
+import socket from "./postItem";
 import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Col, Row } from "react-bootstrap";
-import { handleLike, handleUnLike, ShowDetail } from "../homeSlice";
+import {
+  getCommentsByPostID,
+  handleLike,
+  handleUnLike,
+  ShowDetail,
+} from "../homeSlice";
 
 const ReactIcon = ({ postId }) => {
   const { listPosts } = useSelector((state) => state.home);
-  const { loginUser } = useSelector((state) => state.auth);
+  const current = JSON.parse(localStorage.getItem("LoginUser"));
 
   //get list like of the post
   const activePost = listPosts.find((post) => post._id == postId);
   const likes = activePost.likes;
 
-  const [isLike, setisLike] = useState(likes.includes(loginUser));
+  const [isLike, setisLike] = useState(likes.includes(current._id));
 
   const dispatch = useDispatch();
 
   //hàm xử lý show phần comment khi show tất cả phần comment
-  const showDetail = (id) => {
-    const action = ShowDetail(id);
+  const showDetail = (a) => {
+    const action1 = getCommentsByPostID(postId);
+    dispatch(action1);
+
+    const action = ShowDetail(postId);
     dispatch(action);
+
+    const message = { room: a };
+    socket.emit("joinRoom", message);
   };
 
   //hàm xử lý like hay không like bài post

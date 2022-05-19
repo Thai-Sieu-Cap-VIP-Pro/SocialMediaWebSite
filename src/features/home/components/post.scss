@@ -22,6 +22,7 @@ body {
       width: 30px;
       height: 30px;
       border-radius: 50%;
+      object-fit: cover;
     }
     #more {
       cursor: pointer;
@@ -32,9 +33,13 @@ body {
     }
   }
 
+  &__slide.col-md-12 {
+    padding: 0;
+  }
+
   &__slide {
     padding: 0;
-    height: 600px;
+    height: 500px;
 
     .slide {
       width: 100%;
@@ -45,6 +50,7 @@ body {
         z-index: 0;
         button {
           background-color: gray;
+          width: 5px;
         }
       }
 
@@ -129,7 +135,7 @@ body {
       font-weight: bold;
       text-decoration: none;
       color: rgb(98, 95, 95);
-      margin-left: 100px;
+      margin-left: 150px;
     }
 
     p {
@@ -153,6 +159,7 @@ body {
     align-items: center;
     margin: 20px 0;
     position: relative;
+    width: 300px;
   }
 
   &__img {
@@ -193,6 +200,8 @@ body {
     color: $primaryColor;
     position: absolute;
     right: 10px;
+    cursor: pointer;
+    user-select: none;
   }
 
   &__expand {
@@ -260,6 +269,7 @@ body {
         height: calc(100% - 110px);
         @include ScrollBarCustom;
         position: relative;
+        overflow-x: hidden;
 
         #load {
           position: absolute;
@@ -274,7 +284,7 @@ body {
         bottom: 0;
         left: 0;
         width: 100%;
-        height: 60px;
+        height: 50px;
         border-top: 1px solid $borderColor;
         background-color: white;
 
@@ -315,7 +325,6 @@ body {
 
 //component add comment
 .addComment {
-  border: 1px solid $borderColor;
   margin: 10px 0 0 0;
   align-items: center;
   height: 50px;
@@ -326,6 +335,22 @@ body {
     z-index: 1;
     position: absolute;
     bottom: 100%;
+  }
+
+  .load {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: white;
+    opacity: 0.3;
+
+    .spinner-border {
+      position: absolute;
+      left: 50%;
+      top: 30%;
+    }
   }
 
   input {
@@ -351,7 +376,6 @@ body {
   }
 
   .replyName {
-    background-color: red;
     padding: 2px 8px;
     position: relative;
     height: fit-content;
@@ -359,6 +383,8 @@ body {
     color: white;
     background-color: $primaryColor;
     user-select: none;
+    font-size: 8px;
+    margin-top: 8px;
 
     span {
       white-space: nowrap;
@@ -368,8 +394,9 @@ body {
       position: absolute;
       top: 0px;
       right: 0px;
+
       transform: translate(50%, -30%);
-      font-size: 18px;
+      font-size: 13px;
       color: rgb(165, 165, 165);
     }
   }
@@ -397,8 +424,6 @@ body {
 
   &__layout {
     @include ModalLayout;
-    background-color: gray;
-    opacity: 0.9;
   }
 
   &__content {
@@ -428,4 +453,22 @@ body {
   width: 5px;
   height: 5px;
   border-radius: 50%;
+}
+
+.carousel-control-prev {
+  left: 50px;
+}
+
+.reactIcon.row {
+  margin-top: 30px;
+}
+
+.sumary_header.row {
+  margin: 20px;
+}
+
+button.btn.btn-primary.btn-sm {
+  margin: 10px;
+  width: 80%;
+  margin-right: 13%;
 }

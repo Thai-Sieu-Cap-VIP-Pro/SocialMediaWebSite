@@ -1,33 +1,31 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFaceGrinWide, faImage, faHeart, faPaperPlane } from '@fortawesome/free-regular-svg-icons';
-import { Reply, InfoOutlined, FavoriteBorder, Favorite, DeleteOutline, Call } from '@material-ui/icons';
-import { createMessage, getMessageInCons } from '../ChatSlice';
+import { InfoOutlined, Call } from '@material-ui/icons';
+import { createMessage, getMessageInCons, tymMessage, unTymMessage } from '../ChatSlice';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { checkText } from 'smile2emoji';
 import { v1 as uuid } from 'uuid';
-// import Peer from 'simple-peer';
-// import Picker from 'emoji-picker-react';
 import './Chat.scss';
+import Picker from 'emoji-picker-react';
 import { socket } from '../pages/ChatPage';
-import axios from 'axios';
 import ChatSetting from './ChatSetting';
 import ImagePopup from './ImagePopup';
 import useImageUpload from '../../../hooks/useImageUpload';
 import WarningPopup from '../../../shareComponents/WarningPopup/WarningPopup';
+import Message from './Message';
 
 const ChatContent = ({ isOpenSetting, setIsOpenSetting }) => {
     const [text, setText] = useState('');
     const [uploading, setUploading] = useState(false);
     const [image, setImage] = useState('');
     const [isTyping, setIsTyping] = useState(false);
-    const [isOpenEmojiPicker, setIsOpenEmojiPicker] = useState(false);
+    const [showEmojiPicker, setShowEmojiPicker] = useState(false);
     const [openImagePopup, setOpenImagePopup] = useState(false);
     const conversations = useSelector((state) => state.chat.conversations);
     const [currentConversation, setCurrentConversation] = useState(null);
     const [data, setData] = useState([]);
-    const [isTymMsg, setIsTymMsg] = useState(false);
     const [srcPopup, setSrcPopup] = useState('');
     const [videoId, setVideoId] = useState(uuid());
     const [isCalling, setIsCalling] = useState(false);
@@ -38,12 +36,22 @@ const ChatContent = ({ isOpenSetting, setIsOpenSetting }) => {
     const uploadImage = useImageUpload();
 
     const ref = useRef();
-    // dummy thingssssssssssssssssssssssss
 
+    // useEffect
+    useEffect(() => {
+        if (ref.current) {
+            ref.current.scrollTop = ref.current.scrollTopMax;
+        }
+    }, [data, socket, image]);
 
-    const handleClickEmoji = () => {
-        setIsOpenEmojiPicker(!isOpenEmojiPicker);
-    };
+    useEffect(() => {
+        getMessagesInCons();
+        setIsOpenSetting(false);
+        setCurrentConversation(conversations.find((conversation) => conversation._id === params.id));
+        return () => {
+            socket.emit('leaveRoom', params.id);
+        };
+    }, [params.id]);
 
     useEffect(() => {
         socket.on('recieveMessage', (mess) => {
@@ -57,10 +65,50 @@ const ChatContent = ({ isOpenSetting, setIsOpenSetting }) => {
     }, [socket]);
 
     useEffect(() => {
-        if (ref.current) {
-            ref.current.scrollTop = ref.current.scrollHeight;
+        socket.on('recieveTym', (mess) => {
+            setData((prev) => {
+                return prev.map((item) => {
+                    if (item._id === mess._id) {
+                        return mess;
+                    }
+                    return item;
+                });
+            });
+        });
+        return () => {
+            socket.off('recieveTym');
+            console.log('client Off');
+        };
+    }, [socket]);
+
+    useEffect(() => {
+        socket.on('recieveCalling', (videoId) => {
+            setIsCalling(true);
+            setVideoId(videoId);
+        });
+        return () => {
+            socket.off('recieveCalling');
+            console.log('End Call');
+        };
+    }, [socket]);
+
+    const handleTymMessage = async (messageId, userId) => {
+        try {
+            const result = await dispatch(tymMessage({ messageId, userId })).unwrap();
+            socket.emit('sendTym', result.newMessage);
+        } catch (error) {
+            throw error;
         }
-    }, [data, socket, image]);
+    };
+
+    const handleUnTymMessage = async (messageId, userId) => {
+        try {
+            const result = await dispatch(unTymMessage({ messageId, userId })).unwrap();
+            socket.emit('sendTym', result.newMessage);
+        } catch (error) {
+            throw error;
+        }
+    };
 
     const getMessagesInCons = async () => {
         try {
@@ -73,19 +121,10 @@ const ChatContent = ({ isOpenSetting, setIsOpenSetting }) => {
         }
     };
 
-    useEffect(() => {
-        getMessagesInCons();
-        const temp = conversations.find((conversation) => conversation._id === params.id);
-        setCurrentConversation(temp);
-        console.log(params.id)
-        console.log(temp)
-        console.log(currentConversation)
-
-        return () => {
-            console.log(params.id)
-            socket.emit('leaveRoom', params.id);
-        };
-    }, [params.id]);
+    const handleEmojiClick = (event, emojiObject) => {
+        setText((a) => a + emojiObject.emoji);
+        //setshowEmoji(false);
+    };
 
     const handleChange = (e) => {
         if (!e.target.value) {
@@ -147,22 +186,11 @@ const ChatContent = ({ isOpenSetting, setIsOpenSetting }) => {
         setIsCalling(false);
     };
 
-    useEffect(() => {
-        socket.on('recieveCalling', (videoId) => {
-            setIsCalling(true);
-            setVideoId(videoId);
-        });
-        return () => {
-            socket.off('recieveCalling');
-            console.log('End Call');
-        };
-    }, [socket]);
-
     if (isOpenSetting) {
         return <ChatSetting setIsOpenSetting={setIsOpenSetting} currentConversation={currentConversation} />;
     } else {
         return (
-            <div className="rightPanel">
+            <div className="rightPanel" style={{ position: 'relative' }}>
                 <div className="rightPanel__title">
                     <div className="rightPanel__title__user">
                         <div className="rightPanel__title__user__image">
@@ -177,12 +205,18 @@ const ChatContent = ({ isOpenSetting, setIsOpenSetting }) => {
                             />
                         </div>
                         <h6 className="rightPanel__title__user__name">
-                            {(conversations.find((conversation) => conversation._id === params.id))?.members.length === 2
-                                ? (conversations.find((conversation) => conversation._id === params.id))?.members.find((item) => item._id !== currentUser._id).name
-                                : (conversations.find((conversation) => conversation._id === params.id))?.members.length === 1
+                            {conversations.find((conversation) => conversation._id === params.id)?.name
+                            ? conversations.find((conversation) => conversation._id === params.id)?.name
+                            : conversations.find((conversation) => conversation._id === params.id)?.members.length === 2
+                                ? conversations
+                                      .find((conversation) => conversation._id === params.id)
+                                      ?.members.find((item) => item._id !== currentUser._id).name
+                                : conversations.find((conversation) => conversation._id === params.id)?.members
+                                      .length === 1
                                 ? 'Không còn ai muốn trò chuyện với bạn nữa'
-                                : (conversations.find((conversation) => conversation._id === params.id))?.members
-                                      .filter((item) => item._id !== currentUser._id)
+                                : conversations
+                                      .find((conversation) => conversation._id === params.id)
+                                      ?.members.filter((item) => item._id !== currentUser._id)
                                       .map((member) => member.name)
                                       .join(', ')}
                         </h6>
@@ -196,62 +230,15 @@ const ChatContent = ({ isOpenSetting, setIsOpenSetting }) => {
                 </div>
                 <div className="rightPanel__conversation" ref={ref}>
                     {data.map((item, index) => {
+                        console.log({ item });
                         return (
-                            <div
-                                className={`rightPanel__conversation__content ${
-                                    item.sender._id === currentUser._id ? 'mine' : ''
-                                }`}
+                            <Message
+                                message={item}
                                 key={index}
-                            >
-                                {item.sender._id !== currentUser._id && (
-                                    <div className="rightPanel__conversation__content__image">
-                                        <img src={item.sender.avatar} alt="unsplash" />
-                                    </div>
-                                )}
-                                {item.content.isImage === true ? (
-                                    <img
-                                        src={item.content.text}
-                                        alt="pictureChat"
-                                        className="rightPanel__conversation__content__textImage"
-                                        onClick={() => handleImagePopup(item.content.text)}
-                                    />
-                                ) : (
-                                    <p
-                                        className={`rightPanel__conversation__content__text ${
-                                            item.sender._id === currentUser._id ? 'mine' : ''
-                                        }`}
-                                    >
-                                        {item.content.text}
-                                    </p>
-                                )}
-                                {isTymMsg && (
-                                    <div
-                                        className={`rightPanel__conversation__content__react ${
-                                            item.sender._id === currentUser._id ? 'mine' : ''
-                                        }`}
-                                    >
-                                        <Favorite
-                                            htmlColor="red"
-                                            fontSize="small"
-                                            className="rightPanel__conversation__content__react__tym"
-                                        />
-                                    </div>
-                                )}
-
-                                <div
-                                    className={`rightPanel__conversation__content__options ${
-                                        item.sender._id === currentUser._id ? 'mine' : ''
-                                    }`}
-                                >
-                                    {!isTymMsg ? (
-                                        <FavoriteBorder onClick={() => setIsTymMsg(true)} />
-                                    ) : (
-                                        <Favorite htmlColor="red" onClick={() => setIsTymMsg(false)} />
-                                    )}
-                                    <Reply />
-                                    <DeleteOutline />
-                                </div>
-                            </div>
+                                handleImagePopup={handleImagePopup}
+                                handleTymMessage={handleTymMessage}
+                                handleUnTymMessage={handleUnTymMessage}
+                            />
                         );
                     })}
                     {uploading && (
@@ -262,12 +249,27 @@ const ChatContent = ({ isOpenSetting, setIsOpenSetting }) => {
                         />
                     )}
                 </div>
+                {showEmojiPicker && (
+                    // <Picker
+                    //     style={{ position: 'absolute', bottom: 0, left: 0, zIndex: 990 }}
+                    //     onEmojiClick={handleEmojiClick}
+                    //     // pickerStyle={{
+                    //     //     width: 'auto',
+                    //     //     outerHeight: '100%',
+                    //     //     innerHeight: '100px',
+                    //     // }}
+                    // ></Picker>
+                    <div style={{ position: 'absolute', bottom: '60px', left: '20px', zIndex: 990 }}>
+                        <Picker onEmojiClick={handleEmojiClick}></Picker>
+                    </div>
+                )}
                 <div className="rightPanel__inputContainer">
                     <FontAwesomeIcon
                         className="rightPanel__inputContainer__icon emoji"
                         icon={faFaceGrinWide}
                         size="lg"
                         cursor="pointer"
+                        onClick={() => setShowEmojiPicker(!showEmojiPicker)}
                     />
                     <input
                         type="text"
