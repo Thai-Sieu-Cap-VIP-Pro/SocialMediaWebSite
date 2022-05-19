@@ -230,7 +230,6 @@ const ChatContent = ({ isOpenSetting, setIsOpenSetting }) => {
                 </div>
                 <div className="rightPanel__conversation" ref={ref}>
                     {data.map((item, index) => {
-                        console.log({ item });
                         return (
                             <Message
                                 message={item}
