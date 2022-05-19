@@ -1,19 +1,20 @@
-
 import { createSlice, createAsyncThunk, current } from "@reduxjs/toolkit";
 import postAPI from "../../api/PostApi";
 
-
 //hàm lấy tất cả bài post khi vào trang chủ
-export const getPosts = createAsyncThunk('post/getPosts', async () => {
-    const listPosts = await postAPI.getPosts();
-    return listPosts;
+export const getPosts = createAsyncThunk("post/getPosts", async () => {
+  const listPosts = await postAPI.getPosts();
+  return listPosts;
 });
 
 //hàm lấy tất cả comment của bài post
-export const getCommentsByPostID = createAsyncThunk('post/getComments', async (params) => {
+export const getCommentsByPostID = createAsyncThunk(
+  "post/getComments",
+  async (params) => {
     const listComment = await postAPI.getCommentByPostID(params);
     return listComment;
-});
+  }
+);
 
 //hàm xử lý like hay bỏ like bài post
 
@@ -21,24 +22,29 @@ export const handleLike = createAsyncThunk("post/Like", async (params) => {
   console.log("Đang like bài " + params);
   const listComment = await postAPI.likePost(params);
   return params;
-
 });
 
-export const handleUnLike = createAsyncThunk('post/UnLike', async (params) => {
-    const listComment = await postAPI.unLikePost(params);
+export const handleUnLike = createAsyncThunk("post/UnLike", async (params) => {
+  const listComment = await postAPI.unLikePost(params);
 });
 
 //hàm lấy danh sách gợi ý kết bạn
-export const getListRecommendFriends = createAsyncThunk('home/getListRecommendFriends', async () => {
+export const getListRecommendFriends = createAsyncThunk(
+  "home/getListRecommendFriends",
+  async () => {
     const listRecommend = await postAPI.recommendFriends();
     return listRecommend;
-});
+  }
+);
 
 //hàm add comment
-export const addNewComment = createAsyncThunk('home/addNewComments', async (params) => {
+export const addNewComment = createAsyncThunk(
+  "home/addNewComments",
+  async (params) => {
     const listRecommend = await postAPI.addComment(params);
     return listRecommend;
-});
+  }
+);
 
 //like or unlike comment
 export const likeOrUnlikeCmt = createAsyncThunk(
@@ -83,7 +89,6 @@ export const getListUser = createAsyncThunk(
 );
 
 const HomeSlice = createSlice({
-
   name: "home",
   initialState: {
     replingCmt: {
@@ -261,13 +266,15 @@ const HomeSlice = createSlice({
         isShowAlllikeModal: true,
         listUsers: action.payload.users,
       };
-    }
-}});
+
+    },
+  },
+});
+
 
 // Action creators are generated for each case reducer function
 const { reducer: HomeReducer, actions } = HomeSlice;
 export const {
-
   ShowDetail,
   HideDetailReducer,
   ShowReportModal,
@@ -277,7 +284,6 @@ export const {
   SetReplyCmd,
   CancelReplyCmd,
   editCmt,
-
 } = actions;
 
 export default HomeReducer;

@@ -35,7 +35,7 @@ const HomePage = () => {
           <Header></Header>
         </Row>
       </Container>
-      <Container style={{ marginTop: "80px" }}>
+      <Container style={{ marginTop: "100px" }}>
         {loadListPostFail ? (
           <Row>
             <ErrorFetch />
@@ -63,7 +63,7 @@ const HomePage = () => {
                     );
                   })}
                 </Col>
-                <Col md={{ span: 4 }}>
+                <Col md={{ span: 4, offset: 1 }}>
                   <Category />
                 </Col>
               </>

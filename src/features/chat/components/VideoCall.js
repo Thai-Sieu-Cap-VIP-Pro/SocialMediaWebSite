@@ -86,7 +86,11 @@ const VideoCall = (props) => {
         });
 
         peer.on('signal', (signal) => {
-            socketRef.current.emit('sending signal', { userToSignal, callerID, signal });
+            socketRef.current.emit('sending signal', {
+                userToSignal,
+                callerID,
+                signal,
+            });
         });
 
         return peer;
