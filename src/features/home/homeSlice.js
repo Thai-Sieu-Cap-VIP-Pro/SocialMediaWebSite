@@ -19,7 +19,6 @@ export const getCommentsByPostID = createAsyncThunk(
 //hàm xử lý like hay bỏ like bài post
 
 export const handleLike = createAsyncThunk("post/Like", async (params) => {
-  console.log("Đang like bài " + params);
   const listComment = await postAPI.likePost(params);
   return params;
 });
@@ -98,6 +97,7 @@ const HomeSlice = createSlice({
     editingCmt: {},
     listLikeCmt: {
       isShowAlllikeModal: false,
+      isLoad: true,
       listUsers: [],
     },
     isLoadingAddCmt: false,
@@ -260,17 +260,29 @@ const HomeSlice = createSlice({
     [follow.fulfilled]: (state, action) => {
       //state.isShowReportModal = false;
     },
-
+    [getListUser.pending]: (state, action) => {
+      state.listLikeCmt = {
+        isShowAlllikeModal: true,
+        isLoad: true,
+        listUsers: [],
+      };
+    },
     [getListUser.fulfilled]: (state, action) => {
       state.listLikeCmt = {
         isShowAlllikeModal: true,
         listUsers: action.payload.users,
       };
+    },
 
+    [getListUser.fulfilled]: (state, action) => {
+      state.listLikeCmt = {
+        isShowAlllikeModal: true,
+        isLoad: false,
+        listUsers: action.payload.users,
+      };
     },
   },
 });
-
 
 // Action creators are generated for each case reducer function
 const { reducer: HomeReducer, actions } = HomeSlice;

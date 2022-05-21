@@ -1,8 +1,8 @@
 import React, { useEffect } from "react";
 import CommentItem from "./commons/commentItem";
 import { useSelector, useDispatch } from "react-redux";
-import { socket } from "./postItem";
 import { getCommentsByPostID } from "../homeSlice";
+import { socket } from "../pages/homePage";
 
 const ListComment = () => {
   const dispach = useDispatch();
@@ -10,8 +10,6 @@ const ListComment = () => {
 
   useEffect(async () => {
     socket.off("receive_message").on("receive_message", (data) => {
-      console.log("Đang chạy vào hàm load tất cả cmt by id");
-
       try {
         const action1 = getCommentsByPostID(activePostId);
         dispach(action1);

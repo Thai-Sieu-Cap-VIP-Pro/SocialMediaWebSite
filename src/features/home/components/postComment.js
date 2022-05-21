@@ -62,7 +62,10 @@ const PostComment = () => {
             )}
           </div>
           <div className="detail__content__comment__footer">
-            <AddComment postId={activePostId} />
+            <AddComment
+              postId={activePostId}
+              userPostId={activePost.user._id}
+            />
           </div>
         </div>
       </div>

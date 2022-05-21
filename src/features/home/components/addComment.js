@@ -5,15 +5,16 @@ import {
   HighlightOffOutlined,
 } from "@material-ui/icons";
 import Picker from "emoji-picker-react";
-import { socket } from "./postItem";
 import { addNewComment, CancelReplyCmd } from "../homeSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCircleXmark } from "@fortawesome/free-solid-svg-icons";
 import useCloseOutSideToClose from "../../../hooks/useCloseOutSideToClose";
 import ErrToast from "../../../shareComponents/errorToast/errToast";
+import { socket } from "../pages/homePage";
 
-const AddComment = ({ postId }) => {
+const AddComment = ({ postId, userPostId }) => {
+  const current = JSON.parse(localStorage.getItem("LoginUser"));
   const { replingCmt, isLoadingAddCmt, editingCmt } = useSelector(
     (state) => state.home
   );
@@ -47,7 +48,14 @@ const AddComment = ({ postId }) => {
       console.log(err);
     }
 
+    let notification = {
+      userId: userPostId, // cái này là id của thằng cần gửi thông báo tới
+      type: "1",
+      senderName: current.name,
+    };
+
     socket.emit("send_message", message);
+    socket.emit("send_notificaton", notification);
     setinputValue("");
     setshowEmoji(false);
   };

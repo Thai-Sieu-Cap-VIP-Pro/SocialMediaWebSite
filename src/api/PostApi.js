@@ -13,6 +13,7 @@ class PostAPI {
 
   likePost = (params) => {
     const url = "http://localhost:3001/api/posts/post/" + params + "/like";
+    console.log(params);
     return axiosClient.patch(url, {});
   };
 
@@ -73,6 +74,7 @@ class PostAPI {
 
   getlistLike = (params) => {
     const url = "http://localhost:3001/api/user/users";
+    console.log("Dô tới trong này");
     return axiosClient.post(url, params);
   };
 }

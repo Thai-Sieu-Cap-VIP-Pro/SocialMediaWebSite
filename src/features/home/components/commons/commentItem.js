@@ -1,21 +1,18 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState } from "react";
 import { Col, Row } from "react-bootstrap";
 import {
   FavoriteBorderOutlined,
   CheckCircle,
   Favorite,
 } from "@material-ui/icons";
-import IMAGES from "../../../../assets/images/imageStore";
 import "./common.scss";
 import { useDispatch, useSelector } from "react-redux";
 import {
   deleteComment,
-  editCmt,
   getCommentsByPostID,
   getListUser,
   likeOrUnlikeCmt,
   SetReplyCmd,
-  ShowAllLikesModal,
 } from "../../homeSlice";
 import { format } from "timeago.js";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -74,10 +71,10 @@ const CommentItem = ({ CmtItem }) => {
     setisLike(!isLike);
   };
 
-  const handleEditCmt = (id) => {
-    //const action = editCmt(CmtItem);
-    //dispatch(action);
-  };
+  // const handleEditCmt = (id) => {
+  //   //const action = editCmt(CmtItem);
+  //   //dispatch(action);
+  // };
 
   const handleDeleteCmt = async (id) => {
     const action = deleteComment({ CmtId: id });
@@ -119,12 +116,17 @@ const CommentItem = ({ CmtItem }) => {
             <p className="comment_content_interact_time">
               {format(CmtItem.updatedAt)}
             </p>
-            <p
-              className="comment_content_interact_luotthich"
-              onClick={() => ShowAlllikesModal(CmtItem.likes)}
-            >
-              {NumLikes} lượt thích
-            </p>
+            {NumLikes > 0 ? (
+              <p
+                className="comment_content_interact_luotthich"
+                onClick={() => ShowAlllikesModal(CmtItem.likes)}
+              >
+                {NumLikes} lượt thích
+              </p>
+            ) : (
+              <></>
+            )}
+
             <p
               className="comment_content_interact_response"
               onClick={() => HandleReply(CmtItem._id, CmtItem.user.name)}
@@ -132,33 +134,34 @@ const CommentItem = ({ CmtItem }) => {
               Trả lời
             </p>
             {(isDelete || isEdit) && (
-              <FontAwesomeIcon
-                className="comment_content_interact_more"
-                icon={faEllipsis}
-                onClick={() => setisShowCmtOption(!isShowCmtOption)}
-              />
-            )}
-
-            <div
-              ref={domNode1}
-              className="comment_content_interact_option"
-              style={{ display: isShowCmtOption == true ? "" : "none" }}
-            >
-              <ul>
-                <li
+              <div className="comment_content_interact_more">
+                <FontAwesomeIcon
+                  // className="comment_content_interact_more"
+                  icon={faEllipsis}
+                  onClick={() => setisShowCmtOption(!isShowCmtOption)}
+                />
+                <div
+                  ref={domNode1}
+                  className="comment_content_interact_more_option"
+                  style={{ display: isShowCmtOption == true ? "" : "none" }}
+                >
+                  <ul>
+                    {/* <li
                   className={isEdit == true ? "" : "disabledd"}
                   onClick={() => handleEditCmt(CmtItem._id)}
                 >
                   Sửa
-                </li>
-                <li
-                  className={isDelete == true ? "" : "disabledd"}
-                  onClick={() => handleDeleteCmt(CmtItem._id)}
-                >
-                  Xóa
-                </li>
-              </ul>
-            </div>
+                </li> */}
+                    <li
+                      className={isDelete == true ? "" : "disabledd"}
+                      onClick={() => handleDeleteCmt(CmtItem._id)}
+                    >
+                      Xóa
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </Col>
