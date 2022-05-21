@@ -109,6 +109,15 @@ export const changeConversationName = createAsyncThunk('conversation/changeName'
     }
 });
 
+export const changeConversationAvatar = createAsyncThunk('conversation/changeAvatar', async (args, thunkAPI) => {
+    try {
+        const response = await ChatAPI.changeConAvt(args);
+        return response;
+    } catch (error) {
+        return thunkAPI.rejectWithValue(`${error}`);
+    }
+});
+
 const chatSlice = createSlice({
     name: 'chat',
     initialState: {
@@ -263,6 +272,20 @@ const chatSlice = createSlice({
             state.conversations[conIndex].name = action.payload.newConversation.name
         },
         [changeConversationName.rejected]: (state, action) => {
+            state.loading = false;
+            state.error = true;
+        },
+        [changeConversationAvatar.pending]: (state, action) => {
+            state.loading = true;
+            state.error = false;
+        },
+        [changeConversationAvatar.fulfilled]: (state, action) => {
+            state.loading = false;
+            state.error = false;
+            const conIndex = state.conversations.findIndex(conversation => conversation._id == action.payload.newConversation._id)
+            state.conversations[conIndex].avatar = action.payload.newConversation.avatar
+        },
+        [changeConversationAvatar.rejected]: (state, action) => {
             state.loading = false;
             state.error = true;
         },

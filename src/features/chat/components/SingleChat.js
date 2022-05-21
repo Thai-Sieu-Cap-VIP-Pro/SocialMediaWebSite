@@ -60,7 +60,9 @@ const SingleChat = ({ conversation = null, handleClick = null, setId = null, cur
       <div className="singleChat__image">
         <img
           src={`${
-            conversation?.members.length === 2
+            conversation?.avatar
+            ? conversation?.avatar
+            : conversation?.members.length === 2
               ? conversation?.members.find((item) => item._id !== currentUser._id).avatar
               : "https://res.cloudinary.com/wjbucloud/image/upload/v1651308420/j2team_girl_8_btpoep.jpg"
           }`}

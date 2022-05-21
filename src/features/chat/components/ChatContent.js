@@ -195,8 +195,9 @@ const ChatContent = ({ isOpenSetting, setIsOpenSetting }) => {
                     <div className="rightPanel__title__user">
                         <div className="rightPanel__title__user__image">
                             <img
-                                src={
-                                    currentConversation?.members.length === 2
+                                src={conversations.find((conversation) => conversation._id === params.id)?.avatar
+                                    ? conversations.find((conversation) => conversation._id === params.id)?.avatar
+                                    : currentConversation?.members.length === 2
                                         ? currentConversation?.members.find((item) => item._id !== currentUser._id)
                                               .avatar
                                         : 'https://res.cloudinary.com/wjbucloud/image/upload/v1651308420/j2team_girl_8_btpoep.jpg'

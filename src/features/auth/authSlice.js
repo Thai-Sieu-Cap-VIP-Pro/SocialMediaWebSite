@@ -10,6 +10,15 @@ export const LoginUser = createAsyncThunk(
   }
 );
 
+export const Register = createAsyncThunk('auth/Register', async (args, thunkAPI) => {
+  try {
+      const response = await authAPI.createAccount(args);
+      return response;
+  } catch (error) {
+      return thunkAPI.rejectWithValue(`${error}`);
+  }
+});
+
 export const Logout = createAsyncThunk("auth/logout", async () => {
   console.log("dô trong create async logout");
   await authAPI.logout();
@@ -52,6 +61,22 @@ const AuthSlice = createSlice({
         "LoginUser",
         JSON.stringify(action.payload.currentUser)
       );
+    },
+
+    [Register.pending]: (state) => {
+      state.loading = true;
+      console.log("Đang load");
+    },
+
+    [Register.rejected]: (state, action) => {
+      state.loading = false;
+      console.log("Đăng ký thất bại");
+      state.error = "Đăng ký thất bại !";
+    },
+
+    [Register.fulfilled]: (state, action) => {
+      state.loading = false;
+      console.log("Đăng ký thành công");
     },
 
     [Logout.fulfilled]: (state, action) => {
