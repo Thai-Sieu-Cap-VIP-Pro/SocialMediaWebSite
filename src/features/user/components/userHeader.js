@@ -11,9 +11,10 @@ const UserHeader = () => {
   const [isShowFollowers, setIsShowFollowers] = useState(false);
 
   const UserInfo = useSelector((state) => state.user.userInfo);
+  const posts = useSelector((state) => state.user.posts)
   console.log(UserInfo);
 
-  const { name } = UserInfo;
+  const { name, avatar } = UserInfo;
   const totalFollower = UserInfo.followers?.length;
   const totalFollowing = UserInfo.following?.length;
 
@@ -45,7 +46,7 @@ const UserHeader = () => {
         <div className="d-flex flex-row justify-content-center">
           <div className="p-2">
             <div className="avatar__container">
-              <img src="https://i.ibb.co/8xStM5r/avatar.jpg" />
+              <img src={avatar} />
             </div>
           </div>
           <div className="p-2 ">
@@ -68,7 +69,7 @@ const UserHeader = () => {
               </div>
               <div className="p-0 ">
                 <div className="d-flex  flex-row">
-                  <div className="p-2 ">8 posts</div>
+                  <div className="p-2 ">{posts?.length} posts</div>
                   <div
                     className="p-2"
                     style={{ cursor: 'pointer' }}

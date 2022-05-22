@@ -24,7 +24,7 @@ const Category = () => {
           <a href="">Xem tất cả</a>
         </div>
         <ul>
-          {listRecommend.map((user, index) => {
+          {listRecommend && listRecommend.map((user, index) => {
             if (index < 4) {
               return <RecommendItem key={index} user={user} />;
             }

@@ -1,17 +1,18 @@
 import React, { useEffect } from "react";
 import { Container, Row, Col } from "react-bootstrap";
 import { useSelector, useDispatch } from "react-redux";
-import { getAllPost } from "../../profileSlice";
+import { getPostsById } from "../../profileSlice";
+import PostItem from "../PostItem";
 
 import "./styles.scss"
 
 const UserPost = () => {
     const dispatch = useDispatch()
-
+    const activeId = useSelector((state) => state.user.activeId)
     const posts = useSelector(state => state.user.posts)
     console.log(posts)
     useEffect( async () => {
-        const action = getAllPost();
+        const action = getPostsById(activeId);
         await dispatch(action)
     }, [])
 
@@ -21,9 +22,7 @@ const UserPost = () => {
                 {
                     posts.length && 
                     posts.map((item, index) => (
-                        <Col sm={4} key={index}>
-                            <img className="post-image" src={item.images[0]} />
-                        </Col>
+                        <PostItem key={index} post={item} />
                     ))
                 }
             </Row>
