@@ -2,8 +2,7 @@
 @import "../../../assets/styles/_mixin.scss";
 @import "../../../assets/styles/variable";
 
-
-// HEADER 
+// HEADER
 .header__container {
   margin-top: 120px;
   text-align: left;
@@ -17,7 +16,6 @@
       height: 150px;
       border-radius: 50%;
       object-fit: cover;
-
     }
   }
 
@@ -35,13 +33,9 @@
       font-size: 13px;
       padding: 2px;
       border-radius: 5px;
-
     }
   }
-
 }
-
-
 
 /* POSTS  */
 .img_gallery {
@@ -54,7 +48,6 @@
     // justify-content: space-between;
     align-content: flex-start;
     gap: 12px;
-
 
     .post_container {
       position: relative;
@@ -73,7 +66,7 @@
         left: 0;
         right: 0;
         opacity: 0;
-        transition: .2s ease;
+        transition: 0.2s ease;
         background-color: rgba(0, 0, 0, 0.3);
 
         .overlay__info {
@@ -84,60 +77,58 @@
           left: 50%;
           transform: translate(-50%, -50%);
 
-          svg{
+          svg {
             color: white !important;
           }
         }
       }
-
     }
   }
 
   .post:hover .overlay {
     opacity: 1;
   }
-
 }
 
-//  posts navigation 
+//  posts navigation
 .postNav {
   border-top: 1px solid rgba(196, 192, 192, 0.5);
   border-bottom: none;
   width: 920px;
   margin: 30px auto 20px;
   padding-left: 25%;
-
 }
-.tab-content>.active {
+.tab-content > .active {
   background-color: white;
   display: block;
   box-shadow: 2px solid red;
 }
-.active, .active svg{
+.active,
+.active svg {
   box-shadow: none !important;
-  color: black !important;;
+  color: black !important;
 }
-.nav-link{
+.nav-link {
   color: black;
 }
-.nav-tabs .nav-link.active, .nav-tabs .nav-item.show .nav-link {
-  border:none;
+.nav-tabs .nav-link.active,
+.nav-tabs .nav-item.show .nav-link {
+  border: none;
   border-radius: 0px;
   border-top: 2px solid black;
 }
-
 
 //popup
 .report {
   @include ModalContainer;
   z-index: 2;
-  
+
   &__layout {
     @include ModalLayout;
     background-color: gray;
-    opacity: 0.9;
+    opacity: 0.1;
   }
-  
+
   &__content {
     max-height: 400px;
     background-color: white;
@@ -162,28 +153,23 @@
     }
   }
 
-  .follow__modal{
-    ul{
-      li{
+  .follow__modal {
+    ul {
+      li {
         padding: 10px 0px;
       }
-    }    
+    }
   }
 }
 
 //end
 
-
-
-//   footer 
+//   footer
 footer {
   color: rgb(155, 154, 154);
   margin: 20px auto;
   text-align: center;
-
-
 }
-
 
 // follow
 .follow__tag {
@@ -198,7 +184,6 @@ footer {
     height: 50px;
     border-radius: 50%;
     object-fit: cover;
-
   }
 
   &__name {
@@ -209,23 +194,22 @@ footer {
       text-align: left;
       margin-left: 10px;
       margin-bottom: 2px;
-  
+
       &:first-child {
         font-weight: 500;
       }
-  
+
       &:last-child {
         color: gray;
       }
     }
   }
-  &__button{
-    button{
+  &__button {
+    button {
       padding: 5px;
       border: 1px solid black;
       border-radius: 3px;
       background-color: white;
     }
   }
-  
 }

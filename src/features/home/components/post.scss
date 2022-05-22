@@ -72,6 +72,7 @@ body {
   &__content {
     &__likes {
       font-weight: 500;
+      cursor: pointer;
     }
 
     &__allCmt {
@@ -174,11 +175,11 @@ body {
   }
 
   &__name {
-    &:hover {
-      .recommend__expand {
-        display: block;
-      }
-    }
+    // &:hover {
+    //   .recommend__expand {
+    //     display: block;
+    //   }
+    // }
 
     margin-right: 50px;
     a {
@@ -209,7 +210,6 @@ body {
     margin: 20px;
     top: 5px;
     left: 5%;
-    display: none;
     z-index: 1;
   }
 }
@@ -420,10 +420,12 @@ body {
 //report modal
 .report {
   @include ModalContainer;
+
   z-index: 2;
 
   &__layout {
     @include ModalLayout;
+    opacity: 0.1;
   }
 
   &__content {
