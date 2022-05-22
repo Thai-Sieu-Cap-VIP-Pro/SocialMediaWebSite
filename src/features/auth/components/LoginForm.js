@@ -96,7 +96,6 @@ const LoginForm = () => {
             }}
           </Formik>
         </div>
-
         <div className="loginForm__right__footer">
           Do you have account? <Link to="/register">Register Now</Link>
         </div>

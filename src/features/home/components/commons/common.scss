@@ -2,9 +2,10 @@
 @import "../../../../assets/styles/variable";
 
 .comment {
-  margin: 20px 0;
+  padding-top: 10px;
   align-items: center;
   font-size: 13px;
+  margin: 12px 0;
 
   &_chilrentCmt {
     margin-left: 30px;
@@ -23,7 +24,7 @@
       font-size: 14px;
       cursor: pointer;
       position: absolute;
-      right: 10px;
+      right: 20px;
       &:hover {
         transform: scale(1.2);
       }
@@ -47,18 +48,21 @@
       display: flex;
       align-items: center;
       position: relative;
+      margin-top: 5px;
 
       &_time {
         font-weight: 300;
-        margin-right: 20px;
+        padding: 0 20px 0 0;
         color: #bfbfbf;
+        font-size: 11px;
       }
 
       &_luotthich {
         font-weight: 500;
-        margin-right: 20px;
+        padding: 0 20px 0 0;
         color: #bfbfbf;
         cursor: pointer;
+        font-size: 11px;
 
         &:hover {
           color: #e7e4e4;
@@ -69,43 +73,46 @@
         font-weight: 500;
         color: #bfbfbf;
         cursor: pointer;
+        font-size: 11px;
       }
 
       &_more {
+        position: relative;
         color: #bfbfbf;
         cursor: pointer;
         margin-left: 15px;
         font-size: 15px;
-      }
 
-      &_option {
-        position: absolute;
-        top: -100%;
-        right: 20px;
-        border-radius: 5px;
-        overflow: hidden;
-        box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+        &_option {
+          position: absolute;
+          top: -5px;
+          right: -73px;
+          border-radius: 5px;
+          overflow: hidden;
+          box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
 
-        ul {
-          list-style: none;
-          margin: 0;
-          padding: 0;
+          ul {
+            list-style: none;
+            margin: 0;
+            padding: 0;
 
-          li {
-            padding: 5px 20px;
-            cursor: pointer;
-            &:hover {
-              background-color: #eeecec;
+            li {
+              padding: 5px 20px;
+              cursor: pointer;
+              font-size: 12px;
+              color: black;
+              &:hover {
+                background-color: #eeecec;
+              }
             }
-          }
-          li.disabledd {
-            display: none;
+            li.disabledd {
+              display: none;
+            }
           }
         }
       }
     }
     &_caption {
-      margin-bottom: 10px;
       &_name {
         font-weight: 500;
       }
@@ -177,6 +184,16 @@
       height: fit-content;
       overflow-y: scroll;
       @include ScrollBarCustom;
+      overflow-x: hidden;
+
+      .spinner_wrap {
+        display: flex;
+        justify-content: center;
+        .spinner {
+          text-align: center;
+          margin: 20px 0;
+        }
+      }
     }
   }
 }
@@ -234,4 +251,13 @@
       border: none;
     }
   }
+}
+
+.comment_childrenStatus.col-md-10.offset-md-2 {
+  font-size: 12px;
+  margin-top: 20px;
+}
+
+.accountItem.row {
+  margin: 10px;
 }

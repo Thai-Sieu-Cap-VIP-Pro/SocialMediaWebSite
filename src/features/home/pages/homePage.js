@@ -1,5 +1,5 @@
-import React, { useEffect } from "react";
-import { Col, Container, Row, Spinner } from "react-bootstrap";
+import React, { useEffect, useState } from "react";
+import { Col, Container, Row, Spinner, Toast } from "react-bootstrap";
 import Header from "../../../shareComponents/header/Header";
 import Category from "../components/category";
 import PostComment from "../components/postComment";
@@ -10,7 +10,16 @@ import { getListRecommendFriends, getPosts } from "../homeSlice";
 import "./homePage.scss";
 import ErrorFetch from "../../../shareComponents/fetchfail/error";
 
+import io from "socket.io-client";
+import AlllikesPopup from "../components/commons/allLikesPopup";
+export const socket = io.connect("http://localhost:3002");
+
 const HomePage = () => {
+  const [showB, setShowB] = useState(false);
+  const [toastMessage, setToastMessage] = useState("");
+
+  const toggleShowB = () => setShowB(!showB);
+  const current = JSON.parse(localStorage.getItem("LoginUser"));
   const dispatch = useDispatch();
   const {
     listPosts,
@@ -20,6 +29,8 @@ const HomePage = () => {
     listRecommend,
   } = useSelector((state) => state.home);
 
+  socket.emit("joinNotificationRoom", current._id);
+
   useEffect(() => {
     let action = getPosts();
     dispatch(action);
@@ -28,6 +39,15 @@ const HomePage = () => {
     dispatch(action1);
   }, []);
 
+  // useEffect(async () => {
+  //   socket.off("receive_notification").on("receive_notification", (data) => {
+  //     console.log(data.content);
+  //     //  setToastMessage(data.content);
+  //     // console.log(toastMessage);
+  //     toggleShowB();
+  //   });
+  // }, [socket]);
+
   return (
     <>
       <Container fluid>
@@ -35,7 +55,21 @@ const HomePage = () => {
           <Header></Header>
         </Row>
       </Container>
-      <Container style={{ marginTop: "80px" }}>
+      <div className="toastMessage">
+        <Toast onClose={toggleShowB} show={showB}>
+          <Toast.Header>
+            <img
+              src="holder.js/20x20?text=%20"
+              className="rounded me-2"
+              alt=""
+            />
+            <strong className="me-auto">Thông báo</strong>
+            <small>11s ago</small>
+          </Toast.Header>
+          <Toast.Body>Có ai đó mới comment bài viết của bạn</Toast.Body>
+        </Toast>
+      </div>
+      <Container style={{ marginTop: "100px" }}>
         {loadListPostFail ? (
           <Row>
             <ErrorFetch />
@@ -52,7 +86,7 @@ const HomePage = () => {
               </Col>
             ) : (
               <>
-                <Col md={{ span: 6, offset: 1 }}>
+                <Col md={{ span: 7 }}>
                   {listPosts.map((post) => {
                     return (
                       <PostItem
@@ -63,7 +97,7 @@ const HomePage = () => {
                     );
                   })}
                 </Col>
-                <Col md={{ span: 4 }}>
+                <Col md={{ span: 4, offset: 1 }}>
                   <Category />
                 </Col>
               </>
@@ -72,6 +106,7 @@ const HomePage = () => {
         )}
         {activePostId == "" ? "" : <PostComment />}
       </Container>
+      <AlllikesPopup />
     </>
   );
 };

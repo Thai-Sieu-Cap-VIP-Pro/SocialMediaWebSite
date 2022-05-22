@@ -2,10 +2,10 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, { useEffect, useState } from "react";
 import { Carousel, Col, Row } from "react-bootstrap";
 import "./post.scss";
-import IMAGES from "../../../assets/images/imageStore";
 import { useDispatch, useSelector } from "react-redux";
 import {
   getCommentsByPostID,
+  getListUser,
   handleLike,
   handleUnLike,
   ShowDetail,
@@ -26,9 +26,9 @@ import {
   faCircleChevronRight,
 } from "@fortawesome/free-solid-svg-icons";
 
-import io from "socket.io-client";
 import ReportModal from "./reportModal";
-export const socket = io.connect("http://localhost:3002");
+import { socket } from "../pages/homePage";
+import AlllikesPopup from "./commons/allLikesPopup";
 
 const PostItem = ({ postId, content }) => {
   const dispatch = useDispatch();
@@ -60,7 +60,7 @@ const PostItem = ({ postId, content }) => {
   //hàm xử lý show phần comment khi show tất cả phần comment
 
   //hàm xử lý like hay không like bài post
-  const HandleLikePost = async (id) => {
+  const HandleLikePost = async (id, userid) => {
     if (isLike) {
       setnumLikes(--numLikes);
       const action1 = handleUnLike(id);
@@ -69,9 +69,21 @@ const PostItem = ({ postId, content }) => {
       setnumLikes(++numLikes);
       const action1 = handleLike(id);
       dispatch(action1);
+      let notification = {
+        postId,
+        userId: userid, // cái này là id của thằng cần gửi thông báo tới
+        type: "2",
+        senderName: current.name,
+      };
+      socket.emit("send_notificaton", notification);
     }
 
     setisLike(!isLike);
+  };
+
+  const ShowAlllikesModal = async (a) => {
+    const action = getListUser(a);
+    await dispatch(action).unwrap();
   };
 
   return (
@@ -106,7 +118,9 @@ const PostItem = ({ postId, content }) => {
                 onClick={() => HandleLikePost(postId)}
               />
             ) : (
-              <FavoriteBorderOutlined onClick={() => HandleLikePost(postId)} />
+              <FavoriteBorderOutlined
+                onClick={() => HandleLikePost(postId, content.user._id)}
+              />
             )}
 
             <AddCommentOutlined onClick={() => showDetail(postId)} />
@@ -120,7 +134,12 @@ const PostItem = ({ postId, content }) => {
       </Col>
 
       <Col md={12} className="postItem__content">
-        <div className="postItem__content__likes">{numLikes} lượt thích</div>
+        <div
+          className="postItem__content__likes"
+          onClick={() => ShowAlllikesModal(content.likes)}
+        >
+          {numLikes} lượt thích
+        </div>
         <div className="postItem__content__caption">{content.content}</div>
         <div
           className="postItem__content__allCmt"
@@ -132,9 +151,6 @@ const PostItem = ({ postId, content }) => {
           {format(content.createdAt)}
         </div>
       </Col>
-      {/* <Col md={12} style={{ padding: "0" }}>
-        <AddComment postId={postId} />
-      </Col> */}
       <ReportModal userPostId={content.user._id} />
     </Row>
   );

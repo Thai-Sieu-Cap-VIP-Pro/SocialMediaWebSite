@@ -3,13 +3,11 @@ import { Close } from "@material-ui/icons";
 import AccountItem from "./accountItem";
 import { useDispatch, useSelector } from "react-redux";
 import { HideAllLikesModal } from "../../homeSlice";
+import { Spinner } from "react-bootstrap";
 
 const AlllikesPopup = () => {
   const dispatch = useDispatch();
   const { listLikeCmt } = useSelector((state) => state.home);
-
-  console.log(listLikeCmt);
-
   const HideAlllikesModal = () => {
     const action = HideAllLikesModal();
     dispatch(action);
@@ -26,9 +24,17 @@ const AlllikesPopup = () => {
           <Close onClick={HideAlllikesModal} />
         </div>
         <div className="alllikes_content_content">
-          {listLikeCmt.listUsers.map((user, index) => {
-            return <AccountItem key={index} user={user} />;
-          })}
+          {listLikeCmt.isLoad ? (
+            <div className="spinner_wrap">
+              <Spinner className="spinner" animation="border" size="sm" />
+            </div>
+          ) : (
+            <>
+              {listLikeCmt.listUsers.map((user, index) => {
+                return <AccountItem key={index} user={user} />;
+              })}
+            </>
+          )}
         </div>
       </div>
     </div>
