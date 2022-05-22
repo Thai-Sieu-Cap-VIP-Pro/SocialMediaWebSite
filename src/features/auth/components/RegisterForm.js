@@ -4,9 +4,11 @@ import * as Yup from "yup";
 import "./auth.scss";
 import { Button } from "react-bootstrap";
 import FormikControl from "../../../shareComponents/formikCustom/FormikControl";
-import { Link } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import IMAGES from "../../../assets/images/imageStore";
 import { Container, Col, Row } from "react-bootstrap";
+import { useDispatch } from "react-redux";
+import { Register } from "../authSlice";
 
 const initialValues = {
   email: "giathai1505@gmail.com",
@@ -22,9 +24,16 @@ const validationSchema = Yup.object({
   pass: Yup.string().required("Enter your password"),
 });
 
-const onSubmit = (values) => console.log("Form data ", values);
-
 const RegisterForm = () => {
+  const params = useParams();
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  const onSubmit = async(values) => {
+    console.log("Form data ", values);
+    const result = await dispatch(Register({values: values})).unwrap();
+  }
+
   const radioOptions = [
     { key: "1", value: "Nam" },
     { key: "2", value: "Nữ" },

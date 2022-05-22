@@ -11,7 +11,7 @@ const ChatAPI = {
         return axiosClient.post(url, params);
     },
     getUserContact: () => {
-        const url = 'http://localhost:3001/api/user/contact';
+        const url = 'http://localhost:3001/api/user/chat/contact';
         return axiosClient.get(url);
     },
     createMessage: (params) => {
@@ -45,6 +45,14 @@ const ChatAPI = {
     unTymMessage: (params) => {
         const url = 'http://localhost:3001/api/chat/unTymMessage';
         return axiosClient.patch(url, params);
+    },
+    changeConName: (params) => {
+        const url = `http://localhost:3001/api/chat/changeName/${params.id}`;
+        return axiosClient.patch(url, {newName: params.newName});
+    },
+    changeConAvt: (params) => {
+        const url = `http://localhost:3001/api/chat/changeAvatar/${params.id}`;
+        return axiosClient.patch(url, {newAvt: params.newAvt});
     },
 };
 
