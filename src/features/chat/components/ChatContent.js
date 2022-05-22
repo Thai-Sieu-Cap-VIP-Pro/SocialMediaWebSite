@@ -242,6 +242,7 @@ const ChatContent = ({ isOpenSetting, setIsOpenSetting }) => {
                             src={image}
                             alt="collections"
                             style={{ opacity: 0.5, maxWidth: '40%', alignSelf: 'flex-end', borderRadius: '10px' }}
+                            loading="lazy"
                         />
                     )}
                 </div>

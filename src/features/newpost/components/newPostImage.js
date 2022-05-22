@@ -1,12 +1,9 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { AddAPhotoOutlined } from '@material-ui/icons';
-import axios from 'axios';
-import { Image } from 'cloudinary-react';
 import { Close } from '@material-ui/icons';
 import useImageUpload from '../../../hooks/useImageUpload';
 
-const NewpostImage = () => {
-    const [listImg, setlistImg] = useState([]);
+const NewpostImage = ({ listImg, setlistImg }) => {
     const imageUpload = useImageUpload();
     const imgHandleChange = async (e) => {
         console.log(e.target.files);
@@ -37,11 +34,11 @@ const NewpostImage = () => {
                 {/* <Image cloudName="wjbucloud" publicId={listImg} /> */}
                 {listImg.map((item, index) => {
                     return (
-                        <div className="newImg_listImg_singleImg">
+                        <div className="newImg_listImg_singleImg" key={index}>
                             <div className="newImg_listImg_singleImg_closeIcon">
-                                <Close onClick={() => handleDropImage(item)} />
+                                <Close onClick={() => handleDropImage(item)} fontSize="small" />
                             </div>
-                            <img src={item} key={index} alt="imagePosthihi" />
+                            <img src={item} key={index} alt="imagePosthihi" loading="lazy" />
                         </div>
                     );
                 })}

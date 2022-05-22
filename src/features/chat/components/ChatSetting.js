@@ -49,8 +49,8 @@ const ChatSetting = ({ setIsOpenSetting, currentConversation }) => {
                 />
             </div>
             <div className="rightPanel__mainSetting">
+                <h4 className="rightPanel__mainSetting__title">Members</h4>
                 <div className="rightPanel__mainSetting__listMember">
-                    <h4>Members</h4>
                     {currentConversation?.members.map((member) => {
                         return <ChatMember member={member} key={member._id} />;
                     })}
