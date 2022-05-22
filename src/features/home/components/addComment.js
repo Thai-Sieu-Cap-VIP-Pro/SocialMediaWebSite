@@ -19,9 +19,9 @@ const AddComment = ({ postId, userPostId }) => {
     (state) => state.home
   );
 
-  useEffect(() => {
-    console.log(editingCmt);
-  }, [editingCmt]);
+  // useEffect(() => {
+  //   console.log(editingCmt);
+  // }, [editingCmt]);
   const dispatch = useDispatch();
   const [showEmoji, setshowEmoji] = useState(false);
   const [inputValue, setinputValue] = useState(editingCmt?.content);
@@ -49,6 +49,7 @@ const AddComment = ({ postId, userPostId }) => {
     }
 
     let notification = {
+      postId,
       userId: userPostId, // cái này là id của thằng cần gửi thông báo tới
       type: "1",
       senderName: current.name,

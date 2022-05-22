@@ -13,8 +13,12 @@ class PostAPI {
 
   likePost = (params) => {
     const url = "http://localhost:3001/api/posts/post/" + params + "/like";
-    console.log(params);
     return axiosClient.patch(url, {});
+  };
+
+  getPostById = (params) => {
+    const url = "http://localhost:3001/api/posts/postbyId";
+    return axiosClient.post(url, params);
   };
 
   unLikePost = (params) => {
@@ -28,8 +32,6 @@ class PostAPI {
   };
 
   addComment = (params) => {
-    console.log(params);
-    // '/:postId/:commentId?'
     let url = "";
     if (params.commentId == null || params.commentId == "") {
       url = "http://localhost:3001/api/comments/" + params.postId + "/";
@@ -47,13 +49,13 @@ class PostAPI {
 
   handleLikeCmt = (params) => {
     const url = "http://localhost:3001/api/comments/ul/" + params;
-    console.log(url);
+
     return axiosClient.put(url, {});
   };
 
   deleteCmt = (params) => {
     const url = "http://localhost:3001/api/comments/" + params.CmtId;
-    console.log(url);
+
     return axiosClient.delete(url, {});
   };
 
@@ -74,7 +76,7 @@ class PostAPI {
 
   getlistLike = (params) => {
     const url = "http://localhost:3001/api/user/users";
-    console.log("Dô tới trong này");
+
     return axiosClient.post(url, params);
   };
 }

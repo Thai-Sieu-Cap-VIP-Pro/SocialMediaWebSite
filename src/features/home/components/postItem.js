@@ -70,6 +70,7 @@ const PostItem = ({ postId, content }) => {
       const action1 = handleLike(id);
       dispatch(action1);
       let notification = {
+        postId,
         userId: userid, // cái này là id của thằng cần gửi thông báo tới
         type: "2",
         senderName: current.name,

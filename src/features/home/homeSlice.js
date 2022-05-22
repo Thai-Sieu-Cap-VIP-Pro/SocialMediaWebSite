@@ -87,6 +87,14 @@ export const getListUser = createAsyncThunk(
   }
 );
 
+export const getPostById = createAsyncThunk(
+  "post/getPostById",
+  async (params) => {
+    const post = await postAPI.getPostById(params);
+    return post;
+  }
+);
+
 const HomeSlice = createSlice({
   name: "home",
   initialState: {
@@ -95,6 +103,7 @@ const HomeSlice = createSlice({
       CmtUserName: "",
     },
     editingCmt: {},
+    post: {},
     listLikeCmt: {
       isShowAlllikeModal: false,
       isLoad: true,
@@ -121,6 +130,7 @@ const HomeSlice = createSlice({
     HideDetailReducer: (state, action) => {
       state.isShowDetail = false;
       state.activePostId = "";
+      state.post = {};
     },
     ShowReportModal: (state, action) => {
       state.isShowReportModal = true;
@@ -166,7 +176,6 @@ const HomeSlice = createSlice({
       state.listPosts = action.payload.posts;
       state.isLoading = false;
       state.loadListPostFail = false;
-      console.log(action.payload);
     },
     //get all comment of post
     [getCommentsByPostID.pending]: (state, action) => {
@@ -208,7 +217,6 @@ const HomeSlice = createSlice({
     [getListRecommendFriends.pending]: (state, action) => {},
     [getListRecommendFriends.rejected]: (state, action) => {},
     [getListRecommendFriends.fulfilled]: (state, action) => {
-      console.log(action.payload);
       state.listRecommend = action.payload.relateUser;
     },
 
@@ -255,6 +263,13 @@ const HomeSlice = createSlice({
     [unFollow.fulfilled]: (state, action) => {
       console.log("Unfollow thành công");
       state.isShowReportModal = false;
+    },
+    //get post by id
+
+    [getPostById.pending]: (state, action) => {},
+    [getPostById.rejected]: (state, action) => {},
+    [getPostById.fulfilled]: (state, action) => {
+      state.post = action.payload.post[0];
     },
 
     [follow.fulfilled]: (state, action) => {

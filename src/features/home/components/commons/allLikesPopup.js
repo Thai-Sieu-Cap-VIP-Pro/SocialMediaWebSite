@@ -8,9 +8,6 @@ import { Spinner } from "react-bootstrap";
 const AlllikesPopup = () => {
   const dispatch = useDispatch();
   const { listLikeCmt } = useSelector((state) => state.home);
-
-  console.log(listLikeCmt);
-
   const HideAlllikesModal = () => {
     const action = HideAllLikesModal();
     dispatch(action);

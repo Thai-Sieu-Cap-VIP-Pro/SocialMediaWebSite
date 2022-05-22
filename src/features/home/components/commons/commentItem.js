@@ -32,11 +32,16 @@ const CommentItem = ({ CmtItem }) => {
   const [isShowCmtOption, setisShowCmtOption] = useState(false);
 
   //get state from redux store
-  const { activePostId, listPosts } = useSelector((state) => state.home);
+  const { activePostId, listPosts, post } = useSelector((state) => state.home);
 
   //variable
   const { reply } = CmtItem;
-  let activePost = listPosts.find((post) => post._id == activePostId);
+  let activePost = {};
+  if (Object.keys(post).length === 0) {
+    activePost = listPosts.find((post) => post._id == activePostId);
+  } else {
+    activePost = post;
+  }
 
   const isDelete =
     CmtItem.user._id == LoginUser._id || LoginUser._id == activePost.user._id;

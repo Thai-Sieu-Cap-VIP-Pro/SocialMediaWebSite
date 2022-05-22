@@ -17,11 +17,15 @@ import AlllikesPopup from "./commons/allLikesPopup";
 const PostComment = () => {
   const dispatch = useDispatch();
 
-  const { isShowDetail, isLoadCmt, activePostId, listPosts } = useSelector(
-    (state) => state.home
-  );
+  const { isShowDetail, isLoadCmt, activePostId, listPosts, post } =
+    useSelector((state) => state.home);
 
-  let activePost = listPosts.find((post) => post._id == activePostId);
+  let activePost = {};
+  if (Object.keys(post).length === 0) {
+    activePost = listPosts.find((post) => post._id == activePostId);
+  } else {
+    activePost = post;
+  }
 
   const HideDetail = () => {
     const action = HideDetailReducer();
@@ -37,7 +41,7 @@ const PostComment = () => {
             prevIcon={<FontAwesomeIcon icon={faCircleChevronLeft} />}
             nextIcon={<FontAwesomeIcon icon={faCircleChevronRight} />}
           >
-            {activePost.images.map((contenItem, index) => {
+            {activePost.images?.map((contenItem, index) => {
               return (
                 <Carousel.Item key={index}>
                   <img

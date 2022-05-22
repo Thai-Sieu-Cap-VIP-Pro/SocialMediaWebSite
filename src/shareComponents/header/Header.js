@@ -20,6 +20,11 @@ import { Logout } from "../../features/auth/authSlice";
 import { socket } from "../../features/home/pages/homePage";
 import { Button } from "react-bootstrap";
 import Usecloseoutsidetoclose from "../../hooks/useCloseOutSideToClose";
+import {
+  getCommentsByPostID,
+  getPostById,
+  ShowDetail,
+} from "../../features/home/homeSlice";
 
 const Header = () => {
   const current = JSON.parse(localStorage.getItem("LoginUser"));
@@ -44,7 +49,7 @@ const Header = () => {
     navigate("/auth/login");
   };
 
-  const createNotificationContent = ({ senderName, type }) => {
+  const createNotificationContent = ({ senderName, type, postId }) => {
     let action = "";
     if (type === "1") {
       action = senderName + " commented bài viết của bạn";
@@ -53,7 +58,10 @@ const Header = () => {
           <ModeComment className="commentIcon" />
           <div className="notificationContent">
             <span className="commentName">{senderName}</span> đã bình luận về
-            bài viết của bạn. <span className="seePost"> Xem bài viết</span>
+            bài viết của bạn.
+            <div className="seePost" onClick={() => showDetail(postId)}>
+              Xem bài viết
+            </div>
           </div>
         </span>
       );
@@ -65,7 +73,9 @@ const Header = () => {
           <div className="notificationContent">
             <span className="commentName">{senderName}</span> đã thích bài viết
             của bạn.
-            <div className="seePost">Xem bài viết</div>
+            <div className="seePost" onClick={() => showDetail(postId)}>
+              Xem bài viết
+            </div>
           </div>
         </span>
       );
@@ -75,9 +85,12 @@ const Header = () => {
   useEffect(async () => {
     socket
       .off("receive_notification")
-      .on("receive_notification", ({ senderName, type }) => {
-        let message = createNotificationContent({ senderName, type });
-        setListNotifications((prev) => [...prev, message]);
+      .on("receive_notification", async ({ senderName, type, postId }) => {
+        console.log(postId);
+        const action = getPostById({ postId });
+        await dispatch(action);
+        let message = createNotificationContent({ senderName, type, postId });
+        setListNotifications((prev) => [message, ...prev]);
       });
   }, [socket]);
 
@@ -88,6 +101,21 @@ const Header = () => {
   let domNode = Usecloseoutsidetoclose(() => {
     setIsShowNotificationPanel(false);
   });
+
+  const showDetail = async (a) => {
+    const action2 = getPostById({ postId: a });
+    await dispatch(action2);
+    //a là post id
+    const action1 = getCommentsByPostID(a);
+    dispatch(action1);
+
+    const action = ShowDetail(a);
+    dispatch(action);
+
+    // const message = { room: a };
+    socket.emit("joinRoom", a);
+  };
+  //phần react
 
   return (
     <header className="header">
