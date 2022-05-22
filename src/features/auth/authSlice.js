@@ -84,9 +84,7 @@ const AuthSlice = createSlice({
       localStorage.removeItem("authTokens");
       localStorage.removeItem("LoginUser");
     },
-    [getPosts.fulfilled]: (state, action) => {
-      console.log(action.payload);
-    },
+    [getPosts.fulfilled]: (state, action) => {},
   },
 });
 
