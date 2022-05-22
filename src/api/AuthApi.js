@@ -6,6 +6,11 @@ class AuthAPI {
         return axiosClient.post(url, params);
     };
 
+    createAccount = (params) => {
+        const url = 'http://localhost:5001/api/auth/register';
+        return axiosClient.post(url, params);
+    };
+
     logout = (params) => {
         localStorage.removeItem('authTokens');
         const url = 'api/auth/lout';

@@ -19,6 +19,14 @@ export const getPosts = createAsyncThunk('post/getPosts', async () => {
     const listPosts = await postAPI.getPosts();
     return listPosts;
 });
+export const Register = createAsyncThunk('auth/Register', async (args, thunkAPI) => {
+    try {
+        const response = await authAPI.createAccount(args);
+        return response;
+    } catch (error) {
+        return thunkAPI.rejectWithValue(`${error}`);
+    }
+});
 
 export const getAllUsers = createAsyncThunk('user/getAll', async (args, thunkAPI) => {
     try {
@@ -76,6 +84,28 @@ const AuthSlice = createSlice({
             state.listUser = action.payload.listUser;
         },
         [getAllUsers.rejected]: (state, action) => {},
+        [Register.pending]: (state) => {
+            state.loading = true;
+            console.log('Đang load');
+        },
+
+        [Register.rejected]: (state, action) => {
+            state.loading = false;
+            console.log('Đăng ký thất bại');
+            state.error = 'Đăng ký thất bại !';
+        },
+
+        [Register.fulfilled]: (state, action) => {
+            state.loading = false;
+            console.log('Đăng ký thành công');
+        },
+
+        [Logout.fulfilled]: (state, action) => {
+            state.isLogin = false;
+            localStorage.removeItem('authTokens');
+            localStorage.removeItem('LoginUser');
+        },
+        [getPosts.fulfilled]: (state, action) => {},
     },
 });
 

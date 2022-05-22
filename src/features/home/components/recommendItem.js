@@ -4,6 +4,7 @@ import { follow, unFollow } from "../homeSlice";
 import UserSumary from "./commons/userSumary";
 
 const RecommendItem = ({ user }) => {
+  const [isShowRecommend, setIsShowRecommend] = useState(false);
   const dispatch = useDispatch();
   const [IsFollow, setIsFollow] = useState(false);
   const handleFollow = (id) => {
@@ -20,16 +21,28 @@ const RecommendItem = ({ user }) => {
     }
   };
 
+  const showRecommend = () => {
+    setIsShowRecommend(true);
+  };
+
+  const hideRecommend = () => {
+    setIsShowRecommend(false);
+  };
+
   return (
     <li key={user._id}>
       <div className="recommend__img">
         <img src={user.avatar} alt="" />
       </div>
-      <div className="recommend__name">
+      <div
+        className="recommend__name"
+        onMouseOver={() => showRecommend()}
+        onMouseLeave={() => hideRecommend()}
+      >
         <a href="">{user?.name}</a>
         <p className="recommend__name_desc">Gợi ý cho bạn</p>
         <div className="recommend__expand">
-          <UserSumary user={user}></UserSumary>
+          {isShowRecommend ? <UserSumary user={user}></UserSumary> : ""}
         </div>
       </div>
       <p className="recommend__folo" onClick={() => handleFollow(user._id)}>

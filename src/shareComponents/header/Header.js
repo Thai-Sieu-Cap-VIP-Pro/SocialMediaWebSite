@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import './Header.scss';
 import {
     FavoriteBorderOutlined,
@@ -10,18 +10,23 @@ import {
     LocalDiningOutlined,
     SearchOutlined,
     NotificationsOutlined,
+    ModeComment,
+    Favorite,
 } from '@material-ui/icons';
+import SingleDestination from '../../features/chat/components/SingleDestination';
 import IMAGES from '../../assets/images/imageStore';
 import { useNavigate, NavLink } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { Logout } from '../../features/auth/authSlice';
-import SingleDestination from '../../features/chat/components/SingleDestination';
+import { socket } from '../../features/home/pages/homePage';
+import { Button } from 'react-bootstrap';
+import Usecloseoutsidetoclose from '../../hooks/useCloseOutSideToClose';
+import { getCommentsByPostID, getPostById, ShowDetail } from '../../features/home/homeSlice';
 
 const Header = () => {
     const current = JSON.parse(localStorage.getItem('LoginUser'));
     const currentUser = useSelector((state) => state.auth.current);
     const listUser = useSelector((state) => state.auth.listUser).filter((user) => user._id !== currentUser._id);
-
     const [bruh, setBruh] = useState([]);
     const [searchValue, setSearchValue] = useState('');
     const dispatch = useDispatch();
@@ -37,11 +42,83 @@ const Header = () => {
         setBruh(searchUser);
     };
 
+    const [listNotifications, setListNotifications] = useState([]);
+    const [isShowNotificationPanel, setIsShowNotificationPanel] = useState(false);
+
+    const handleRead = () => {
+        setListNotifications([]);
+        setIsShowNotificationPanel(false);
+    };
+
     const handleLogout = async () => {
         const action = Logout();
         await dispatch(action);
         navigate('/auth/login');
     };
+
+    const createNotificationContent = ({ senderName, type, postId }) => {
+        let action = '';
+        if (type === '1') {
+            action = senderName + ' commented bài viết của bạn';
+            return (
+                <span className="notificationItem">
+                    <ModeComment className="commentIcon" />
+                    <div className="notificationContent">
+                        <span className="commentName">{senderName}</span> đã bình luận về bài viết của bạn.
+                        <div className="seePost" onClick={() => showDetail(postId)}>
+                            Xem bài viết
+                        </div>
+                    </div>
+                </span>
+            );
+        } else if (type === '2') {
+            action = senderName + ' liked bài viết của bạn';
+            return (
+                <span className="notificationItem">
+                    <Favorite className="tymIcon" />
+                    <div className="notificationContent">
+                        <span className="commentName">{senderName}</span> đã thích bài viết của bạn.
+                        <div className="seePost" onClick={() => showDetail(postId)}>
+                            Xem bài viết
+                        </div>
+                    </div>
+                </span>
+            );
+        }
+    };
+
+    useEffect(async () => {
+        socket.off('receive_notification').on('receive_notification', async ({ senderName, type, postId }) => {
+            console.log(postId);
+            const action = getPostById({ postId });
+            await dispatch(action);
+            let message = createNotificationContent({ senderName, type, postId });
+            setListNotifications((prev) => [message, ...prev]);
+        });
+    }, [socket]);
+
+    const showNotificationPanel = () => {
+        setIsShowNotificationPanel(!isShowNotificationPanel);
+    };
+
+    let domNode = Usecloseoutsidetoclose(() => {
+        setIsShowNotificationPanel(false);
+    });
+
+    const showDetail = async (a) => {
+        const action2 = getPostById({ postId: a });
+        await dispatch(action2);
+        //a là post id
+        const action1 = getCommentsByPostID(a);
+        dispatch(action1);
+
+        const action = ShowDetail(a);
+        dispatch(action);
+
+        // const message = { room: a };
+        socket.emit('joinRoom', a);
+    };
+    //phần react
 
     return (
         <header className="header">
@@ -79,9 +156,36 @@ const Header = () => {
                 <NavLink to="/new">
                     <AddCircleOutline />
                 </NavLink>
-                <NavLink to="/liked">
-                    <NotificationsOutlined />
-                </NavLink>
+                <div className="notification">
+                    {listNotifications.length > 0 ? (
+                        <div className="notification__number">{listNotifications.length}</div>
+                    ) : (
+                        <></>
+                    )}
+
+                    <NotificationsOutlined onClick={showNotificationPanel} />
+                    {isShowNotificationPanel ? (
+                        <div ref={domNode} className="notification__panel">
+                            {listNotifications.length > 0 ? (
+                                <>
+                                    {' '}
+                                    <ul>
+                                        {listNotifications.map((item, index) => {
+                                            return <li key={index}>{item}</li>;
+                                        })}
+                                    </ul>
+                                    <div onClick={handleRead} className="saw">
+                                        Đánh dấu đã đọc
+                                    </div>
+                                </>
+                            ) : (
+                                <div className="noNotification">Không có thông báo nào</div>
+                            )}
+                        </div>
+                    ) : (
+                        <></>
+                    )}
+                </div>
             </div>
             <div className="header__profile">
                 <span>{current.name}</span>
