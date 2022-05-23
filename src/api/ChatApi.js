@@ -54,6 +54,10 @@ const ChatAPI = {
         const url = `http://localhost:3001/api/chat/changeAvatar/${params.id}`;
         return axiosClient.patch(url, { newAvt: params.newAvt });
     },
+    deleteMessage: (params) => {
+        const url = `http://localhost:3001/api/chat/deleteMessage/${params.id}`;
+        return axiosClient.delete(url);
+    },
 };
 
 export default ChatAPI;

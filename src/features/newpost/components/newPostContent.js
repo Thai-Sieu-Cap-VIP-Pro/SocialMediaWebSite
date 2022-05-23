@@ -4,9 +4,11 @@ import IMAGES from '../../../assets/images/imageStore';
 import './newcomponent.scss';
 import { TagFacesOutlined } from '@material-ui/icons';
 import Picker from 'emoji-picker-react';
+import { useSelector } from 'react-redux';
 
 const NewpostContent = ({ valueInput, setValueInput }) => {
     const [showEmoji, setshowEmoji] = useState(false);
+    const currentUser = useSelector((state) => state.auth.current);
 
     console.log(showEmoji);
 
@@ -19,9 +21,9 @@ const NewpostContent = ({ valueInput, setValueInput }) => {
         <div className="newContent">
             <Row>
                 <Col md={{ span: 2, offset: 1 }}>
-                    <img src={IMAGES.avatar} alt="" />
+                    <img src={currentUser.avatar} alt="userAvatar" />
                 </Col>
-                <Col md={{ span: 8 }}>Ngô Gia Thái</Col>
+                <Col md={{ span: 8 }}>{currentUser.name}</Col>
             </Row>
 
             <Row>
