@@ -201,10 +201,13 @@ const ChatContent = ({ isOpenSetting, setIsOpenSetting }) => {
                                 src={
                                     conversations.find((conversation) => conversation._id === params.id)?.avatar
                                         ? conversations.find((conversation) => conversation._id === params.id)?.avatar
-                                        : currentConversation?.members.length === 2
-                                        ? currentConversation?.members.find((item) => item._id !== currentUser._id)
-                                              .avatar
-                                        : currentConversation?.members.length === 1
+                                        : conversations.find((conversation) => conversation._id === params.id)?.members
+                                              .length === 2
+                                        ? conversations
+                                              .find((conversation) => conversation._id === params.id)
+                                              ?.members.find((item) => item._id !== currentUser._id).avatar
+                                        : conversations.find((conversation) => conversation._id === params.id)?.members
+                                              .length === 1
                                         ? 'https://res.cloudinary.com/wjbucloud/image/upload/v1653282748/haha_axj617.jpg'
                                         : 'https://res.cloudinary.com/wjbucloud/image/upload/v1651308420/j2team_girl_8_btpoep.jpg'
                                 }
