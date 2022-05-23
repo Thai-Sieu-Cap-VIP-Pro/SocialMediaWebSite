@@ -21,7 +21,7 @@ const ChatSetting = ({ setIsOpenSetting, currentConversation }) => {
 
     const handleDeleteCon = async () => {
         try {
-            currentConversation.members.length > 1
+            currentConversation?.members.length > 1
                 ? await dispatch(
                       removeUserInCon({
                           conversationId: params.id,
@@ -35,7 +35,7 @@ const ChatSetting = ({ setIsOpenSetting, currentConversation }) => {
                       .unwrap()
                       .then((resultValue) => console.log(resultValue))
                       .catch((rejectedValue) => console.log(rejectedValue));
-            await socket.emit('sendNotice', currentConversation.members);
+            await socket.emit('sendNotice', currentConversation?.members);
             navigate('/messenger');
         } catch (error) {
             console.log({ error });
@@ -61,7 +61,7 @@ const ChatSetting = ({ setIsOpenSetting, currentConversation }) => {
     const handleSubmit = async () => {
         try {
             const result = await dispatch(changeConversationName({ id: params.id, newName: text })).unwrap();
-            socket.emit('sendNotice', currentConversation.members);
+            socket.emit('sendNotice', currentConversation?.members);
             setText('');
             setIsTyping(false);
             setIsOpenSetting(false);
@@ -80,7 +80,7 @@ const ChatSetting = ({ setIsOpenSetting, currentConversation }) => {
         const url = await uploadImage(e.target.files[0]);
         const result = await dispatch(changeConversationAvatar({ id: params.id, newAvt: url })).unwrap();
         console.log(result);
-        socket.emit('sendNotice', currentConversation.members);
+        socket.emit('sendNotice', currentConversation?.members);
         setIsOpenSetting(false);
     };
 
@@ -94,7 +94,7 @@ const ChatSetting = ({ setIsOpenSetting, currentConversation }) => {
                     onClick={() => setIsOpenSetting(false)}
                 />
             </div>
-            {currentConversation.members.length > 2 ? (
+            {currentConversation?.members.length > 2 ? (
                 <div>
                     <div className="rightPanel__changeGroupPhoto">
                         <div className="rightPanel__changeGroupPhoto__image">
