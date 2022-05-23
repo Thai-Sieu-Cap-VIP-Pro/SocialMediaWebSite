@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import CommentItem from "./commons/commentItem";
 import { useSelector, useDispatch } from "react-redux";
 import { getCommentsByPostID } from "../homeSlice";
-import { socket } from "../pages/homePage";
+import { socket } from "../../../App";
 
 const ListComment = () => {
   const dispach = useDispatch();

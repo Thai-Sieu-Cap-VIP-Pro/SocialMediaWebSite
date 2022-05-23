@@ -5,7 +5,6 @@ import {
   Favorite,
   BookmarkBorderOutlined,
 } from "@material-ui/icons";
-import socket from "./postItem";
 import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Col, Row } from "react-bootstrap";
@@ -15,6 +14,7 @@ import {
   handleUnLike,
   ShowDetail,
 } from "../homeSlice";
+import { socket } from "../../../App";
 
 const ReactIcon = ({ postId }) => {
   const { listPosts } = useSelector((state) => state.home);
