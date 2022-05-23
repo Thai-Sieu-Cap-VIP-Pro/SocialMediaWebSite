@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
 
-const Message = ({ message, handleImagePopup, handleTymMessage, handleUnTymMessage }) => {
+const Message = ({ message, handleImagePopup, handleTymMessage, handleUnTymMessage, handleDeleteMessage }) => {
     const currentUser = useSelector((state) => state.auth.current);
     const params = useParams();
     const currentConversation = useSelector((state) => state.chat.conversations).find((item) => item._id === params.id);
@@ -28,7 +28,7 @@ const Message = ({ message, handleImagePopup, handleTymMessage, handleUnTymMessa
                         message.sender._id === currentUser._id ? 'mine' : ''
                     }`}
                 >
-                    {message.content.text}
+                    {message.content.text === '' ? `${message.sender.name} vừa gỡ một tin nhắn` : message.content.text}
                 </p>
             )}
 
@@ -83,7 +83,9 @@ const Message = ({ message, handleImagePopup, handleTymMessage, handleUnTymMessa
                     <Favorite htmlColor="red" onClick={() => handleUnTymMessage(message._id, currentUser._id)} />
                 )}
                 <Reply />
-                <DeleteOutline />
+                {message.sender._id === currentUser._id && (
+                    <DeleteOutline onClick={() => handleDeleteMessage(message._id)} />
+                )}
             </div>
         </div>
     );

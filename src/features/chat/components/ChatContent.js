@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFaceGrinWide, faImage, faHeart, faPaperPlane } from '@fortawesome/free-regular-svg-icons';
 import { InfoOutlined, Call } from '@material-ui/icons';
-import { createMessage, getMessageInCons, tymMessage, unTymMessage } from '../ChatSlice';
+import { createMessage, deleteMessage, getMessageInCons, tymMessage, unTymMessage } from '../ChatSlice';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { checkText } from 'smile2emoji';
@@ -93,6 +93,23 @@ const ChatContent = ({ isOpenSetting, setIsOpenSetting }) => {
         };
     }, [socket]);
 
+    useEffect(() => {
+        socket.on('recieveDeleteMsg', (mess) => {
+            setData((prev) => {
+                return prev.map((item) => {
+                    if (item._id === mess._id) {
+                        item.content.text = '';
+                    }
+                    return item;
+                });
+            });
+        });
+        return () => {
+            socket.off('recieveDeleteMsg');
+            console.log('client Off');
+        };
+    }, [socket]);
+
     const handleTymMessage = async (messageId, userId) => {
         try {
             const result = await dispatch(tymMessage({ messageId, userId })).unwrap();
@@ -155,6 +172,16 @@ const ChatContent = ({ isOpenSetting, setIsOpenSetting }) => {
             setIsTyping(false);
         } catch (error) {
             console.log(error);
+        }
+    };
+
+    const handleDeleteMessage = async (id) => {
+        try {
+            const result = await dispatch(deleteMessage({ id })).unwrap();
+            socket.emit('sendDeleteMsg', result.deletedMessage);
+            socket.emit('sendNotice', conversations.find((conversation) => conversation._id === params.id)?.members);
+        } catch (error) {
+            throw error;
         }
     };
 
@@ -249,6 +276,7 @@ const ChatContent = ({ isOpenSetting, setIsOpenSetting }) => {
                                 handleImagePopup={handleImagePopup}
                                 handleTymMessage={handleTymMessage}
                                 handleUnTymMessage={handleUnTymMessage}
+                                handleDeleteMessage={handleDeleteMessage}
                             />
                         );
                     })}
@@ -267,15 +295,6 @@ const ChatContent = ({ isOpenSetting, setIsOpenSetting }) => {
                     )}
                 </div>
                 {showEmojiPicker && (
-                    // <Picker
-                    //     style={{ position: 'absolute', bottom: 0, left: 0, zIndex: 990 }}
-                    //     onEmojiClick={handleEmojiClick}
-                    //     // pickerStyle={{
-                    //     //     width: 'auto',
-                    //     //     outerHeight: '100%',
-                    //     //     innerHeight: '100px',
-                    //     // }}
-                    // ></Picker>
                     <div
                         style={{
                             position: 'absolute',
