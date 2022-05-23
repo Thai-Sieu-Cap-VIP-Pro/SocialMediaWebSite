@@ -19,8 +19,8 @@ export const unFollow = createAsyncThunk('user/unFollow', async (params) => {
   return unFollowUser
 })
 
-export const getPostsById = createAsyncThunk('user/getPostsById', async (params) => {
-  const posts = await userAPI.getPostsById(params)
+export const getPostsByUserId = createAsyncThunk('user/getPostsById', async (params) => {
+  const posts = await userAPI.getPostsByUserId(params)
   console.log(posts)
   return posts
 })
@@ -61,13 +61,13 @@ const UserSlice = createSlice({
     [unFollow.rejected]: (state, action) => {
       state.isLoading = false
     },
-    [getPostsById.pending]: (state) => {
+    [getPostsByUserId.pending]: (state) => {
       state.isLoading = true
     },
-    [getPostsById.fulfilled]: (state, action) => {
+    [getPostsByUserId.fulfilled]: (state, action) => {
       state.posts = action.payload.listPost
     },
-    [getPostsById.rejected]: (state, action) => {
+    [getPostsByUserId.rejected]: (state, action) => {
       state.isLoading = false
     }
   },

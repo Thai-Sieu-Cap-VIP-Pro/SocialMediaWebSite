@@ -17,8 +17,8 @@ class PostAPI {
   };
 
   getPostById = (params) => {
-    const url = "http://localhost:3001/api/posts/postbyId";
-    return axiosClient.post(url, params);
+    const url = `http://localhost:3001/api/posts/${params}`;
+    return axiosClient.get(url, {});
   };
 
   unLikePost = (params) => {
@@ -32,6 +32,7 @@ class PostAPI {
   };
 
   addComment = (params) => {
+    console.log(params)
     let url = "";
     if (params.commentId == null || params.commentId == "") {
       url = "http://localhost:3001/api/comments/" + params.postId + "/";

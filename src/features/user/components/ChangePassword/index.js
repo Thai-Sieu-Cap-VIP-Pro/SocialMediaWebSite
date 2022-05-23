@@ -1,7 +1,9 @@
 import React from 'react';
 
 import Form from 'react-bootstrap/Form';
-import { Row, Col, Container } from 'react-bootstrap';
+import { Row, Col, Container, Button } from 'react-bootstrap';
+
+import './styles.scss'
 
 const ChangePassword = () => {
   return (
@@ -54,6 +56,7 @@ const ChangePassword = () => {
           </Row>
         </Container>
       </Form.Group>
+      <Button variant='primary' className='submit-btn' type='submit'>Save</Button>
     </Form>
   );
 };

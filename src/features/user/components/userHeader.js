@@ -12,7 +12,6 @@ const UserHeader = () => {
 
   const UserInfo = useSelector((state) => state.user.userInfo);
   const posts = useSelector((state) => state.user.posts)
-  console.log(UserInfo);
 
   const { name, avatar } = UserInfo;
   const totalFollower = UserInfo.followers?.length;
@@ -86,9 +85,9 @@ const UserHeader = () => {
                   </div>
                 </div>
               </div>
-              <div className="p-2">
+              {/* <div className="p-2">
                 <div>TT</div>
-              </div>
+              </div> */}
             </div>
           </div>
         </div>

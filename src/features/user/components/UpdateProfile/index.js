@@ -4,6 +4,7 @@ import Form from 'react-bootstrap/Form';
 import { Row, Col, Container, Button } from 'react-bootstrap';
 import { useSelector, useDispatch } from 'react-redux';
 
+import './styles.scss'
 
 import { updateUser } from '../../profileSlice';
 
@@ -144,7 +145,7 @@ const UpdateProfile = () => {
           </Row>
         </Container>
       </Form.Group>
-      <Button variant="primary" type="submit">
+      <Button variant="primary" className="submit-btn" type="submit">
         Save
       </Button>
     </Form>

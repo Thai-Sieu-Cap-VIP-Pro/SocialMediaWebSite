@@ -87,7 +87,7 @@ const Header = () => {
       .off("receive_notification")
       .on("receive_notification", async ({ senderName, type, postId }) => {
         console.log(postId);
-        const action = getPostById({ postId });
+        const action = getPostById(postId);
         await dispatch(action);
         let message = createNotificationContent({ senderName, type, postId });
         setListNotifications((prev) => [message, ...prev]);
@@ -102,18 +102,18 @@ const Header = () => {
     setIsShowNotificationPanel(false);
   });
 
-  const showDetail = async (a) => {
-    const action2 = getPostById({ postId: a });
+  const showDetail = async (id) => {
+    const action2 = getPostById(id);
     await dispatch(action2);
     //a là post id
-    const action1 = getCommentsByPostID(a);
+    const action1 = getCommentsByPostID(id);
     dispatch(action1);
 
-    const action = ShowDetail(a);
+    const action = ShowDetail(id);
     dispatch(action);
 
     // const message = { room: a };
-    socket.emit("joinRoom", a);
+    socket.emit("joinRoom", id);
   };
   //phần react
 

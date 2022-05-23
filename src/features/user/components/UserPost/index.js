@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { Container, Row, Col } from "react-bootstrap";
 import { useSelector, useDispatch } from "react-redux";
-import { getPostsById } from "../../profileSlice";
+import { getPostsByUserId } from "../../profileSlice";
 import PostItem from "../PostItem";
 
 import "./styles.scss"
@@ -10,9 +10,8 @@ const UserPost = () => {
     const dispatch = useDispatch()
     const activeId = useSelector((state) => state.user.activeId)
     const posts = useSelector(state => state.user.posts)
-    console.log(posts)
     useEffect( async () => {
-        const action = getPostsById(activeId);
+        const action = getPostsByUserId(activeId);
         await dispatch(action)
     }, [])
 

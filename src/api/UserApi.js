@@ -18,8 +18,8 @@ class UserAPI {
     const url = 'http://localhost:3001/api/list-followings';
     return axiosClient.get(url, params);
   };
-  getPostsById = (params) => {
-    const url = `http://localhost:3001/api/posts/${params}`;
+  getPostsByUserId = (params) => {
+    const url = `http://localhost:3001/api/posts/user/${params}`;
     return axiosClient.get(url, params);
   };
 }

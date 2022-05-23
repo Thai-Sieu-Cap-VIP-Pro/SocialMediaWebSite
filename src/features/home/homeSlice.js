@@ -91,6 +91,7 @@ export const getPostById = createAsyncThunk(
   "post/getPostById",
   async (params) => {
     const post = await postAPI.getPostById(params);
+    console.log(post)
     return post;
   }
 );

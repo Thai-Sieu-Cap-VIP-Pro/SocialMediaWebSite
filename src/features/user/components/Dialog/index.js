@@ -49,14 +49,14 @@ const Dialog = ({ showModal, setShowModal }) => {
           </Row>
         </Tab.Container>
       </Modal.Body>
-      <Modal.Footer>
+      {/* <Modal.Footer>
         <Button variant="secondary" onClick={handleCloseDialog}>
           Cancel
         </Button>
         <Button variant="secondary" type="submit">
           Save
         </Button>
-      </Modal.Footer>
+      </Modal.Footer> */}
     </Modal>
   );
 };
