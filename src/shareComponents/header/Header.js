@@ -117,6 +117,17 @@ const Header = () => {
     }
   };
 
+  useEffect(async () => {
+    socket
+      .off("receive_notification")
+      .on("receive_notification", async ({ senderName, type, postId }) => {
+        console.log(postId);
+        const action = getPostById(postId);
+        await dispatch(action);
+        let message = createNotificationContent({ senderName, type, postId });
+        setListNotifications((prev) => [message, ...prev]);
+      });
+  }, [socket]);
 
     useEffect(async () => {
         socket.off('receive_notification').on('receive_notification', async ({ senderName, type, postId }) => {

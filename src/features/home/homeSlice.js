@@ -80,6 +80,7 @@ export const createPost = createAsyncThunk('post/createNew', async (args, thunkA
 
 export const getPostById = createAsyncThunk('post/getPostById', async (params) => {
     const post = await postAPI.getPostById(params);
+    console.log(post)
     return post;
 });
 
