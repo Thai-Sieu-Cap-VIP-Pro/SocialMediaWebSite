@@ -50,7 +50,7 @@ const ChatContent = ({ isOpenSetting, setIsOpenSetting }) => {
   // useEffect
   useEffect(() => {
     if (ref.current) {
-      ref.current.scrollTop = ref.current.scrollTopMax;
+      ref.current.scrollTop = ref.current.scrollHeight;
     }
   }, [data, socket, image]);
 

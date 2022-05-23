@@ -19,7 +19,7 @@ const UserSumary = ({ user }) => {
 
     let notification = {
       userId: id, // cái này là id của thằng cần gửi thông báo tới
-      type: "3",
+      type: 3,
       senderName: current.name,
     };
     socket.emit("send_notificaton", notification);

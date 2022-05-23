@@ -1,16 +1,16 @@
-import React from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { Container, Row, Col } from 'react-bootstrap';
+import React from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { Container, Row, Col } from "react-bootstrap";
 import {
   getCommentsByPostID,
   getPostById,
   ShowDetail,
-} from '../../../home/homeSlice';
+} from "../../../home/homeSlice";
 
-import { socket } from '../../../home/pages/homePage';
-import PostComment from '../../../home/components/postComment';
+import PostComment from "../../../home/components/postComment";
 
-import './styles.scss';
+import "./styles.scss";
+import { socket } from "../../../../App";
 
 const PostItem = ({ post }) => {
   const dispatch = useDispatch();
@@ -31,7 +31,7 @@ const PostItem = ({ post }) => {
     dispatch(dialogAction);
 
     //socket
-    socket.emit('joinRoom', id);
+    socket.emit("joinRoom", id);
   };
 
   return (
