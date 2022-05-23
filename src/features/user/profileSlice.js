@@ -1,8 +1,8 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import userAPI from '../../api/UserApi';
 
-export const getUserInfo = createAsyncThunk('user/getUserInfo', async (params) => {
-  const userInfo = await userAPI.getUserInfo(params)
+export const getUserById = createAsyncThunk('user/getUserInfo', async (params) => {
+  const userInfo = await userAPI.getUserById(params)
   return userInfo
 })
 
@@ -19,8 +19,8 @@ export const unFollow = createAsyncThunk('user/unFollow', async (params) => {
   return unFollowUser
 })
 
-export const getAllPost = createAsyncThunk('user/getAllPost', async (params) => {
-  const posts = await userAPI.getAllPost(params)
+export const getPostsByUserId = createAsyncThunk('user/getPostsById', async (params) => {
+  const posts = await userAPI.getPostsByUserId(params)
   console.log(posts)
   return posts
 })
@@ -28,25 +28,26 @@ export const getAllPost = createAsyncThunk('user/getAllPost', async (params) => 
 const UserSlice = createSlice({
   name: 'user',
   initialState: {
+    activeId: "62794b3efab692cd57d1428c",
     userInfo: {},
     posts: [],
     isLoading: false,
   },
   extraReducers: {
-    [getUserInfo.pending]: (state) => {
+    [getUserById.pending]: (state) => {
       state.isLoading = true
     },
-    [getUserInfo.fulfilled]: (state, action) => {
+    [getUserById.fulfilled]: (state, action) => {
       state.userInfo = action.payload.userInfo
     },
-    [getUserInfo.rejected]: (state, action) => {
+    [getUserById.rejected]: (state, action) => {
       state.isLoading = false
     },
     [updateUser.pending]: (state) => {
       state.isLoading = true;
     },
     [updateUser.fulfilled]: (state, action) => {
-      state.userInfo = action.payload.userInfo;
+      state.userInfo = action.payload.user;
     },
     [updateUser.rejected]: (state, action) => {
       state.isLoading = false;
@@ -60,13 +61,13 @@ const UserSlice = createSlice({
     [unFollow.rejected]: (state, action) => {
       state.isLoading = false
     },
-    [getAllPost.pending]: (state) => {
+    [getPostsByUserId.pending]: (state) => {
       state.isLoading = true
     },
-    [getAllPost.fulfilled]: (state, action) => {
+    [getPostsByUserId.fulfilled]: (state, action) => {
       state.posts = action.payload.listPost
     },
-    [getAllPost.rejected]: (state, action) => {
+    [getPostsByUserId.rejected]: (state, action) => {
       state.isLoading = false
     }
   },

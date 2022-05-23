@@ -1,12 +1,14 @@
 import axiosClient from "./AxiosClient";
 
 class UserAPI {
+
   getUserInfo = (params) => {
     const url = "http://localhost:3001/api/user";
     return axiosClient.get(url, params);
   };
   updateUser = (params) => {
     const url = "http://localhost:3001/api/user/update";
+
     return axiosClient.post(url, params);
   };
   unFollow = (params) => {
@@ -15,6 +17,7 @@ class UserAPI {
     return axiosClient.patch(url, {});
   };
   getListFollowings = (params) => {
+
     const url = "http://localhost:3001/api/list-followings";
     return axiosClient.get(url, params);
   };
@@ -26,6 +29,7 @@ class UserAPI {
     const url = "http://localhost:3001/api/user/users/getAllUsers";
     return axiosClient.get(url);
   };
+
 }
 
 const userAPI = new UserAPI();

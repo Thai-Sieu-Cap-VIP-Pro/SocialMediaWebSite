@@ -121,7 +121,9 @@ const Header = () => {
       .off("receive_notification")
       .on("receive_notification", async ({ senderName, type, postId }) => {
         console.log(postId);
+
         const action = getPostById({ postId });
+
         await dispatch(action);
         let message = createNotificationContent({ senderName, type, postId });
         setListNotifications((prev) => [message, ...prev]);

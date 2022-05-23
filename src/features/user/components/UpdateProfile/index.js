@@ -4,6 +4,8 @@ import Form from 'react-bootstrap/Form';
 import { Row, Col, Container, Button } from 'react-bootstrap';
 import { useSelector, useDispatch } from 'react-redux';
 
+import './styles.scss'
+
 import { updateUser } from '../../profileSlice';
 
 import useImageUpload from '../../../../hooks/useImageUpload';
@@ -11,12 +13,13 @@ import useImageUpload from '../../../../hooks/useImageUpload';
 const UpdateProfile = () => {
   const dispatch = useDispatch();
   const uploadImage = useImageUpload();
-
-  const UserState = useSelector((state) => state.auth.current);
-
+  
+  const UserState = useSelector((state) => state.user.userInfo);
+  
+  const [imageAvt, setImageAvt] = useState("")
   const [userInfo, setUserInfo] = useState(UserState);
 
-  const { name, email, mobile, role } = userInfo;
+  const { name, email, mobile, role, avatar } = userInfo;
 
   const onChangeUserInfo = (e) => {
     setUserInfo({ ...userInfo, [e.target.name]: e.target.value });
@@ -24,14 +27,14 @@ const UpdateProfile = () => {
 
   const handleFileChange = async (e) => {
     const image = await uploadImage(e.target.files[0]);
-    console.log(image);
+    setImageAvt(image);
   };
 
   const onSubmit = async (e) => {
-    e.preventDefault()
-    console.log(userInfo)
-    const action = updateUser(userInfo)
-    await dispatch(action)
+    e.preventDefault();
+    console.log(userInfo);
+    const action = updateUser({...userInfo, avatar: imageAvt});
+    await dispatch(action);
   };
 
   return (
@@ -85,7 +88,7 @@ const UpdateProfile = () => {
               <Form.Label>Email</Form.Label>
             </Col>
             <Col sm={10}>
-              <Form.Control
+              <Form.Control disabled
                 className="w-100"
                 type="text"
                 name="email"
@@ -127,17 +130,24 @@ const UpdateProfile = () => {
               <Form.Label>Gender</Form.Label>
             </Col>
             <Col sm={10}>
-              <Form.Select aria-label="">
+              <Form.Control
+                as="select"
+                value={role}
+                name="role"
+                onChange={onChangeUserInfo}
+              >
                 <option value="Male">Male</option>
                 <option value="Female">Female</option>
                 <option value="Other">Other</option>
-              </Form.Select>
+              </Form.Control>
               <Form.Text className="text-muted">Choose your gender</Form.Text>
             </Col>
           </Row>
         </Container>
       </Form.Group>
-      <Button variant='primary' type='submit'>Save</Button>
+      <Button variant="primary" className="submit-btn" type="submit">
+        Save
+      </Button>
     </Form>
   );
 };

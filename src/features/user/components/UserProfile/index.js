@@ -1,17 +1,22 @@
 import React, { useEffect } from 'react';
-import { useDispatch } from 'react-redux';
-import { getUserInfo } from '../../profileSlice';
+import { useDispatch, useSelector } from 'react-redux';
+import { getUserById } from '../../profileSlice';
 import UserHeader from '../userHeader';
+import UserPost from '../UserPost';
 
 const UserProfile = () => {
+
+  const activeId = useSelector(state => state.user.activeId)
+
   const dispatch = useDispatch();
   useEffect(async () => {
-    const action = getUserInfo();
+    const action = getUserById(activeId);
     await dispatch(action);
   }, []);
   return (
     <>
       <UserHeader />
+      <UserPost />
     </>
   );
 };
