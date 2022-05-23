@@ -37,12 +37,13 @@ const ChatContent = ({ isOpenSetting, setIsOpenSetting }) => {
 
     const ref = useRef();
 
-    // useEffect
-    useEffect(() => {
-        if (ref.current) {
-            ref.current.scrollTop = ref.current.scrollTopMax;
-        }
-    }, [data, socket, image]);
+  // useEffect
+  useEffect(() => {
+    if (ref.current) {
+      ref.current.scrollTop = ref.current.scrollHeight;
+    }
+  }, [data, socket, image]);
+
 
     useEffect(() => {
         getMessagesInCons();

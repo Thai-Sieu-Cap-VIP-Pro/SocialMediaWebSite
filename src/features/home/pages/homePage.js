@@ -6,7 +6,11 @@ import PostComment from "../components/postComment";
 import PostItem from "../components/postItem";
 import ReportModal from "../components/reportModal";
 import { useDispatch, useSelector } from "react-redux";
-import { getListRecommendFriends, getPosts } from "../homeSlice";
+import {
+  getListRecommendFriends,
+  getNotification,
+  getPosts,
+} from "../homeSlice";
 import "./homePage.scss";
 import ErrorFetch from "../../../shareComponents/fetchfail/error";
 
@@ -29,24 +33,20 @@ const HomePage = () => {
     listRecommend,
   } = useSelector((state) => state.home);
 
+  console.log(listPosts);
+
   socket.emit("joinNotificationRoom", current._id);
 
   useEffect(() => {
     let action = getPosts();
     dispatch(action);
 
+    let action2 = getNotification();
+    dispatch(action2);
+
     let action1 = getListRecommendFriends();
     dispatch(action1);
   }, []);
-
-  // useEffect(async () => {
-  //   socket.off("receive_notification").on("receive_notification", (data) => {
-  //     console.log(data.content);
-  //     //  setToastMessage(data.content);
-  //     // console.log(toastMessage);
-  //     toggleShowB();
-  //   });
-  // }, [socket]);
 
   return (
     <>

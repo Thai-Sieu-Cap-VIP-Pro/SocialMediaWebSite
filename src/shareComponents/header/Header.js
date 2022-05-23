@@ -27,6 +27,7 @@ import {
 } from "../../features/home/homeSlice";
 import SingleDestination from "../../features/chat/components/SingleDestination";
 import { socket } from "../../App";
+import NotificationItem from "./notificationItem";
 
 const Header = () => {
   const current = JSON.parse(localStorage.getItem("LoginUser"));
@@ -34,6 +35,23 @@ const Header = () => {
   const listUser = useSelector((state) => state.auth.listUser).filter(
     (user) => user._id !== currentUser._id
   );
+
+  const { listNotification } = useSelector((state) => state.home);
+
+  const [listNotifications, setListNotifications] = useState([]);
+
+  useEffect(() => {
+    listNotification.forEach((item) => {
+      const obj = {
+        senderName: item.sender.name,
+        type: item.notiType,
+        postId: item.desId,
+      };
+
+      setListNotifications((prev) => [...prev, obj]);
+    });
+  }, []);
+
   const [bruh, setBruh] = useState([]);
   const [searchValue, setSearchValue] = useState("");
   const dispatch = useDispatch();
@@ -49,13 +67,7 @@ const Header = () => {
     setBruh(searchUser);
   };
 
-  const [listNotifications, setListNotifications] = useState([]);
   const [isShowNotificationPanel, setIsShowNotificationPanel] = useState(false);
-
-  const handleRead = () => {
-    setListNotifications([]);
-    setIsShowNotificationPanel(false);
-  };
 
   const handleLogout = async () => {
     const action = Logout();
@@ -63,70 +75,18 @@ const Header = () => {
     navigate("/auth/login");
   };
 
-  const createNotificationContent = ({ senderName, type, postId }) => {
-    let action = "";
-    if (type === "1") {
-      return (
-        <span className="notificationItem">
-          <ModeComment className="commentIcon" />
-          <div className="notificationContent">
-            <span className="commentName">{senderName}</span> đã bình luận về
-            bài viết của bạn.
-            <div className="seePost" onClick={() => showDetail(postId)}>
-              Xem bài viết
-            </div>
-          </div>
-        </span>
-      );
-    } else if (type === "2") {
-      return (
-        <span className="notificationItem">
-          <Favorite className="tymIcon" />
-          <div className="notificationContent">
-            <span className="commentName">{senderName}</span> đã thích bài viết
-            của bạn.
-            <div className="seePost" onClick={() => showDetail(postId)}>
-              Xem bài viết
-            </div>
-          </div>
-        </span>
-      );
-    } else if (type === "3") {
-      return (
-        <span className="notificationItem">
-          <PersonAdd className="followIcon" />
-          <div className="notificationContent">
-            <span className="commentName">{senderName}</span> vừa follow bạn.
-          </div>
-        </span>
-      );
-    } else if (type === "4") {
-      return (
-        <span className="notificationItem">
-          <ModeComment className="commentIcon" />
-          <div className="notificationContent">
-            <span className="commentName">{senderName}</span> vừa phản hồi về
-            bình luận của bạn.
-            <div className="seePost" onClick={() => showDetail(postId)}>
-              Xem bài viết
-            </div>
-          </div>
-        </span>
-      );
-    }
-  };
-
   useEffect(async () => {
     socket
       .off("receive_notification")
       .on("receive_notification", async ({ senderName, type, postId }) => {
-        console.log(postId);
-
         const action = getPostById({ postId });
-
         await dispatch(action);
-        let message = createNotificationContent({ senderName, type, postId });
-        setListNotifications((prev) => [message, ...prev]);
+        const obj = {
+          senderName,
+          type,
+          postId,
+        };
+        setListNotifications((prev) => [obj, ...prev]);
       });
   }, [socket]);
 
@@ -203,15 +163,11 @@ const Header = () => {
             <div ref={domNode} className="notification__panel">
               {listNotifications.length > 0 ? (
                 <>
-                  {" "}
                   <ul>
                     {listNotifications.map((item, index) => {
-                      return <li key={index}>{item}</li>;
+                      return <NotificationItem info={item} />;
                     })}
                   </ul>
-                  <div onClick={handleRead} className="saw">
-                    Đánh dấu đã đọc
-                  </div>
                 </>
               ) : (
                 <div className="noNotification">Không có thông báo nào</div>

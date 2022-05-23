@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Container, Row, Col } from 'react-bootstrap';
@@ -40,6 +41,7 @@ const PostItem = ({ post }) => {
                     </Col>
                 </Row>
                 {/* <Row>
+
           <Col>{post.content}</Col>
         </Row> */}
             </Col>

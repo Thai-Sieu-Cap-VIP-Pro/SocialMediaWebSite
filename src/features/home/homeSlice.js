@@ -1,4 +1,5 @@
 import { createSlice, createAsyncThunk, current } from "@reduxjs/toolkit";
+import NotificationAPI from "../../api/NotificationApi";
 import postAPI from "../../api/PostApi";
 
 //hàm lấy tất cả bài post khi vào trang chủ
@@ -103,8 +104,23 @@ export const getPostById = createAsyncThunk(
   "post/getPostById",
   async (params) => {
     const post = await postAPI.getPostById(params);
-    console.log(post)
+    console.log(post);
     return post;
+  }
+);
+
+export const getNotification = createAsyncThunk(
+  "notification/get",
+  async () => {
+    const listNotification = await NotificationAPI.getNotification();
+    return listNotification;
+  }
+);
+
+export const createNotification = createAsyncThunk(
+  "notification/create",
+  async (params) => {
+    const listNotification = await NotificationAPI.createNotification(params);
   }
 );
 
@@ -123,6 +139,7 @@ const HomeSlice = createSlice({
       isLoad: true,
       listUsers: [],
     },
+    listNotification: [],
     isLoadingAddCmt: false,
     likepost: false,
     listPosts: [],
@@ -286,6 +303,21 @@ const HomeSlice = createSlice({
     [getPostById.rejected]: (state, action) => {},
     [getPostById.fulfilled]: (state, action) => {
       state.post = action.payload.post[0];
+    },
+
+    //get list notification
+    [getNotification.pending]: (state, action) => {},
+    [getNotification.rejected]: (state, action) => {},
+    [getNotification.fulfilled]: (state, action) => {
+      state.listNotification = action.payload.notifications;
+    },
+
+    //create notification
+    [createNotification.pending]: (state, action) => {},
+    [createNotification.rejected]: (state, action) => {},
+    [createNotification.fulfilled]: (state, action) => {
+      //state.listNotification = action.payload;
+      console.log("Tạo notification thành công");
     },
 
     [follow.fulfilled]: (state, action) => {

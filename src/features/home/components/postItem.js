@@ -4,6 +4,7 @@ import { Carousel, Col, Row } from "react-bootstrap";
 import "./post.scss";
 import { useDispatch, useSelector } from "react-redux";
 import {
+  createNotification,
   getCommentsByPostID,
   getListUser,
   handleLike,
@@ -72,10 +73,22 @@ const PostItem = ({ postId, content }) => {
       let notification = {
         postId,
         userId: userid, // cái này là id của thằng cần gửi thông báo tới
-        type: "2",
+        type: 2,
         senderName: current.name,
       };
       socket.emit("send_notificaton", notification);
+
+      //tham số truyền vào khi tạo comment
+      const paramsCreate = {
+        receiver: userid,
+        notiType: 2,
+        desId: postId,
+      };
+
+      console.log(paramsCreate);
+
+      const action = createNotification(paramsCreate);
+      await dispatch(action);
     }
 
     setisLike(!isLike);
