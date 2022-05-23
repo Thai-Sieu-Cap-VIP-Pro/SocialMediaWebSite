@@ -3,16 +3,26 @@ import { Button, Col, Row } from "react-bootstrap";
 import { useDispatch } from "react-redux";
 import IMAGES from "../../../../assets/images/imageStore";
 import { follow } from "../../homeSlice";
+import { socket } from "../../pages/homePage";
 
 const UserSumary = ({ user }) => {
   const dispatch = useDispatch();
   const [IsFollow, setIsFollow] = useState(false);
+  const current = JSON.parse(localStorage.getItem("LoginUser"));
+
+  //hàm xử lý khi nhấn follow
   const handleFollow = (id) => {
     console.log(id);
     const action = follow(id);
     // dispatch(action);
-    console.log("setisfolllows");
     setIsFollow(true);
+
+    let notification = {
+      userId: id, // cái này là id của thằng cần gửi thông báo tới
+      type: "3",
+      senderName: current.name,
+    };
+    socket.emit("send_notificaton", notification);
   };
   return (
     <div className="sumary">

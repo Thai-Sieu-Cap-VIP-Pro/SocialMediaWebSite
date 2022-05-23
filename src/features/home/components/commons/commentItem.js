@@ -53,8 +53,8 @@ const CommentItem = ({ CmtItem }) => {
     await dispatch(action).unwrap();
   };
 
-  const HandleReply = (cmtId, userName) => {
-    const action = SetReplyCmd({ cmtId, userName });
+  const HandleReply = (cmtId, userName, userId) => {
+    const action = SetReplyCmd({ cmtId, userName, userId });
     dispatch(action);
   };
 
@@ -134,7 +134,9 @@ const CommentItem = ({ CmtItem }) => {
 
             <p
               className="comment_content_interact_response"
-              onClick={() => HandleReply(CmtItem._id, CmtItem.user.name)}
+              onClick={() =>
+                HandleReply(CmtItem._id, CmtItem.user.name, CmtItem.user._id)
+              }
             >
               Trả lời
             </p>

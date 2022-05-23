@@ -38,6 +38,51 @@ const AddComment = ({ postId, userPostId }) => {
       postId: postId,
       commentId: replingCmt.CmtID,
     };
+    console.log(params);
+    //kiểm tra xem thằng đc phản hồi có phải là thằng đăng post hay không
+    //thằng đc phản hồi là replingCmt.CmtUserId
+    //thằng đăng post userPostId
+
+    if (
+      params.commentId != null &&
+      params.commentId != "" &&
+      params.commentId != undefined
+    ) {
+      //tiếp tục kiểu tra xem
+      if (replingCmt.CmtUserId == userPostId) {
+        let notification1 = {
+          postId,
+          userId: replingCmt.CmtUserId, // cái này là id của thằng cần gửi thông báo tới (trong trường hợp này là chủ commnent)
+          type: "4",
+          senderName: current.name,
+        };
+        socket.emit("send_notificaton", notification1);
+      } else {
+        let notification1 = {
+          postId,
+          userId: replingCmt.CmtUserId, // cái này là id của thằng cần gửi thông báo tới (trong trường hợp này là chủ commnent)
+          type: "4",
+          senderName: current.name,
+        };
+        socket.emit("send_notificaton", notification1);
+
+        let notification = {
+          postId,
+          userId: userPostId, // cái này là id của thằng cần gửi thông báo tới
+          type: "1",
+          senderName: current.name,
+        };
+        socket.emit("send_notificaton", notification);
+      }
+    } else {
+      let notification = {
+        postId,
+        userId: userPostId, // cái này là id của thằng cần gửi thông báo tới
+        type: "1",
+        senderName: current.name,
+      };
+      socket.emit("send_notificaton", notification);
+    }
 
     const action = addNewComment(params);
 
@@ -48,15 +93,8 @@ const AddComment = ({ postId, userPostId }) => {
       console.log(err);
     }
 
-    let notification = {
-      postId,
-      userId: userPostId, // cái này là id của thằng cần gửi thông báo tới
-      type: "1",
-      senderName: current.name,
-    };
-
     socket.emit("send_message", message);
-    socket.emit("send_notificaton", notification);
+
     setinputValue("");
     setshowEmoji(false);
   };

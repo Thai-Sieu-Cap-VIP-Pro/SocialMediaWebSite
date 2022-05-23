@@ -1,27 +1,34 @@
 import React, { useEffect, useState } from 'react';
 import './Header.scss';
 import {
-    FavoriteBorderOutlined,
-    HomeOutlined,
-    AddCircleOutline,
-    WhatsApp,
-    SettingsOutlined,
-    AccountCircleOutlined,
-    LocalDiningOutlined,
-    SearchOutlined,
-    NotificationsOutlined,
-    ModeComment,
-    Favorite,
-} from '@material-ui/icons';
+
+  FavoriteBorderOutlined,
+  HomeOutlined,
+  AddCircleOutline,
+  WhatsApp,
+  SettingsOutlined,
+  AccountCircleOutlined,
+  LocalDiningOutlined,
+  SearchOutlined,
+  NotificationsOutlined,
+  ModeComment,
+  Favorite,
+  PersonAdd,
+} from "@material-ui/icons";
+import IMAGES from "../../assets/images/imageStore";
+import { useNavigate, NavLink } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { Logout } from "../../features/auth/authSlice";
+import { socket } from "../../features/home/pages/homePage";
+import { Button } from "react-bootstrap";
+import Usecloseoutsidetoclose from "../../hooks/useCloseOutSideToClose";
+import {
+  getCommentsByPostID,
+  getPostById,
+  ShowDetail,
+} from "../../features/home/homeSlice";
 import SingleDestination from '../../features/chat/components/SingleDestination';
-import IMAGES from '../../assets/images/imageStore';
-import { useNavigate, NavLink } from 'react-router-dom';
-import { useDispatch, useSelector } from 'react-redux';
-import { Logout } from '../../features/auth/authSlice';
-import { socket } from '../../features/home/pages/homePage';
-import { Button } from 'react-bootstrap';
-import Usecloseoutsidetoclose from '../../hooks/useCloseOutSideToClose';
-import { getCommentsByPostID, getPostById, ShowDetail } from '../../features/home/homeSlice';
+
 
 const Header = () => {
     const current = JSON.parse(localStorage.getItem('LoginUser'));
@@ -56,36 +63,60 @@ const Header = () => {
         navigate('/auth/login');
     };
 
-    const createNotificationContent = ({ senderName, type, postId }) => {
-        let action = '';
-        if (type === '1') {
-            action = senderName + ' commented bài viết của bạn';
-            return (
-                <span className="notificationItem">
-                    <ModeComment className="commentIcon" />
-                    <div className="notificationContent">
-                        <span className="commentName">{senderName}</span> đã bình luận về bài viết của bạn.
-                        <div className="seePost" onClick={() => showDetail(postId)}>
-                            Xem bài viết
-                        </div>
-                    </div>
-                </span>
-            );
-        } else if (type === '2') {
-            action = senderName + ' liked bài viết của bạn';
-            return (
-                <span className="notificationItem">
-                    <Favorite className="tymIcon" />
-                    <div className="notificationContent">
-                        <span className="commentName">{senderName}</span> đã thích bài viết của bạn.
-                        <div className="seePost" onClick={() => showDetail(postId)}>
-                            Xem bài viết
-                        </div>
-                    </div>
-                </span>
-            );
-        }
-    };
+
+  const createNotificationContent = ({ senderName, type, postId }) => {
+    let action = "";
+    if (type === "1") {
+      return (
+        <span className="notificationItem">
+          <ModeComment className="commentIcon" />
+          <div className="notificationContent">
+            <span className="commentName">{senderName}</span> đã bình luận về
+            bài viết của bạn.
+            <div className="seePost" onClick={() => showDetail(postId)}>
+              Xem bài viết
+            </div>
+          </div>
+        </span>
+      );
+    } else if (type === "2") {
+      return (
+        <span className="notificationItem">
+          <Favorite className="tymIcon" />
+          <div className="notificationContent">
+            <span className="commentName">{senderName}</span> đã thích bài viết
+            của bạn.
+            <div className="seePost" onClick={() => showDetail(postId)}>
+              Xem bài viết
+            </div>
+          </div>
+        </span>
+      );
+    } else if (type === "3") {
+      return (
+        <span className="notificationItem">
+          <PersonAdd className="followIcon" />
+          <div className="notificationContent">
+            <span className="commentName">{senderName}</span> vừa follow bạn.
+          </div>
+        </span>
+      );
+    } else if (type === "4") {
+      return (
+        <span className="notificationItem">
+          <ModeComment className="commentIcon" />
+          <div className="notificationContent">
+            <span className="commentName">{senderName}</span> vừa phản hồi về
+            bình luận của bạn.
+            <div className="seePost" onClick={() => showDetail(postId)}>
+              Xem bài viết
+            </div>
+          </div>
+        </span>
+      );
+    }
+  };
+
 
     useEffect(async () => {
         socket.off('receive_notification').on('receive_notification', async ({ senderName, type, postId }) => {

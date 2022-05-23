@@ -84,66 +84,72 @@ export const getPostById = createAsyncThunk('post/getPostById', async (params) =
 });
 
 const HomeSlice = createSlice({
-    name: 'home',
-    initialState: {
-        replingCmt: {
-            CmtID: null,
-            CmtUserName: '',
-        },
-        editingCmt: {},
-        post: {},
-        listLikeCmt: {
-            isShowAlllikeModal: false,
-            isLoad: true,
-            listUsers: [],
-        },
-        isLoadingAddCmt: false,
-        likepost: false,
-        listPosts: [],
-        listComment: [],
-        listRecommend: [],
-        activePostId: '',
-        isShowDetail: false,
-        isShowReportModal: false,
 
-        isLoading: false,
-        isLoadCmt: false,
-        loadListPostFail: false,
+  name: "home",
+  initialState: {
+    replingCmt: {
+      CmtID: null,
+      CmtUserName: "",
+      CmtUserId: "",
     },
-    reducers: {
-        ShowDetail: (state, action) => {
-            state.isShowDetail = true;
-            state.activePostId = action.payload;
-        },
-        HideDetailReducer: (state, action) => {
-            state.isShowDetail = false;
-            state.activePostId = '';
-        },
-        ShowReportModal: (state, action) => {
-            state.isShowReportModal = true;
-        },
-        HideReportModal: (state, action) => {
-            state.isShowReportModal = false;
-        },
-        ShowAllLikesModal: (state, action) => {
-            state.isShowAlllikeModal = true;
-        },
-        HideAllLikesModal: (state, action) => {
-            state.listLikeCmt = {
-                isShowAlllikeModal: false,
-                listUsers: [],
-            };
-        },
-        SetReplyCmd: (state, action) => {
-            state.replingCmt.CmtID = action.payload.cmtId;
-            state.replingCmt.CmtUserName = action.payload.userName;
-        },
-        CancelReplyCmd: (state, action) => {
-            state.replingCmt = {
-                CmtID: null,
-                CmtUserName: '',
-            };
-        },
+    editingCmt: {},
+    post: {},
+    listLikeCmt: {
+      isShowAlllikeModal: false,
+      isLoad: true,
+      listUsers: [],
+    },
+    isLoadingAddCmt: false,
+    likepost: false,
+    listPosts: [],
+    listComment: [],
+    listRecommend: [],
+    activePostId: "",
+    isShowDetail: false,
+    isShowReportModal: false,
+
+    isLoading: false,
+    isLoadCmt: false,
+    loadListPostFail: false,
+  },
+  reducers: {
+    ShowDetail: (state, action) => {
+      state.isShowDetail = true;
+      state.activePostId = action.payload;
+    },
+    HideDetailReducer: (state, action) => {
+      state.isShowDetail = false;
+      state.activePostId = "";
+      state.post = {};
+    },
+    ShowReportModal: (state, action) => {
+      state.isShowReportModal = true;
+    },
+    HideReportModal: (state, action) => {
+      state.isShowReportModal = false;
+    },
+    ShowAllLikesModal: (state, action) => {
+      state.isShowAlllikeModal = true;
+    },
+    HideAllLikesModal: (state, action) => {
+      state.listLikeCmt = {
+        isShowAlllikeModal: false,
+        listUsers: [],
+      };
+    },
+    SetReplyCmd: (state, action) => {
+      state.replingCmt.CmtID = action.payload.cmtId;
+      state.replingCmt.CmtUserName = action.payload.userName;
+      state.replingCmt.CmtUserId = action.payload.userId;
+    },
+    CancelReplyCmd: (state, action) => {
+      state.replingCmt = {
+        CmtID: null,
+        CmtUserName: "",
+        CmtUserId: "",
+      };
+    },
+
 
         editCmt: (state, action) => {
             state.editingCmt = action.payload;
