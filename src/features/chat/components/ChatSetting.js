@@ -3,9 +3,10 @@ import React, { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
 import WarningPopup from '../../../shareComponents/WarningPopup/WarningPopup';
-import { deleteCon, removeUserInCon } from '../ChatSlice';
+import { changeConversationAvatar, changeConversationName, deleteCon, removeUserInCon } from '../ChatSlice';
 import { socket } from '../pages/ChatPage';
 import ChatMember from './ChatMember';
+import useImageUpload from '../../../hooks/useImageUpload';
 
 const ChatSetting = ({ setIsOpenSetting, currentConversation }) => {
     const params = useParams();
@@ -13,8 +14,14 @@ const ChatSetting = ({ setIsOpenSetting, currentConversation }) => {
     const navigate = useNavigate();
     const currentUser = useSelector((state) => state.auth.current);
     const [isClosePopup, setIsClosePopup] = useState(true);
+    const [isTyping, setIsTyping] = useState(false);
+    const [text, setText] = useState('');
+    const [image, setImage] = useState('');
+    const uploadImage = useImageUpload();
+
     const handleDeleteCon = async () => {
         try {
+
             currentConversation.members.length > 1
                 ? await dispatch(removeUserInCon({ conversationId: params.id, userId: currentUser._id }))
                       .unwrap()
@@ -37,6 +44,44 @@ const ChatSetting = ({ setIsOpenSetting, currentConversation }) => {
     const handleOpenPopup = () => {
         setIsClosePopup(false);
     };
+    const handleChange = (e) => {
+        if (!e.target.value) {
+            setIsTyping(false);
+            setText('');
+        } else {
+            setIsTyping(true);
+            setText(e.target.value);
+        }
+    };
+
+    const handleSubmit = async () => {
+        try {
+            const result = await dispatch(changeConversationName({ id: params.id, newName: text })).unwrap();
+            socket.emit('sendNotice', currentConversation.members);
+            setText('');
+            setIsTyping(false);
+            setIsOpenSetting(false)
+            
+        } catch (error) {
+            console.log(error);
+        }
+    };
+    const handleKeyDown = (e) => {
+        if (e.keyCode === 13) {
+            handleSubmit();
+        }
+    };
+
+    const handleFileChange = async (e) => {
+        setImage(window.URL.createObjectURL(e.target.files[0]));
+        const url = await uploadImage(e.target.files[0]);
+        const result = await dispatch(
+            changeConversationAvatar({ id: params.id, newAvt: url })
+        ).unwrap();
+        console.log(result);
+        socket.emit('sendNotice', currentConversation.members);
+        setIsOpenSetting(false)
+    };
 
     return (
         <div className="rightPanel">
@@ -48,9 +93,54 @@ const ChatSetting = ({ setIsOpenSetting, currentConversation }) => {
                     onClick={() => setIsOpenSetting(false)}
                 />
             </div>
+            {currentConversation.members.length > 2 ?
+                (
+                    <div>
+                        <div className='rightPanel__changeGroupPhoto'>
+                            <div className="rightPanel__changeGroupPhoto__image">
+                                <img
+                                src={`${currentConversation?.avatar
+                                    ? currentConversation?.avatar
+                                    : currentConversation?.members.length === 2
+                                    ? currentConversation?.members.find((item) => item._id !== currentUser._id).avatar
+                                    : "https://res.cloudinary.com/wjbucloud/image/upload/v1651308420/j2team_girl_8_btpoep.jpg"
+                                }`}
+                                alt="unsplash"
+                                />
+                            </div>
+                            {/* <button
+                                onClick={handleSubmit}
+                            >Change Group Photo</button> */}
+                            <div className="rightPanel__changeGroupPhoto__changeImg">
+                                <label htmlFor="image-input">
+                                Change Group Photo
+                                </label>
+                                <input type="file" id="image-input" onChange={handleFileChange} />
+                            </div>
+                        </div>
+
+                        <div className='rightPanel__changeName'>
+                        <p>Group Name: </p>
+                        <input
+                                type="text"
+                                placeholder="Add a name..."
+                                value={text}
+                                onChange={handleChange}
+                                onKeyDown={(e) => handleKeyDown(e)}
+                        />
+                        {isTyping ? (
+                                <button
+                                onClick={handleSubmit}
+                                >Done</button>
+                        ):(<></>)}
+                        </div>
+                    </div>
+                )
+                :(<></>)}
+            
             <div className="rightPanel__mainSetting">
+                <h4 className="rightPanel__mainSetting__title">Members</h4>
                 <div className="rightPanel__mainSetting__listMember">
-                    <h4>Members</h4>
                     {currentConversation?.members.map((member) => {
                         return <ChatMember member={member} key={member._id} />;
                     })}

@@ -12,6 +12,9 @@ import PopupOverlay from '../../../shareComponents/PopupOverlay/PopupOverlay';
 const MessagePopup = ({ setIsShowPopup }) => {
     const currentUser = useSelector((state) => state.auth.current);
     const userContact = useSelector((state) => state.chat.userFollowing);
+    const [searchValue, setSearchValue] = useState('');
+    const listUser = useSelector((state) => state.auth.listUser).filter((user) => user._id !== currentUser._id);
+    const [bruh, setBruh] = useState([]);
     const navigate = useNavigate();
     const dispatch = useDispatch();
     const tags = useSelector((state) => state.chat.tags);
@@ -66,6 +69,17 @@ const MessagePopup = ({ setIsShowPopup }) => {
         console.log(tags);
     }, []);
 
+    const handleSearch = (searchValue) => {
+        setSearchValue(searchValue);
+        const searchUser = listUser.filter((user) => {
+            if (user.name.toLowerCase().includes(searchValue.toLowerCase())) {
+                return user;
+            }
+        });
+        console.log(searchUser);
+        setBruh(searchUser);
+    };
+
     return (
         <>
             <PopupOverlay onClick={handleClosePopup} />
@@ -94,16 +108,25 @@ const MessagePopup = ({ setIsShowPopup }) => {
                                       })}
                             </Row>
                             <Row className="messagePopup__destinations__input">
-                                <input type="text" placeholder="Tìm kiếm..." />
+                                <input
+                                    type="text"
+                                    placeholder="Tìm kiếm..."
+                                    value={searchValue}
+                                    onChange={(e) => handleSearch(e.target.value)}
+                                />
                             </Row>
                         </Col>
                     </Row>
                 </Container>
                 <div className="messagePopup__destinationList">
-                    <h6 style={{ margin: '20px 0' }}>Suggested</h6>
-                    {userContact.map((follow, index) => {
-                        return <SingleDestination follow={follow} key={index} />;
-                    })}
+                    <h6 style={{ padding: '10px 20px 10px 20px' }}>Suggested</h6>
+                    {searchValue === ''
+                        ? userContact.map((follow, index) => {
+                              return <SingleDestination follow={follow} key={index} />;
+                          })
+                        : bruh.map((user, index) => {
+                              return <SingleDestination follow={user} key={index} />;
+                          })}
                 </div>
             </div>
         </>
