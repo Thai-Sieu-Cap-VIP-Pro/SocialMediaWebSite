@@ -12,6 +12,7 @@ import {
   NotificationsOutlined,
   ModeComment,
   Favorite,
+  PersonAdd,
 } from "@material-ui/icons";
 import IMAGES from "../../assets/images/imageStore";
 import { useNavigate, NavLink } from "react-router-dom";
@@ -52,7 +53,6 @@ const Header = () => {
   const createNotificationContent = ({ senderName, type, postId }) => {
     let action = "";
     if (type === "1") {
-      action = senderName + " commented bài viết của bạn";
       return (
         <span className="notificationItem">
           <ModeComment className="commentIcon" />
@@ -66,13 +66,34 @@ const Header = () => {
         </span>
       );
     } else if (type === "2") {
-      action = senderName + " liked bài viết của bạn";
       return (
         <span className="notificationItem">
           <Favorite className="tymIcon" />
           <div className="notificationContent">
             <span className="commentName">{senderName}</span> đã thích bài viết
             của bạn.
+            <div className="seePost" onClick={() => showDetail(postId)}>
+              Xem bài viết
+            </div>
+          </div>
+        </span>
+      );
+    } else if (type === "3") {
+      return (
+        <span className="notificationItem">
+          <PersonAdd className="followIcon" />
+          <div className="notificationContent">
+            <span className="commentName">{senderName}</span> vừa follow bạn.
+          </div>
+        </span>
+      );
+    } else if (type === "4") {
+      return (
+        <span className="notificationItem">
+          <ModeComment className="commentIcon" />
+          <div className="notificationContent">
+            <span className="commentName">{senderName}</span> vừa phản hồi về
+            bình luận của bạn.
             <div className="seePost" onClick={() => showDetail(postId)}>
               Xem bài viết
             </div>

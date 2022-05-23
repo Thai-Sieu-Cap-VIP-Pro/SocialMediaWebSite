@@ -101,6 +101,7 @@ const HomeSlice = createSlice({
     replingCmt: {
       CmtID: null,
       CmtUserName: "",
+      CmtUserId: "",
     },
     editingCmt: {},
     post: {},
@@ -150,11 +151,13 @@ const HomeSlice = createSlice({
     SetReplyCmd: (state, action) => {
       state.replingCmt.CmtID = action.payload.cmtId;
       state.replingCmt.CmtUserName = action.payload.userName;
+      state.replingCmt.CmtUserId = action.payload.userId;
     },
     CancelReplyCmd: (state, action) => {
       state.replingCmt = {
         CmtID: null,
         CmtUserName: "",
+        CmtUserId: "",
       };
     },
 
