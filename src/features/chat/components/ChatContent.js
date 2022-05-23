@@ -114,7 +114,7 @@ const ChatContent = ({ isOpenSetting, setIsOpenSetting }) => {
         try {
             socket.emit('joinRoom', params.id);
             const result = await dispatch(getMessageInCons(params.id)).unwrap();
-            console.log(result.messages);
+            //console.log(result.messages);
             setData(result.messages);
         } catch (error) {
             console.log(error);
@@ -147,6 +147,7 @@ const ChatContent = ({ isOpenSetting, setIsOpenSetting }) => {
         try {
             const result = await dispatch(createMessage({ content: text, conversationId: params.id })).unwrap();
             console.log(result);
+            console.log(currentConversation)
             socket.emit('sendMessage', result.newMessage);
             socket.emit('sendNotice', currentConversation.members);
             setText('');
@@ -194,8 +195,9 @@ const ChatContent = ({ isOpenSetting, setIsOpenSetting }) => {
                     <div className="rightPanel__title__user">
                         <div className="rightPanel__title__user__image">
                             <img
-                                src={
-                                    currentConversation?.members.length === 2
+                                src={conversations.find((conversation) => conversation._id === params.id)?.avatar
+                                    ? conversations.find((conversation) => conversation._id === params.id)?.avatar
+                                    : currentConversation?.members.length === 2
                                         ? currentConversation?.members.find((item) => item._id !== currentUser._id)
                                               .avatar
                                         : 'https://res.cloudinary.com/wjbucloud/image/upload/v1651308420/j2team_girl_8_btpoep.jpg'
@@ -204,7 +206,9 @@ const ChatContent = ({ isOpenSetting, setIsOpenSetting }) => {
                             />
                         </div>
                         <h6 className="rightPanel__title__user__name">
-                            {conversations.find((conversation) => conversation._id === params.id)?.members.length === 2
+                            {conversations.find((conversation) => conversation._id === params.id)?.name
+                            ? conversations.find((conversation) => conversation._id === params.id)?.name
+                            : conversations.find((conversation) => conversation._id === params.id)?.members.length === 2
                                 ? conversations
                                       .find((conversation) => conversation._id === params.id)
                                       ?.members.find((item) => item._id !== currentUser._id).name
@@ -227,7 +231,6 @@ const ChatContent = ({ isOpenSetting, setIsOpenSetting }) => {
                 </div>
                 <div className="rightPanel__conversation" ref={ref}>
                     {data.map((item, index) => {
-                        console.log({ item });
                         return (
                             <Message
                                 message={item}
@@ -243,6 +246,7 @@ const ChatContent = ({ isOpenSetting, setIsOpenSetting }) => {
                             src={image}
                             alt="collections"
                             style={{ opacity: 0.5, maxWidth: '40%', alignSelf: 'flex-end', borderRadius: '10px' }}
+                            loading="lazy"
                         />
                     )}
                 </div>

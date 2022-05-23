@@ -20,6 +20,7 @@ const Message = ({ message, handleImagePopup, handleTymMessage, handleUnTymMessa
                     alt="pictureChat"
                     className="rightPanel__conversation__content__textImage"
                     onClick={() => handleImagePopup(message.content.text)}
+                    loading="lazy"
                 />
             ) : (
                 <p

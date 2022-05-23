@@ -1,7 +1,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { Col, Container, Row } from 'react-bootstrap';
-import { Route, Routes } from 'react-router-dom';
+import { Route, Routes, useParams } from 'react-router-dom';
 import Header from '../../../shareComponents/header/Header';
 import ChatContent from '../components/ChatContent';
 import DefaultContent from '../components/DefaultContent';
@@ -16,9 +16,11 @@ const ChatPage = () => {
 
     const [isOpenSetting, setIsOpenSetting] = useState(false);
     const currentUser = useSelector((state) => state.auth.current);
+    const params = useParams()
+    console.log(currentUser._id)
     useEffect(() => {
         socket.emit('joinMessenger', currentUser._id);
-    }, []);
+    },[params]);
     return (
         <>
             <Container fluid>
