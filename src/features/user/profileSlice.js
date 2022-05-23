@@ -1,8 +1,10 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import userAPI from '../../api/UserApi';
 
-export const getUserById = createAsyncThunk('user/getUserInfo', async (params) => {
-  const userInfo = await userAPI.getUserById(params)
+export const getUserById = createAsyncThunk('user/getUserById', async (params) => {
+  console.log(params)
+  const userInfo = await userAPI.getUserInfo(params)
+  console.log(userInfo)
   return userInfo
 })
 
@@ -19,7 +21,8 @@ export const unFollow = createAsyncThunk('user/unFollow', async (params) => {
   return unFollowUser
 })
 
-export const getPostsByUserId = createAsyncThunk('user/getPostsById', async (params) => {
+export const getPostsByUserId = createAsyncThunk('user/getPostsByUserId', async (params) => {
+  console.log(params)
   const posts = await userAPI.getPostsByUserId(params)
   console.log(posts)
   return posts
@@ -32,6 +35,11 @@ const UserSlice = createSlice({
     userInfo: {},
     posts: [],
     isLoading: false,
+  },
+  reducers: {
+    addActiveId: (state, action) => {
+      state.activeId = action.payload.id
+    }
   },
   extraReducers: {
     [getUserById.pending]: (state) => {

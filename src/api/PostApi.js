@@ -17,8 +17,8 @@ class PostAPI {
     };
 
     getPostById = (params) => {
-        const url = 'http://localhost:3001/api/posts/postbyId';
-        return axiosClient.post(url, params);
+        const url = `http://localhost:3001/api/posts/${params}`;
+        return axiosClient.get(url, {});
     };
 
     unLikePost = (params) => {
