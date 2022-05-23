@@ -1,13 +1,17 @@
-import React from 'react';
-import { Routes, Route, Outlet } from 'react-router-dom';
-import Auth from './features/auth';
-import IndexHome from './features/home';
-import PrivateRout from './shareComponents/privateRout/privateRout';
-import IndexChat from './features/chat';
-import NotFound from './shareComponents/notfound/NotFound';
-import NewIndex from './features/newpost/newIndex';
-import VideoCall from './features/chat/components/VideoCall';
-import UserIndex from './features/user';
+import React from "react";
+import { Routes, Route, Outlet } from "react-router-dom";
+import Auth from "./features/auth";
+import IndexHome from "./features/home";
+import PrivateRout from "./shareComponents/privateRout/privateRout";
+import IndexChat from "./features/chat";
+import NotFound from "./shareComponents/notfound/NotFound";
+import NewIndex from "./features/newpost/newIndex";
+import VideoCall from "./features/chat/components/VideoCall";
+import UserIndex from "./features/user";
+
+import io from "socket.io-client";
+
+export const socket = io.connect("http://localhost:3001");
 
 function App() {
   return (

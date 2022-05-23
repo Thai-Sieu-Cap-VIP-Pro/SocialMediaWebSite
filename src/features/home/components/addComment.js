@@ -11,7 +11,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCircleXmark } from "@fortawesome/free-solid-svg-icons";
 import useCloseOutSideToClose from "../../../hooks/useCloseOutSideToClose";
 import ErrToast from "../../../shareComponents/errorToast/errToast";
-import { socket } from "../pages/homePage";
+import { socket } from "../../../App";
 
 const AddComment = ({ postId, userPostId }) => {
   const current = JSON.parse(localStorage.getItem("LoginUser"));
@@ -38,10 +38,6 @@ const AddComment = ({ postId, userPostId }) => {
       postId: postId,
       commentId: replingCmt.CmtID,
     };
-    console.log(params);
-    //kiểm tra xem thằng đc phản hồi có phải là thằng đăng post hay không
-    //thằng đc phản hồi là replingCmt.CmtUserId
-    //thằng đăng post userPostId
 
     if (
       params.commentId != null &&

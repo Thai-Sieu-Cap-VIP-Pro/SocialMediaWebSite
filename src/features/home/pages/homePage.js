@@ -12,7 +12,7 @@ import ErrorFetch from "../../../shareComponents/fetchfail/error";
 
 import io from "socket.io-client";
 import AlllikesPopup from "../components/commons/allLikesPopup";
-export const socket = io.connect("http://localhost:3002");
+import { socket } from "../../../App";
 
 const HomePage = () => {
   const [showB, setShowB] = useState(false);

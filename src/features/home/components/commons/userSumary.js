@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import { Button, Col, Row } from "react-bootstrap";
 import { useDispatch } from "react-redux";
+import { socket } from "../../../../App";
 import IMAGES from "../../../../assets/images/imageStore";
 import { follow } from "../../homeSlice";
-import { socket } from "../../pages/homePage";
 
 const UserSumary = ({ user }) => {
   const dispatch = useDispatch();

@@ -27,8 +27,8 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 
 import ReportModal from "./reportModal";
-import { socket } from "../pages/homePage";
 import AlllikesPopup from "./commons/allLikesPopup";
+import { socket } from "../../../App";
 
 const PostItem = ({ postId, content }) => {
   const dispatch = useDispatch();
@@ -48,7 +48,7 @@ const PostItem = ({ postId, content }) => {
     dispatch(action);
 
     // const message = { room: a };
-    socket.emit("joinRoom", a);
+    socket.emit("joinComment", a);
   };
   //phần react
   const { listPosts } = useSelector((state) => state.home);
