@@ -18,7 +18,7 @@ import IMAGES from "../../assets/images/imageStore";
 import { useNavigate, NavLink } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { Logout } from "../../features/auth/authSlice";
-import { Button } from "react-bootstrap";
+import { Button, Col } from "react-bootstrap";
 import Usecloseoutsidetoclose from "../../hooks/useCloseOutSideToClose";
 import {
   getCommentsByPostID,
@@ -38,6 +38,8 @@ const Header = () => {
 
   const { listNotification } = useSelector((state) => state.home);
 
+  console.log(listNotification);
+
   const [listNotifications, setListNotifications] = useState([]);
 
   useEffect(() => {
@@ -46,6 +48,9 @@ const Header = () => {
         senderName: item.sender.name,
         type: item.notiType,
         postId: item.desId,
+        time: item.createdAt,
+        isSeen: item.isSeen,
+        img: item.sender.avatar,
       };
 
       setListNotifications((prev) => [...prev, obj]);
@@ -78,13 +83,17 @@ const Header = () => {
   useEffect(async () => {
     socket
       .off("receive_notification")
-      .on("receive_notification", async ({ senderName, type, postId }) => {
+      .on("receive_notification", async ({ senderName, type, postId, img }) => {
         const action = getPostById({ postId });
         await dispatch(action);
+        console.log(type);
         const obj = {
           senderName,
           type,
           postId,
+          time: Date.now(),
+          isSeen: false,
+          img,
         };
         setListNotifications((prev) => [obj, ...prev]);
       });
@@ -98,19 +107,6 @@ const Header = () => {
     setIsShowNotificationPanel(false);
   });
 
-  const showDetail = async (a) => {
-    const action2 = getPostById({ postId: a });
-    await dispatch(action2);
-    //a là post id
-    const action1 = getCommentsByPostID(a);
-    dispatch(action1);
-
-    const action = ShowDetail(a);
-    dispatch(action);
-
-    // const message = { room: a };
-    socket.emit("joinRoom", a);
-  };
   //phần react
 
   return (
@@ -168,6 +164,7 @@ const Header = () => {
                       return <NotificationItem info={item} />;
                     })}
                   </ul>
+                  <div className="seeMore">Xem thêm</div>
                 </>
               ) : (
                 <div className="noNotification">Không có thông báo nào</div>

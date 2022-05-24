@@ -75,6 +75,7 @@ const PostItem = ({ postId, content }) => {
         userId: userid, // cái này là id của thằng cần gửi thông báo tới
         type: 2,
         senderName: current.name,
+        img: current.avatar,
       };
       socket.emit("send_notificaton", notification);
 
@@ -84,8 +85,6 @@ const PostItem = ({ postId, content }) => {
         notiType: 2,
         desId: postId,
       };
-
-      console.log(paramsCreate);
 
       const action = createNotification(paramsCreate);
       await dispatch(action);
