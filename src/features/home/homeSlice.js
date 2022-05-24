@@ -103,6 +103,7 @@ export const createPost = createAsyncThunk(
 export const getPostById = createAsyncThunk(
   "post/getPostById",
   async (params) => {
+    console.log(params);
     const post = await postAPI.getPostById(params);
     console.log(post);
     return post;
@@ -302,6 +303,7 @@ const HomeSlice = createSlice({
     [getPostById.pending]: (state, action) => {},
     [getPostById.rejected]: (state, action) => {},
     [getPostById.fulfilled]: (state, action) => {
+      console.log(action.payload.post[0]);
       state.post = action.payload.post[0];
     },
 
