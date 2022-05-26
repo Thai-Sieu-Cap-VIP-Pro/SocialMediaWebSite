@@ -215,6 +215,14 @@ h6 {
             &.mine {
                 flex-direction: row-reverse;
             }
+            &.BOT {
+                justify-content: center;
+                color: grey;
+                font-style: italic;
+                font-size: 0.8rem;
+                cursor: auto;
+                user-select: none;
+            }
             &__image {
                 width: 30px;
                 height: 30px;
@@ -358,6 +366,17 @@ h6 {
         &__title {
             padding: 1rem;
             padding-bottom: 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            & button {
+                background: none;
+                font-weight: bolder;
+                color: #0fa8f9;
+                border: none;
+                outline: none;
+                padding: 0 0;
+            }
         }
         &__listMember {
             padding: 1rem;
@@ -592,6 +611,12 @@ h6 {
                 & p:first-child {
                     color: black;
                     font-weight: 500;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                    display: -webkit-box;
+                    -webkit-line-clamp: 1;
+                    -webkit-box-orient: vertical;
+                    word-break: break-all;
                 }
                 & p:last-child {
                     color: grey;
@@ -636,6 +661,14 @@ h6 {
     bottom: 0;
     background-color: rgba(0, 0, 0, 0.6);
     z-index: 1;
+}
+
+#bruh-bruh-lmao-lmao {
+    background-color: white;
+    color: black;
+    border: 1px solid black;
+    user-select: none;
+    font-style: italic;
 }
 
 @keyframes reactMessage {

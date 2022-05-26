@@ -88,6 +88,8 @@ const SingleChat = ({ conversation = null, handleClick = null, setId = null, cur
                     <p className="singleChat__user__content__summary">
                         {messages[messages.length - 1]?.content.isImage === true
                             ? 'Đã gửi hình ảnh'
+                            : messages[messages.length - 1]?.isDeleted
+                            ? `${messages[messages.length - 1]?.sender.name} đã thu hồi tin nhắn`
                             : messages[messages.length - 1]?.content.text}{' '}
                     </p>
                     <span className="singleChat__user__content__time">
