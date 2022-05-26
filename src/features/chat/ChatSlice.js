@@ -73,15 +73,6 @@ export const removeUserInCon = createAsyncThunk('conversation/removeUser', async
     }
 });
 
-export const addUserInCon = createAsyncThunk('conversation/addUser', async (args, thunkAPI) => {
-    try {
-        const response = await ChatAPI.addUserInCon(args);
-        return response;
-    } catch (error) {
-        return thunkAPI.rejectWithValue(`${error}`);
-    }
-});
-
 export const tymMessage = createAsyncThunk('message/tym', async (args, thunkAPI) => {
     try {
         const response = await ChatAPI.tymMessage(args);
@@ -121,6 +112,15 @@ export const changeConversationAvatar = createAsyncThunk('conversation/changeAva
 export const deleteMessage = createAsyncThunk('message/delete', async (args, thunkAPI) => {
     try {
         const response = await ChatAPI.deleteMessage(args);
+        return response;
+    } catch (error) {
+        return thunkAPI.rejectWithValue(`${error}`);
+    }
+});
+
+export const addUserIntoCon = createAsyncThunk('conversation/addUser', async (args, thunkAPI) => {
+    try {
+        const response = await ChatAPI.addUserIntoCon(args);
         return response;
     } catch (error) {
         return thunkAPI.rejectWithValue(`${error}`);
@@ -312,6 +312,23 @@ const chatSlice = createSlice({
         },
         [deleteMessage.fulfilled]: (state, action) => {
             state.loading = false;
+            state.error = false;
+        },
+        [addUserIntoCon.pending]: (state, action) => {
+            state.loading = true;
+            state.error = false;
+        },
+        [addUserIntoCon.rejected]: (state, action) => {
+            state.loading = false;
+            state.error = true;
+        },
+        [addUserIntoCon.fulfilled]: (state, action) => {
+            state.loading = false;
+            state.conversations
+                .filter((con) => {
+                    return con._id !== action.payload.newConversation._id;
+                })
+                .unshift();
             state.error = false;
         },
     },

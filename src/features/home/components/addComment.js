@@ -5,7 +5,11 @@ import {
   HighlightOffOutlined,
 } from "@material-ui/icons";
 import Picker from "emoji-picker-react";
-import { addNewComment, CancelReplyCmd } from "../homeSlice";
+import {
+  addNewComment,
+  CancelReplyCmd,
+  createNotification,
+} from "../homeSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCircleXmark } from "@fortawesome/free-solid-svg-icons";
@@ -39,6 +43,8 @@ const AddComment = ({ postId, userPostId }) => {
       commentId: replingCmt.CmtID,
     };
 
+    let paramsCreate = {};
+
     if (
       params.commentId != null &&
       params.commentId != "" &&
@@ -49,35 +55,65 @@ const AddComment = ({ postId, userPostId }) => {
         let notification1 = {
           postId,
           userId: replingCmt.CmtUserId, // cái này là id của thằng cần gửi thông báo tới (trong trường hợp này là chủ commnent)
-          type: "4",
+          type: 4,
           senderName: current.name,
         };
         socket.emit("send_notificaton", notification1);
+        paramsCreate = {
+          receiver: replingCmt.CmtUserId,
+          notiType: 4,
+          desId: postId,
+        };
+        const actionCreateNoti = createNotification(paramsCreate);
+        dispatch(actionCreateNoti);
       } else {
         let notification1 = {
           postId,
           userId: replingCmt.CmtUserId, // cái này là id của thằng cần gửi thông báo tới (trong trường hợp này là chủ commnent)
-          type: "4",
+          type: 4,
           senderName: current.name,
         };
         socket.emit("send_notificaton", notification1);
 
+        paramsCreate = {
+          receiver: replingCmt.CmtUserId,
+          notiType: 4,
+          desId: postId,
+        };
+        const actionCreateNoti = createNotification(paramsCreate);
+        dispatch(actionCreateNoti);
+
         let notification = {
           postId,
           userId: userPostId, // cái này là id của thằng cần gửi thông báo tới
-          type: "1",
+          type: 1,
           senderName: current.name,
         };
         socket.emit("send_notificaton", notification);
+        const paramsCreate1 = {
+          receiver: userPostId,
+          notiType: 1,
+          desId: postId,
+        };
+        const actionCreateNoti1 = createNotification(paramsCreate1);
+        dispatch(actionCreateNoti1);
       }
     } else {
       let notification = {
         postId,
         userId: userPostId, // cái này là id của thằng cần gửi thông báo tới
-        type: "1",
+        type: 1,
         senderName: current.name,
       };
       socket.emit("send_notificaton", notification);
+
+      paramsCreate = {
+        receiver: userPostId,
+        notiType: 1,
+        desId: postId,
+      };
+      const actionCreateNoti = createNotification(paramsCreate);
+      dispatch(actionCreateNoti);
     }
 
     const action = addNewComment(params);

@@ -2,12 +2,29 @@ import React, { useState } from 'react';
 import { CheckCircle } from '@material-ui/icons';
 import { useDispatch, useSelector } from 'react-redux';
 import { createTag, deleteTag } from '../ChatSlice';
-const SingleDestination = ({ follow, forRenderSearch = false }) => {
+const SingleDestination = ({ follow, forRenderSearch = false, isForward = false }) => {
     const dispatch = useDispatch();
+    const currentUser = useSelector((state) => state.auth.current);
     const tags = useSelector((state) => state.chat.tags);
     const handleSelect = (e) => {
         e.stopPropagation();
-        dispatch(createTag(follow));
+        if (!isForward) {
+            dispatch(createTag(follow));
+        } else {
+            const { name, ...others } = follow;
+
+            const newName = follow?.name
+                ? follow?.name
+                : follow?.members.length === 2
+                ? follow?.members.find((item) => item._id !== currentUser._id).name
+                : follow?.members.length === 1
+                ? 'Không còn ai muốn trò chuyện với bạn nữa'
+                : follow?.members
+                      .filter((item) => item._id !== currentUser._id)
+                      .map((member) => member.name)
+                      .join(', ');
+            dispatch(createTag({ name: newName, ...others }));
+        }
     };
     const handleUnselect = (e) => {
         e.stopPropagation();
@@ -33,14 +50,48 @@ const SingleDestination = ({ follow, forRenderSearch = false }) => {
     return (
         <div className="messagePopup__destinationList__singleDestination" onClick={handleClick}>
             <div className="messagePopup__destinationList__singleDestination__avatar">
-                <img src={follow.avatar} alt="avatar_user" />
+                {!isForward ? (
+                    <img src={follow.avatar} alt="avatar_user" />
+                ) : (
+                    <img
+                        src={`${
+                            follow?.avatar
+                                ? follow?.avatar
+                                : follow?.members.length === 2
+                                ? follow?.members.find((item) => item._id !== currentUser._id).avatar
+                                : follow?.members.length === 1
+                                ? 'https://res.cloudinary.com/wjbucloud/image/upload/v1653282748/haha_axj617.jpg'
+                                : 'https://res.cloudinary.com/wjbucloud/image/upload/v1651308420/j2team_girl_8_btpoep.jpg'
+                        }`}
+                        alt="unsplash"
+                    />
+                )}
             </div>
             <div className="messagePopup__destinationList__singleDestination__info">
-                <p>{follow.name}</p>
+                {!isForward ? (
+                    <p>{follow.name}</p>
+                ) : (
+                    <p>
+                        {follow?.name
+                            ? follow?.name
+                            : follow?.members.length === 2
+                            ? follow?.members.find((item) => item._id !== currentUser._id).name
+                            : follow?.members.length === 1
+                            ? 'Không còn ai muốn trò chuyện với bạn nữa'
+                            : follow?.members
+                                  .filter((item) => item._id !== currentUser._id)
+                                  .map((member) => member.name)
+                                  .join(', ')}
+                    </p>
+                )}
                 <p>{follow.email}</p>
             </div>
             {!forRenderSearch ? (
-                tags.includes(follow) ? (
+                tags
+                    .map((tag) => {
+                        return tag._id;
+                    })
+                    .includes(follow._id) ? (
                     <CheckCircle style={{ width: '27px', height: '27px' }} onClick={handleUnselect} />
                 ) : (
                     <div className="messagePopup__destinationList__singleDestination__dot" onClick={handleSelect}></div>

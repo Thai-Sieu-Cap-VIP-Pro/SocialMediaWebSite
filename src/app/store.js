@@ -13,16 +13,27 @@ const persistConfig = {
     whitelist: ['auth'],
 };
 
+// export const store = configureStore({
+//   reducer: {
+//     auth: AuthReducer,
+//     home: HomeReducer,
+//     chat: chatSlice.reducer,
+//     user: userReducer,
+//   },
+// });
+
 const rootReducer = combineReducers({
     auth: AuthReducer,
     home: HomeReducer,
     chat: chatSlice.reducer,
     user: userReducer,
 });
+
 const persistedReducer = persistReducer(persistConfig, rootReducer);
 
 export const store = configureStore({
     reducer: persistedReducer,
+
     middleware: (getDefaultMiddleware) =>
         getDefaultMiddleware({
             serializableCheck: {

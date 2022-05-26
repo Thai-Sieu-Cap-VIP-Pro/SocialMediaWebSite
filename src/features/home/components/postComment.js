@@ -9,6 +9,7 @@ import {
   faCircleChevronRight,
   faCircleChevronLeft,
   faCircleXmark,
+  faChessKing,
 } from "@fortawesome/free-solid-svg-icons";
 import PostHeader from "./postHeader";
 import ListComment from "./ListComment";
@@ -22,7 +23,9 @@ const PostComment = () => {
 
   let activePost = {};
   if (Object.keys(post).length === 0) {
+    console.log("Lấy post trong main");
     activePost = listPosts.find((post) => post._id == activePostId);
+    console.log(activePost);
   } else {
     activePost = post;
   }

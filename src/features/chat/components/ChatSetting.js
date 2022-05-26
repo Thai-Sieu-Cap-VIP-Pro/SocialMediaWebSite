@@ -7,6 +7,8 @@ import { changeConversationAvatar, changeConversationName, deleteCon, removeUser
 import ChatMember from './ChatMember';
 import useImageUpload from '../../../hooks/useImageUpload';
 import { socket } from '../../../App';
+import MessagePopup from './MessagePopup';
+import { createMessage } from '../ChatSlice';
 
 const ChatSetting = ({ setIsOpenSetting, currentConversation }) => {
     const params = useParams();
@@ -17,25 +19,28 @@ const ChatSetting = ({ setIsOpenSetting, currentConversation }) => {
     const [isTyping, setIsTyping] = useState(false);
     const [text, setText] = useState('');
     const [image, setImage] = useState('');
+    const [isShowMessagePopup, setIsShowMessagePopup] = useState(false);
     const uploadImage = useImageUpload();
 
     const handleDeleteCon = async () => {
         try {
-            currentConversation?.members.length > 1
-                ? await dispatch(
-                      removeUserInCon({
-                          conversationId: params.id,
-                          userId: currentUser._id,
-                      })
-                  )
-                      .unwrap()
-                      .then((resultValue) => console.log(resultValue))
-                      .catch((rejectedValue) => console.log(rejectedValue))
-                : await dispatch(deleteCon({ conversationId: params.id }))
-                      .unwrap()
-                      .then((resultValue) => console.log(resultValue))
-                      .catch((rejectedValue) => console.log(rejectedValue));
-            await socket.emit('sendNotice', currentConversation?.members);
+            await dispatch(
+                removeUserInCon({
+                    conversationId: params.id,
+                    userId: currentUser._id,
+                })
+            )
+                .unwrap()
+                .then((resultValue) => console.log(resultValue))
+                .catch((rejectedValue) => console.log(rejectedValue));
+            const newMessage = await dispatch(
+                createMessage({
+                    content: `${currentUser.name} đã rời khỏi cuộc trò chuyện`,
+                    conversationId: params.id,
+                })
+            ).unwrap();
+            socket.emit('sendNotice', currentConversation?.members);
+            socket.emit('sendMessage', newMessage.newMessage);
             navigate('/messenger');
         } catch (error) {
             console.log({ error });
@@ -61,6 +66,13 @@ const ChatSetting = ({ setIsOpenSetting, currentConversation }) => {
     const handleSubmit = async () => {
         try {
             const result = await dispatch(changeConversationName({ id: params.id, newName: text })).unwrap();
+            const newMessage = await dispatch(
+                createMessage({
+                    content: `${currentUser.name} vừa đổi tên cuộc trò chuyện thành ${text}`,
+                    conversationId: params.id,
+                })
+            ).unwrap();
+            socket.emit('sendMessage', newMessage.newMessage);
             socket.emit('sendNotice', currentConversation?.members);
             setText('');
             setIsTyping(false);
@@ -79,7 +91,13 @@ const ChatSetting = ({ setIsOpenSetting, currentConversation }) => {
         setImage(window.URL.createObjectURL(e.target.files[0]));
         const url = await uploadImage(e.target.files[0]);
         const result = await dispatch(changeConversationAvatar({ id: params.id, newAvt: url })).unwrap();
-        console.log(result);
+        const newMessage = await dispatch(
+            createMessage({
+                content: `${currentUser.name} đã thay đổi ảnh đại diện cuộc trò chuyện`,
+                conversationId: params.id,
+            })
+        ).unwrap();
+        socket.emit('sendMessage', newMessage.newMessage);
         socket.emit('sendNotice', currentConversation?.members);
         setIsOpenSetting(false);
     };
@@ -138,7 +156,10 @@ const ChatSetting = ({ setIsOpenSetting, currentConversation }) => {
             )}
 
             <div className="rightPanel__mainSetting">
-                <h4 className="rightPanel__mainSetting__title">Members</h4>
+                <div className="rightPanel__mainSetting__title">
+                    <h4>Members</h4>
+                    <button onClick={() => setIsShowMessagePopup(true)}>Add People</button>
+                </div>
                 <div className="rightPanel__mainSetting__listMember">
                     {currentConversation?.members.map((member) => {
                         return <ChatMember member={member} key={member._id} />;
@@ -159,6 +180,14 @@ const ChatSetting = ({ setIsOpenSetting, currentConversation }) => {
                     content="Việc này sẽ khiến bạn và người khác không thể xem lại nội dung cuộc trò chuyện này nữa"
                     handleOK={handleDeleteCon}
                     handleCANCEL={handleClosePopup}
+                />
+            )}
+            {isShowMessagePopup && (
+                <MessagePopup
+                    setIsShowPopup={setIsShowMessagePopup}
+                    type="add"
+                    listUserId={currentConversation.members.map((mem) => mem._id)}
+                    setIsOpenSetting={setIsOpenSetting}
                 />
             )}
         </div>

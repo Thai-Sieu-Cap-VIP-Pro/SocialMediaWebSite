@@ -16,7 +16,7 @@ import WarningPopup from '../../../shareComponents/WarningPopup/WarningPopup';
 import Message from './Message';
 import { socket } from '../../../App';
 
-const ChatContent = ({ isOpenSetting, setIsOpenSetting }) => {
+const ChatContent = ({ isOpenSetting, setIsOpenSetting, isShowPopup, setIsShowPopup }) => {
     const [text, setText] = useState('');
     const [uploading, setUploading] = useState(false);
     const [image, setImage] = useState('');
@@ -38,9 +38,14 @@ const ChatContent = ({ isOpenSetting, setIsOpenSetting }) => {
     const ref = useRef();
 
     // useEffect
+
+    useEffect(() => {
+        document.title = 'Tiha • Chats';
+    }, []);
+
     useEffect(() => {
         if (ref.current) {
-            ref.current.scrollTop = ref.current.scrollTopMax;
+            ref.current.scrollTop = ref.current.scrollHeight;
         }
     }, [data, socket, image]);
 
@@ -97,7 +102,7 @@ const ChatContent = ({ isOpenSetting, setIsOpenSetting }) => {
             setData((prev) => {
                 return prev.map((item) => {
                     if (item._id === mess._id) {
-                        item.content.text = '';
+                        item.isDeleted = true;
                     }
                     return item;
                 });
@@ -162,7 +167,9 @@ const ChatContent = ({ isOpenSetting, setIsOpenSetting }) => {
 
     const handleSubmit = async () => {
         try {
-            const result = await dispatch(createMessage({ content: text, conversationId: params.id })).unwrap();
+            const result = await dispatch(
+                createMessage({ content: text, conversationId: params.id, userId: currentUser._id })
+            ).unwrap();
             console.log(result);
             console.log(currentConversation);
             socket.emit('sendMessage', result.newMessage);
@@ -189,7 +196,7 @@ const ChatContent = ({ isOpenSetting, setIsOpenSetting }) => {
         setImage(window.URL.createObjectURL(e.target.files[0]));
         const url = await uploadImage(e.target.files[0]);
         const result = await dispatch(
-            createMessage({ content: url, conversationId: params.id, isImage: true })
+            createMessage({ content: url, conversationId: params.id, isImage: true, userId: currentUser._id })
         ).unwrap();
         setUploading(false);
         console.log(result);
@@ -217,7 +224,12 @@ const ChatContent = ({ isOpenSetting, setIsOpenSetting }) => {
     };
 
     if (isOpenSetting) {
-        return <ChatSetting setIsOpenSetting={setIsOpenSetting} currentConversation={currentConversation} />;
+        return (
+            <ChatSetting
+                setIsOpenSetting={setIsOpenSetting}
+                currentConversation={conversations.find((con) => con._id === params.id)}
+            />
+        );
     } else {
         return (
             <div className="rightPanel" style={{ position: 'relative' }}>

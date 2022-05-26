@@ -34,7 +34,7 @@ const ChatAPI = {
         const url = 'http://localhost:3001/api/chat/removeUser';
         return axiosClient.patch(url, params);
     },
-    addUserInCon: (params) => {
+    addUserIntoCon: (params) => {
         const url = 'http://localhost:3001/api/chat/addUser';
         return axiosClient.patch(url, params);
     },
