@@ -19,7 +19,6 @@ import {
   Favorite,
   BookmarkBorderOutlined,
 } from "@material-ui/icons";
-import AddComment from "./addComment";
 import PostHeader from "./postHeader";
 import { format } from "timeago.js";
 import {
@@ -28,7 +27,6 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 
 import ReportModal from "./reportModal";
-import AlllikesPopup from "./commons/allLikesPopup";
 import { socket } from "../../../App";
 
 const PostItem = ({ postId, content }) => {
@@ -70,6 +68,17 @@ const PostItem = ({ postId, content }) => {
       setnumLikes(++numLikes);
       const action1 = handleLike(id);
       dispatch(action1);
+
+      const paramsCreate = {
+        receiver: userid,
+        notiType: 2,
+        desId: postId,
+      };
+
+      const action = createNotification(paramsCreate);
+      let newNoti = await dispatch(action).unwrap();
+      console.log(newNoti);
+
       let notification = {
         postId,
         userId: userid, // cái này là id của thằng cần gửi thông báo tới
@@ -78,16 +87,6 @@ const PostItem = ({ postId, content }) => {
         img: current.avatar,
       };
       socket.emit("send_notificaton", notification);
-
-      //tham số truyền vào khi tạo comment
-      const paramsCreate = {
-        receiver: userid,
-        notiType: 2,
-        desId: postId,
-      };
-
-      const action = createNotification(paramsCreate);
-      await dispatch(action);
     }
 
     setisLike(!isLike);

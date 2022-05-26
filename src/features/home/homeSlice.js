@@ -125,6 +125,22 @@ export const createNotification = createAsyncThunk(
   }
 );
 
+export const seenNotification = createAsyncThunk(
+  "notification/seen",
+  async (params) => {
+    const Notification = await NotificationAPI.seenNotification(params);
+    return Notification;
+  }
+);
+
+export const seenAllNotification = createAsyncThunk(
+  "notification/seenAll",
+  async () => {
+    const Notification = await NotificationAPI.seenAllNotification();
+    return Notification;
+  }
+);
+
 const HomeSlice = createSlice({
   name: "home",
   initialState: {
@@ -200,6 +216,7 @@ const HomeSlice = createSlice({
     //get all post when login successful
     [getPosts.pending]: (state) => {
       state.isLoading = true;
+      state.listNotification = [];
     },
     [getPosts.rejected]: (state) => {
       console.log("Lỗi không lấy được post");
@@ -210,7 +227,6 @@ const HomeSlice = createSlice({
       state.listPosts = action.payload.posts;
       state.isLoading = false;
       state.loadListPostFail = false;
-      console.log(action.payload);
     },
     //get all comment of post
     [getCommentsByPostID.pending]: (state, action) => {
@@ -320,6 +336,24 @@ const HomeSlice = createSlice({
     [createNotification.fulfilled]: (state, action) => {
       //state.listNotification = action.payload;
       console.log("Tạo notification thành công");
+    },
+
+    [seenNotification.fulfilled]: (state, action) => {
+      //console.log(action.payload);
+      //xử lý đã xem tin nhắn
+      state.listNotification = state.listNotification.map((item, index) => {
+        if (item._id === action.payload.seenNoti._id) {
+          item.isSeen = true;
+        }
+        return item;
+      });
+    },
+
+    [seenAllNotification.fulfilled]: (state, action) => {
+      state.listNotification = state.listNotification.map((item, index) => {
+        item.isSeen = true;
+        return item;
+      });
     },
 
     [follow.fulfilled]: (state, action) => {

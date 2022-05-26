@@ -13,12 +13,11 @@ class PostAPI {
 
   likePost = (params) => {
     const url = "http://localhost:3001/api/posts/post/" + params + "/like";
-    return axiosClient.patch(url, {});
+    return axiosClient.patch(url, { postId: params });
   };
 
   getPostById = (params) => {
-    const url = `http://localhost:3001/api/posts/${params}`;
-    console.log(url);
+    const url = `http://localhost:3001/api/posts/${params.postId}`;
     return axiosClient.get(url, {});
   };
 

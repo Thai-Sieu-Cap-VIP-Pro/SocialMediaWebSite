@@ -79,11 +79,6 @@ const AuthSlice = createSlice({
       );
     },
 
-    [Logout.fulfilled]: (state, action) => {
-      state.isLogin = false;
-      localStorage.removeItem("authTokens");
-      localStorage.removeItem("LoginUser");
-    },
     [getPosts.fulfilled]: (state, action) => {
       console.log(action.payload);
     },
@@ -113,6 +108,12 @@ const AuthSlice = createSlice({
     },
 
     [Logout.fulfilled]: (state, action) => {
+      state.isLogin = false;
+      localStorage.removeItem("authTokens");
+      localStorage.removeItem("LoginUser");
+    },
+
+    [Logout.rejected]: (state, action) => {
       state.isLogin = false;
       localStorage.removeItem("authTokens");
       localStorage.removeItem("LoginUser");

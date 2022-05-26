@@ -5,8 +5,9 @@ import Header from '../../../shareComponents/header/Header';
 import ChatContent from '../components/ChatContent';
 import DefaultContent from '../components/DefaultContent';
 import ListChat from '../components/ListChat';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { socket } from '../../../App';
+import { getNotification } from '../../home/homeSlice';
 
 const ChatPage = () => {
     const [isOpenSetting, setIsOpenSetting] = useState(false);
@@ -15,12 +16,18 @@ const ChatPage = () => {
     const currentUser = useSelector((state) => state.auth.current);
     const params = useParams();
     console.log(currentUser._id);
+    const dispatch = useDispatch();
     useEffect(() => {
         socket.emit('joinMessenger', currentUser._id);
     }, [params]);
 
     useEffect(() => {
         document.title = 'Inbox • Chats';
+    }, []);
+
+    useEffect(async () => {
+        let action2 = getNotification();
+        await dispatch(action2).unwrap();
     }, []);
 
     return (

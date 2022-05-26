@@ -9,6 +9,7 @@ import {
   addNewComment,
   CancelReplyCmd,
   createNotification,
+  getCommentsByPostID,
 } from "../homeSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -52,29 +53,33 @@ const AddComment = ({ postId, userPostId }) => {
     ) {
       //tiếp tục kiểu tra xem
       if (replingCmt.CmtUserId == userPostId) {
-        let notification1 = {
-          postId,
-          userId: replingCmt.CmtUserId, // cái này là id của thằng cần gửi thông báo tới (trong trường hợp này là chủ commnent)
-          type: 4,
-          senderName: current.name,
-        };
-        socket.emit("send_notificaton", notification1);
-        paramsCreate = {
-          receiver: replingCmt.CmtUserId,
-          notiType: 4,
-          desId: postId,
-        };
-        const actionCreateNoti = createNotification(paramsCreate);
-        dispatch(actionCreateNoti);
+        //thằng được phản hồi chính là thằng chủ post
+        if (current._id != replingCmt.CmtUserId) {
+          let notification1 = {
+            postId,
+            userId: replingCmt.CmtUserId,
+            type: 4,
+            senderName: current.name,
+            img: current.avatar,
+          };
+          socket.emit("send_notificaton", notification1);
+          paramsCreate = {
+            receiver: replingCmt.CmtUserId,
+            notiType: 4,
+            desId: postId,
+          };
+          const actionCreateNoti = createNotification(paramsCreate);
+          dispatch(actionCreateNoti);
+        }
       } else {
+        //thằng được phản hồi không phải là chủ post
         let notification1 = {
           postId,
-          userId: replingCmt.CmtUserId, // cái này là id của thằng cần gửi thông báo tới (trong trường hợp này là chủ commnent)
+          userId: replingCmt.CmtUserId,
           type: 4,
           senderName: current.name,
+          img: current.avatar,
         };
-        socket.emit("send_notificaton", notification1);
-
         paramsCreate = {
           receiver: replingCmt.CmtUserId,
           notiType: 4,
@@ -82,45 +87,53 @@ const AddComment = ({ postId, userPostId }) => {
         };
         const actionCreateNoti = createNotification(paramsCreate);
         dispatch(actionCreateNoti);
-
+        socket.emit("send_notificaton", notification1);
+        if (current._id != userPostId) {
+          let notification = {
+            postId,
+            userId: userPostId, // cái này là id của thằng cần gửi thông báo tới
+            type: 1,
+            senderName: current.name,
+            img: current.avatar,
+          };
+          socket.emit("send_notificaton", notification);
+          const paramsCreate1 = {
+            receiver: userPostId,
+            notiType: 1,
+            desId: postId,
+          };
+          const actionCreateNoti1 = createNotification(paramsCreate1);
+          dispatch(actionCreateNoti1);
+        }
+      }
+    } else {
+      if (current._id != userPostId) {
         let notification = {
           postId,
           userId: userPostId, // cái này là id của thằng cần gửi thông báo tới
           type: 1,
           senderName: current.name,
+          img: current.avatar,
         };
         socket.emit("send_notificaton", notification);
-        const paramsCreate1 = {
+
+        paramsCreate = {
           receiver: userPostId,
           notiType: 1,
           desId: postId,
         };
-        const actionCreateNoti1 = createNotification(paramsCreate1);
-        dispatch(actionCreateNoti1);
+        const actionCreateNoti = createNotification(paramsCreate);
+        dispatch(actionCreateNoti);
       }
-    } else {
-      let notification = {
-        postId,
-        userId: userPostId, // cái này là id của thằng cần gửi thông báo tới
-        type: 1,
-        senderName: current.name,
-      };
-      socket.emit("send_notificaton", notification);
-
-      paramsCreate = {
-        receiver: userPostId,
-        notiType: 1,
-        desId: postId,
-      };
-      const actionCreateNoti = createNotification(paramsCreate);
-      dispatch(actionCreateNoti);
     }
 
     const action = addNewComment(params);
+    //const action1 = getCommentsByPostID(postId);
 
     //trước khi gửi emmit thì gọi api add comment vào trong backend
     try {
-      await dispatch(action);
+      await dispatch(action).unwrap();
+      // await dispatch(action1).unwrap();
     } catch (err) {
       console.log(err);
     }

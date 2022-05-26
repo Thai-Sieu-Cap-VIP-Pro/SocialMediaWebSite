@@ -14,6 +14,7 @@ import {
 import PostHeader from "./postHeader";
 import ListComment from "./ListComment";
 import AlllikesPopup from "./commons/allLikesPopup";
+import CommentSkeleton from "../../../shareComponents/skeletonLoading/CommentSkeleton";
 
 const PostComment = () => {
   const dispatch = useDispatch();
@@ -62,11 +63,7 @@ const PostComment = () => {
             <PostHeader postId={activePostId} postUser={activePost.user} />
           </div>
           <div className="detail__content__comment__body">
-            {!isLoadCmt ? (
-              <ListComment />
-            ) : (
-              <Spinner id="load" animation="grow" variant="primary" />
-            )}
+            {!isLoadCmt ? <ListComment /> : <CommentSkeleton />}
           </div>
           <div className="detail__content__comment__footer">
             <AddComment
