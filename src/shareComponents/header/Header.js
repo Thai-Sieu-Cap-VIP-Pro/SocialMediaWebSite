@@ -22,6 +22,8 @@ import { Button, Col } from "react-bootstrap";
 import Usecloseoutsidetoclose from "../../hooks/useCloseOutSideToClose";
 import {
   getCommentsByPostID,
+  getNotification,
+  seenAllNotification,
   getPostById,
   ShowDetail,
 } from "../../features/home/homeSlice";
@@ -30,6 +32,8 @@ import { socket } from "../../App";
 import NotificationItem from "./notificationItem";
 
 const Header = () => {
+  const [refresh, setFefresh] = useState(false);
+  let [numNotifications, setNumNotifications] = useState(0);
   const current = JSON.parse(localStorage.getItem("LoginUser"));
   const currentUser = useSelector((state) => state.auth.current);
   const listUser = useSelector((state) => state.auth.listUser).filter(
@@ -38,24 +42,17 @@ const Header = () => {
 
   const { listNotification } = useSelector((state) => state.home);
 
-  console.log(listNotification);
-
-  const [listNotifications, setListNotifications] = useState([]);
-
   useEffect(() => {
+    setNumNotifications(0);
     listNotification.forEach((item) => {
-      const obj = {
-        senderName: item.sender.name,
-        type: item.notiType,
-        postId: item.desId,
-        time: item.createdAt,
-        isSeen: item.isSeen,
-        img: item.sender.avatar,
-      };
-
-      setListNotifications((prev) => [...prev, obj]);
+      if (item.isSeen == false) {
+        console.log(item);
+        setNumNotifications((prev) => {
+          return prev + 1;
+        });
+      }
     });
-  }, []);
+  }, [listNotification]);
 
   const [bruh, setBruh] = useState([]);
   const [searchValue, setSearchValue] = useState("");
@@ -83,29 +80,32 @@ const Header = () => {
   useEffect(async () => {
     socket
       .off("receive_notification")
-      .on("receive_notification", async ({ senderName, type, postId, img }) => {
+      .on("receive_notification", async ({ postId }) => {
+        console.log("Nhận được thông báo");
         const action = getPostById({ postId });
-        await dispatch(action);
-        console.log(type);
-        const obj = {
-          senderName,
-          type,
-          postId,
-          time: Date.now(),
-          isSeen: false,
-          img,
-        };
-        setListNotifications((prev) => [obj, ...prev]);
+        await dispatch(action).unwrap();
+
+        let action2 = getNotification();
+        await dispatch(action2).unwrap();
+
+        setFefresh(!refresh);
       });
   }, [socket]);
 
   const showNotificationPanel = () => {
-    setIsShowNotificationPanel(!isShowNotificationPanel);
+    setIsShowNotificationPanel((prev) => {
+      return !prev;
+    });
   };
 
   let domNode = Usecloseoutsidetoclose(() => {
     setIsShowNotificationPanel(false);
   });
+
+  const handleSeenAll = async () => {
+    const action = seenAllNotification();
+    await dispatch(action).unwrap();
+  };
 
   //phần react
 
@@ -146,25 +146,34 @@ const Header = () => {
           <AddCircleOutline />
         </NavLink>
         <div className="notification">
-          {listNotifications.length > 0 ? (
-            <div className="notification__number">
-              {listNotifications.length}
-            </div>
+          {numNotifications > 0 ? (
+            <div className="notification__number">{numNotifications}</div>
           ) : (
             <></>
           )}
 
-          <NotificationsOutlined onClick={showNotificationPanel} />
+          <NotificationsOutlined
+            ref={domNode}
+            onClick={showNotificationPanel}
+          />
           {isShowNotificationPanel ? (
             <div ref={domNode} className="notification__panel">
-              {listNotifications.length > 0 ? (
+              {listNotification.length > 0 ? (
                 <>
+                  <div className="headerThongBao">Thông báo</div>
                   <ul>
-                    {listNotifications.map((item, index) => {
-                      return <NotificationItem info={item} />;
+                    {listNotification.map((item, index) => {
+                      return (
+                        <NotificationItem
+                          info={item}
+                          handleNum={setNumNotifications}
+                        />
+                      );
                     })}
                   </ul>
-                  <div className="seeMore">Xem thêm</div>
+                  <div className="seeMore" onClick={handleSeenAll}>
+                    Đánh dấu đã đọc
+                  </div>
                 </>
               ) : (
                 <div className="noNotification">Không có thông báo nào</div>
@@ -190,7 +199,7 @@ const Header = () => {
             </li>
             <li id="logout" onClick={handleLogout}>
               <LocalDiningOutlined />
-              <i>Đăng xuất</i>
+              <i> Đăng xuất</i>
             </li>
           </ul>
         </div>

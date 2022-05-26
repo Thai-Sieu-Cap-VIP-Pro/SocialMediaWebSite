@@ -10,10 +10,13 @@ import VideoCall from "./features/chat/components/VideoCall";
 import UserIndex from "./features/user";
 
 import io from "socket.io-client";
+import { useSelector } from "react-redux";
+import PostComment from "./features/home/components/postComment";
 
 export const socket = io.connect("http://localhost:3001");
 
 function App() {
+  const { activePostId } = useSelector((state) => state.home);
   return (
     <div className="App">
       <Routes>
@@ -57,6 +60,7 @@ function App() {
         <Route path="/auth/*" element={<Auth />}></Route>
       </Routes>
       <Outlet></Outlet>
+      {activePostId == "" ? "" : <PostComment />}
     </div>
   );
 }
