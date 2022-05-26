@@ -118,6 +118,15 @@ export const changeConversationAvatar = createAsyncThunk('conversation/changeAva
     }
 });
 
+export const deleteMessage = createAsyncThunk('message/delete', async (args, thunkAPI) => {
+    try {
+        const response = await ChatAPI.deleteMessage(args);
+        return response;
+    } catch (error) {
+        return thunkAPI.rejectWithValue(`${error}`);
+    }
+});
+
 const chatSlice = createSlice({
     name: 'chat',
     initialState: {
@@ -203,7 +212,7 @@ const chatSlice = createSlice({
             state.loading = false;
             state.error = false;
         },
-         [getMessageInCons.rejected]: (state, action) => {
+        [getMessageInCons.rejected]: (state, action) => {
             state.loading = false;
             state.error = true;
         },
@@ -268,8 +277,10 @@ const chatSlice = createSlice({
         [changeConversationName.fulfilled]: (state, action) => {
             state.loading = false;
             state.error = false;
-            const conIndex = state.conversations.findIndex(conversation => conversation._id == action.payload.newConversation._id)
-            state.conversations[conIndex].name = action.payload.newConversation.name
+            const conIndex = state.conversations.findIndex(
+                (conversation) => conversation._id == action.payload.newConversation._id
+            );
+            state.conversations[conIndex].name = action.payload.newConversation.name;
         },
         [changeConversationName.rejected]: (state, action) => {
             state.loading = false;
@@ -282,12 +293,26 @@ const chatSlice = createSlice({
         [changeConversationAvatar.fulfilled]: (state, action) => {
             state.loading = false;
             state.error = false;
-            const conIndex = state.conversations.findIndex(conversation => conversation._id == action.payload.newConversation._id)
-            state.conversations[conIndex].avatar = action.payload.newConversation.avatar
+            const conIndex = state.conversations.findIndex(
+                (conversation) => conversation._id == action.payload.newConversation._id
+            );
+            state.conversations[conIndex].avatar = action.payload.newConversation.avatar;
         },
         [changeConversationAvatar.rejected]: (state, action) => {
             state.loading = false;
             state.error = true;
+        },
+        [deleteMessage.pending]: (state, action) => {
+            state.loading = true;
+            state.error = false;
+        },
+        [deleteMessage.rejected]: (state, action) => {
+            state.loading = false;
+            state.error = true;
+        },
+        [deleteMessage.fulfilled]: (state, action) => {
+            state.loading = false;
+            state.error = false;
         },
     },
 });
