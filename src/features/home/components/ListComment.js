@@ -11,6 +11,7 @@ const ListComment = () => {
   useEffect(async () => {
     socket.off("receive_message").on("receive_message", (data) => {
       try {
+        console.log("Dô trong này để lấy comment");
         const action1 = getCommentsByPostID(activePostId);
         dispach(action1);
       } catch (err) {

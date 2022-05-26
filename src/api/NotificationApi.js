@@ -12,8 +12,13 @@ class notificationAPI {
     return axiosClient.post(url, params);
   };
 
-  seenNotification = () => {
+  seenNotification = (params) => {
     const url = "http://localhost:3001/api/noti/seenNoti";
+    return axiosClient.patch(url, params);
+  };
+
+  seenAllNotification = () => {
+    const url = "http://localhost:3001/api/noti/seenAllNoti";
     return axiosClient.patch(url, {});
   };
 }

@@ -8,6 +8,7 @@ import {
 import "./common.scss";
 import { useDispatch, useSelector } from "react-redux";
 import {
+  createNotification,
   deleteComment,
   getCommentsByPostID,
   getListUser,
@@ -18,6 +19,7 @@ import { format } from "timeago.js";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEllipsis } from "@fortawesome/free-solid-svg-icons";
 import useCloseOutSideToClose from "../../../../hooks/useCloseOutSideToClose";
+import { socket } from "../../../../App";
 
 const CommentItem = ({ CmtItem }) => {
   const dispatch = useDispatch();
@@ -58,13 +60,29 @@ const CommentItem = ({ CmtItem }) => {
     dispatch(action);
   };
 
-  const handleLikeCmt = async (id) => {
+  const handleLikeCmt = async (id, x) => {
     setisLike(!isLike);
     const action = likeOrUnlikeCmt(id);
     if (isLike == true) {
       setNumLikes(--NumLikes);
     } else {
       setNumLikes(++NumLikes);
+      let notification = {
+        postI: activePost._id,
+        userId: CmtItem.user._id,
+        type: 6,
+        senderName: LoginUser.name,
+        img: LoginUser.avatar,
+      };
+      let paramsCreate = {
+        receiver: CmtItem.user._id,
+        notiType: 6,
+        desId: activePost._id,
+      };
+
+      const actionCreateNoti = createNotification(paramsCreate);
+      await dispatch(actionCreateNoti).unwrap();
+      socket.emit("send_notificaton", notification);
     }
 
     try {
@@ -176,7 +194,7 @@ const CommentItem = ({ CmtItem }) => {
         {isLike ? (
           <Favorite
             className="likeActive"
-            onClick={() => handleLikeCmt(CmtItem._id)}
+            onClick={() => handleLikeCmt(CmtItem._id, CmtItem.user._id)}
           />
         ) : (
           <FavoriteBorderOutlined onClick={() => handleLikeCmt(CmtItem._id)} />

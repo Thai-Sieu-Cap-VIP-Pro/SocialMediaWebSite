@@ -2,9 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Col, Container, Row, Spinner, Toast } from "react-bootstrap";
 import Header from "../../../shareComponents/header/Header";
 import Category from "../components/category";
-import PostComment from "../components/postComment";
 import PostItem from "../components/postItem";
-import ReportModal from "../components/reportModal";
 import { useDispatch, useSelector } from "react-redux";
 import {
   getListRecommendFriends,
@@ -13,39 +11,34 @@ import {
 } from "../homeSlice";
 import "./homePage.scss";
 import ErrorFetch from "../../../shareComponents/fetchfail/error";
-
-import io from "socket.io-client";
 import AlllikesPopup from "../components/commons/allLikesPopup";
 import { socket } from "../../../App";
+import HomeSkeleton from "../../../shareComponents/skeletonLoading/HomeSkeleton";
 
 const HomePage = () => {
   const [showB, setShowB] = useState(false);
-  const [toastMessage, setToastMessage] = useState("");
+  const [refresh, setRefresh] = useState(false);
 
   const toggleShowB = () => setShowB(!showB);
   const current = JSON.parse(localStorage.getItem("LoginUser"));
   const dispatch = useDispatch();
-  const {
-    listPosts,
-    isLoading,
-    loadListPostFail,
-    activePostId,
-    listRecommend,
-  } = useSelector((state) => state.home);
+  const { listPosts, isLoading, loadListPostFail } = useSelector(
+    (state) => state.home
+  );
 
-  console.log(listPosts);
-
-  socket.emit("joinNotificationRoom", current._id);
-
-  useEffect(() => {
+  useEffect(async () => {
     let action = getPosts();
-    dispatch(action);
+    await dispatch(action).unwrap();
 
     let action2 = getNotification();
-    dispatch(action2);
+    await dispatch(action2).unwrap();
 
     let action1 = getListRecommendFriends();
-    dispatch(action1);
+    await dispatch(action1).unwrap();
+
+    setRefresh(!refresh);
+
+    socket.emit("joinNotificationRoom", current._id);
   }, []);
 
   return (
@@ -76,14 +69,8 @@ const HomePage = () => {
           </Row>
         ) : (
           <Row>
-            {isLoading ? (
-              <Col md={{ span: 12 }} id="loadingPosts">
-                <Spinner
-                  id="loadingSpinner"
-                  animation="border"
-                  variant="primary"
-                />
-              </Col>
+            {isLoading == true ? (
+              <HomeSkeleton />
             ) : (
               <>
                 <Col md={{ span: 7 }}>
@@ -104,7 +91,6 @@ const HomePage = () => {
             )}
           </Row>
         )}
-        {activePostId == "" ? "" : <PostComment />}
       </Container>
       <AlllikesPopup />
     </>

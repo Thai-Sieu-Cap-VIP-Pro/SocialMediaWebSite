@@ -5,10 +5,12 @@ import Header from "../../../shareComponents/header/Header";
 import ChatContent from "../components/ChatContent";
 import DefaultContent from "../components/DefaultContent";
 import ListChat from "../components/ListChat";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { socket } from "../../../App";
+import { getNotification } from "../../home/homeSlice";
 
 const ChatPage = () => {
+  const dispatch = useDispatch();
   const [isOpenSetting, setIsOpenSetting] = useState(false);
   const currentUser = useSelector((state) => state.auth.current);
   const params = useParams();
@@ -16,6 +18,11 @@ const ChatPage = () => {
   useEffect(() => {
     socket.emit("joinMessenger", currentUser._id);
   }, [params]);
+
+  useEffect(async () => {
+    let action2 = getNotification();
+    await dispatch(action2).unwrap();
+  }, []);
   return (
     <>
       <Container fluid>

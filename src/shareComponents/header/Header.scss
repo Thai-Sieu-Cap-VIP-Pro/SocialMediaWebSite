@@ -1,4 +1,5 @@
 @import "../../assets/styles/variable";
+@import "../../assets/styles/_mixin.scss";
 
 .header {
   display: flex;
@@ -203,7 +204,7 @@
 
   &__panel {
     position: absolute;
-    width: 300px;
+    width: 350px;
     left: -25px;
     background: white;
     border-radius: 10px;
@@ -232,6 +233,11 @@
       list-style: none;
       padding: 15px 0 0 0;
       margin: 0;
+      overflow: hidden;
+      padding: 0;
+      max-height: 500px;
+      overflow-y: auto;
+      @include ScrollBarCustom;
 
       li {
         padding: 5px 0 5px 20px;
@@ -242,10 +248,11 @@
 
 .notificationItem {
   display: flex;
-  font-size: 13px;
+  font-size: 12px;
   align-items: center;
   padding: 5px 25px 5px 11px;
   position: relative;
+  margin: 5px 0;
   &_Img {
     width: 50px;
     height: 50px;
@@ -296,11 +303,23 @@
     color: #a5a0a0;
   }
 
+  .notSeen {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background-color: blue;
+  }
+
   .seePost {
     color: $primaryColor;
     font-size: 11px;
     font-style: italic;
+    cursor: pointer;
   }
+}
+
+.notificationItem.notSeen {
+  background-color: rgb(242, 250, 244);
 }
 
 .seeMore {
@@ -308,6 +327,17 @@
   font-size: 12px;
   text-align: right;
   padding: 0px 20px 10px 0px;
-  color: $primaryColor;
+  color: #2bc891;
   cursor: pointer;
+  border-top: 2px solid #f9f6f6;
+  padding-top: 10px;
+}
+
+.headerThongBao {
+  color: $primaryColor;
+  color: #2bc891;
+  font-weight: bold;
+  font-size: 14px;
+  padding: 10px;
+  border-bottom: 2px solid #f9f6f6;
 }
