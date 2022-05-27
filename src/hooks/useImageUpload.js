@@ -8,7 +8,7 @@ const useImageUpload = () => {
         imageData.append('upload_preset', 'socialnetwork');
         imageData.append('cloud_name', 'wjbucloud');
         const url = (
-            await axios.post('https://api.cloudinary.com/v1_1/wjbucloud/image/upload', imageData, {
+            await axios.post('https://api.cloudinary.com/v1_1/wjbucloud/video/upload', imageData, {
                 headers: {
                     'content-type': 'multipart/form-data',
                 },

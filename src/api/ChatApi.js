@@ -19,7 +19,7 @@ const ChatAPI = {
         return axiosClient.post(url, params);
     },
     getMessageInCon: (params) => {
-        const url = `http://localhost:3001/api/chat/${params}`;
+        const url = `http://localhost:3001/api/chat/${params.id}?page=${params.page}`;
         return axiosClient.get(url);
     },
     getMembersInCon: (params) => {
