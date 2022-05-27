@@ -135,6 +135,7 @@ const chatSlice = createSlice({
         error: false,
         userFollowing: [],
         tags: [],
+        messagesInConversation: [],
     },
     reducers: {
         createTag: (state, action) => {
@@ -211,6 +212,7 @@ const chatSlice = createSlice({
         [getMessageInCons.fulfilled]: (state, action) => {
             state.loading = false;
             state.error = false;
+            state.messagesInConversation = action.payload.messages;
         },
         [getMessageInCons.rejected]: (state, action) => {
             state.loading = false;

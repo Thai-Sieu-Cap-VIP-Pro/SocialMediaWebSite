@@ -24,7 +24,7 @@ const SingleChat = ({ conversation = null, handleClick = null, setId = null, cur
 
     useEffect(() => {
         socket.on('recieveNotice', (leaved) => {
-            dispatch(getMessageInCons(conversation._id))
+            dispatch(getMessageInCons({ id: conversation._id, page: 0 }))
                 .unwrap()
                 .then((resultValue) => {
                     setMessages(resultValue.messages);
@@ -38,7 +38,7 @@ const SingleChat = ({ conversation = null, handleClick = null, setId = null, cur
     }, [socket]);
 
     useEffect(() => {
-        dispatch(getMessageInCons(conversation._id))
+        dispatch(getMessageInCons({ id: conversation._id, page: 0 }))
             .unwrap()
             .then((resultValue) => {
                 setMessages(resultValue.messages);
@@ -86,15 +86,14 @@ const SingleChat = ({ conversation = null, handleClick = null, setId = null, cur
                 </h6>
                 <div className="singleChat__user__content">
                     <p className="singleChat__user__content__summary">
-                        {messages[messages.length - 1]?.content.isImage === true
+                        {messages[0]?.content.isImage === true
                             ? 'Đã gửi hình ảnh'
-                            : messages[messages.length - 1]?.isDeleted
-                            ? `${messages[messages.length - 1]?.sender.name} đã thu hồi tin nhắn`
-                            : messages[messages.length - 1]?.content.text}{' '}
+                            : messages[0]?.isDeleted
+                            ? `${messages[0]?.sender.name} đã thu hồi tin nhắn`
+                            : messages[0]?.content.text}{' '}
                     </p>
                     <span className="singleChat__user__content__time">
-                        {messages[messages.length - 1] &&
-                            '•' + timeAgo.format(Date.parse(messages[messages.length - 1]?.createdAt), 'mini-now')}
+                        {messages[0] && '•' + timeAgo.format(Date.parse(messages[0]?.createdAt), 'mini-now')}
                     </span>
                 </div>
             </div>

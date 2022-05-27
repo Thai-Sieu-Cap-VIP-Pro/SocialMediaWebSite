@@ -19,6 +19,7 @@ import { socket } from '../../../App';
 const ChatContent = ({ isOpenSetting, setIsOpenSetting, isShowPopup, setIsShowPopup }) => {
     const [text, setText] = useState('');
     const [uploading, setUploading] = useState(false);
+    const [isFetchingMessages, setIsFetchingMessages] = useState(false);
     const [image, setImage] = useState('');
     const [isTyping, setIsTyping] = useState(false);
     const [showEmojiPicker, setShowEmojiPicker] = useState(false);
@@ -30,6 +31,8 @@ const ChatContent = ({ isOpenSetting, setIsOpenSetting, isShowPopup, setIsShowPo
     const [videoId, setVideoId] = useState(uuid());
     const [isCalling, setIsCalling] = useState(false);
     const currentUser = useSelector((state) => state.auth.current);
+    const [isEnough, setIsEnough] = useState(false);
+    const [page, setPage] = useState(0);
     const params = useParams();
     const dispatch = useDispatch();
     const navigate = useNavigate();
@@ -47,11 +50,38 @@ const ChatContent = ({ isOpenSetting, setIsOpenSetting, isShowPopup, setIsShowPo
         if (ref.current) {
             ref.current.scrollTop = ref.current.scrollHeight;
         }
-    }, [data, socket, image]);
+    }, [socket, image]);
+
+    const handleScroll = async (e) => {
+        if (e.target.scrollTop === 0) {
+            if (!isEnough) {
+                try {
+                    setIsFetchingMessages(true);
+                    console.log('Fetch More Data');
+                    const lmao = page + 1;
+                    const result = await dispatch(getMessageInCons({ id: params.id, page: lmao })).unwrap();
+                    const newMessages = await result.messages;
+                    setIsFetchingMessages(false);
+                    if (newMessages.length === 0) {
+                        setIsEnough(true);
+                    } else {
+                        setData((prev) => {
+                            return [...prev, ...newMessages];
+                        });
+                        setPage((prev) => prev + 1);
+                    }
+                } catch (error) {
+                    throw error;
+                }
+            }
+        }
+    };
 
     useEffect(() => {
+        setIsEnough(false);
         getMessagesInCons();
         setIsOpenSetting(false);
+        setPage(0);
         setCurrentConversation(conversations.find((conversation) => conversation._id === params.id));
         return () => {
             socket.emit('leaveRoom', params.id);
@@ -60,7 +90,7 @@ const ChatContent = ({ isOpenSetting, setIsOpenSetting, isShowPopup, setIsShowPo
 
     useEffect(() => {
         socket.on('recieveMessage', (mess) => {
-            setData((prev) => [...prev, mess]);
+            setData((prev) => [mess, ...prev]);
             console.log(mess);
         });
         return () => {
@@ -102,7 +132,7 @@ const ChatContent = ({ isOpenSetting, setIsOpenSetting, isShowPopup, setIsShowPo
             setData((prev) => {
                 return prev.map((item) => {
                     if (item._id === mess._id) {
-                        item.isDeleted = true;
+                        return mess;
                     }
                     return item;
                 });
@@ -135,7 +165,7 @@ const ChatContent = ({ isOpenSetting, setIsOpenSetting, isShowPopup, setIsShowPo
     const getMessagesInCons = async () => {
         try {
             socket.emit('joinRoom', params.id);
-            const result = await dispatch(getMessageInCons(params.id)).unwrap();
+            const result = await dispatch(getMessageInCons({ id: params.id, page: 0 })).unwrap();
             //console.log(result.messages);
             setData(result.messages);
         } catch (error) {
@@ -184,6 +214,7 @@ const ChatContent = ({ isOpenSetting, setIsOpenSetting, isShowPopup, setIsShowPo
     const handleDeleteMessage = async (id) => {
         try {
             const result = await dispatch(deleteMessage({ id })).unwrap();
+            console.log(result.deletedMessage);
             socket.emit('sendDeleteMsg', result.deletedMessage);
             socket.emit('sendNotice', conversations.find((conversation) => conversation._id === params.id)?.members);
         } catch (error) {
@@ -278,19 +309,28 @@ const ChatContent = ({ isOpenSetting, setIsOpenSetting, isShowPopup, setIsShowPo
                     </div>
                     <InfoOutlined fontSize="medium" cursor="pointer" onClick={() => setIsOpenSetting(true)} />
                 </div>
-                <div className="rightPanel__conversation" ref={ref}>
-                    {data.map((item, index) => {
-                        return (
-                            <Message
-                                message={item}
-                                key={index}
-                                handleImagePopup={handleImagePopup}
-                                handleTymMessage={handleTymMessage}
-                                handleUnTymMessage={handleUnTymMessage}
-                                handleDeleteMessage={handleDeleteMessage}
-                            />
-                        );
-                    })}
+                <div className="rightPanel__conversation" ref={ref} onScroll={handleScroll}>
+                    {isFetchingMessages && (
+                        <img
+                            src="https://res.cloudinary.com/wjbucloud/image/upload/v1653588935/Ball-Drop-Preloader-1-1_kvobub.gif"
+                            style={{ width: '50px', height: 'auto', alignSelf: 'center' }}
+                        ></img>
+                    )}
+                    {data
+                        .slice(0)
+                        .reverse()
+                        .map((item, index) => {
+                            return (
+                                <Message
+                                    message={item}
+                                    key={index}
+                                    handleImagePopup={handleImagePopup}
+                                    handleTymMessage={handleTymMessage}
+                                    handleUnTymMessage={handleUnTymMessage}
+                                    handleDeleteMessage={handleDeleteMessage}
+                                />
+                            );
+                        })}
                     {uploading && (
                         <img
                             src={image}
