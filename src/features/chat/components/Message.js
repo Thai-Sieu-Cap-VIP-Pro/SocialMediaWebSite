@@ -1,8 +1,9 @@
 import { DeleteOutline, Favorite, FavoriteBorder, Reply } from '@material-ui/icons';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
 import WarningPopup from '../../../shareComponents/WarningPopup/WarningPopup';
+import { getPostById } from '../../home/homeSlice';
 import MessagePopup from './MessagePopup';
 
 const Message = ({ message, handleImagePopup, handleTymMessage, handleUnTymMessage, handleDeleteMessage }) => {
@@ -11,14 +12,29 @@ const Message = ({ message, handleImagePopup, handleTymMessage, handleUnTymMessa
     const currentConversation = useSelector((state) => state.chat.conversations).find((item) => item._id === params.id);
     const [isShowMessagePopup, setIsShowMessagePopup] = useState(false);
     const [isClosePopup, setIsClosePopup] = useState(true);
+    const [post, setPost] = useState({});
     const handleClosePopup = () => {
         setIsClosePopup(true);
     };
+    const dispatch = useDispatch();
 
     const handleDeleteMsg = () => {
         handleDeleteMessage(message._id);
         setIsClosePopup(true);
     };
+
+    useEffect( () => {
+        if (message.content.messType === 'post') {
+            getPost(message.content.text)
+
+        }
+    }, [])
+
+    const getPost = async (id) => {
+        const result = await dispatch(getPostById({postId: id})).unwrap();
+        setPost(result.post[0])
+        console.log(result)
+    }
 
     if (!message.sender) {
         return <div className="rightPanel__conversation__content BOT">{message.content.text}</div>;
@@ -27,6 +43,7 @@ const Message = ({ message, handleImagePopup, handleTymMessage, handleUnTymMessa
             <div
                 className={`rightPanel__conversation__content ${message.sender?._id === currentUser._id ? 'mine' : ''}`}
             >
+                {console.log(post)}
                 {message.sender?._id !== currentUser._id && (
                     <div className="rightPanel__conversation__content__image">
                         <img src={message.sender?.avatar} alt="unsplash" />
@@ -41,7 +58,7 @@ const Message = ({ message, handleImagePopup, handleTymMessage, handleUnTymMessa
                     >
                         {message.sender.name} đã thu hồi tin nhắn
                     </p>
-                ) : message.content.isImage === true ? (
+                ) : message.content.messType === 'image' ? (
                     <img
                         src={message.content.text}
                         alt="pictureChat"
@@ -49,7 +66,16 @@ const Message = ({ message, handleImagePopup, handleTymMessage, handleUnTymMessa
                         onClick={() => handleImagePopup(message.content.text)}
                         loading="lazy"
                     />
-                ) : (
+                ) : message.content.messType === 'post' ? (
+                    <div>
+                        
+                        <p>Day la bai post cua {post?.user?.name}</p>
+                        <div>
+                            <img src={post?.images?.length>0 ? (post?.images[0]) : '' }></img>
+                        </div>
+                    </div>
+                )
+                 : (
                     <p
                         className={`rightPanel__conversation__content__text ${
                             message.sender?._id === currentUser._id ? 'mine' : ''

@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFaceGrinWide, faImage, faHeart, faPaperPlane } from '@fortawesome/free-regular-svg-icons';
 import { InfoOutlined, Call } from '@material-ui/icons';
-import { createMessage, deleteMessage, getMessageInCons, tymMessage, unTymMessage } from '../ChatSlice';
+import { createMessage, deleteMessage, getMessageInCons, seenAllMessages, seenMessage, tymMessage, unTymMessage } from '../ChatSlice';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { checkText } from 'smile2emoji';
@@ -79,10 +79,12 @@ const ChatContent = ({ isOpenSetting, setIsOpenSetting, isShowPopup, setIsShowPo
 
     useEffect(() => {
         setIsEnough(false);
+        seenAll();
         getMessagesInCons();
         setIsOpenSetting(false);
         setPage(0);
         setCurrentConversation(conversations.find((conversation) => conversation._id === params.id));
+        socket.emit('sendNotice', [currentUser])
         return () => {
             socket.emit('leaveRoom', params.id);
         };
@@ -90,8 +92,8 @@ const ChatContent = ({ isOpenSetting, setIsOpenSetting, isShowPopup, setIsShowPo
 
     useEffect(() => {
         socket.on('recieveMessage', (mess) => {
+            seenMess(mess._id);
             setData((prev) => [mess, ...prev]);
-            console.log(mess);
         });
         return () => {
             socket.off('recieveMessage');
@@ -173,6 +175,26 @@ const ChatContent = ({ isOpenSetting, setIsOpenSetting, isShowPopup, setIsShowPo
         }
     };
 
+    const seenAll = async () => {
+        try {
+            const result = await dispatch(seenAllMessages({id : params.id})).unwrap();
+            console.log("seen tin nhan")
+        } catch (error) {
+            console.log(error);
+        }
+    };
+
+    const seenMess = async (id) => {
+        try {
+            console.log(id)
+            const result = await dispatch(seenMessage({messId : id})).unwrap();
+            console.log(result.seenMessage)
+            return result.seenMessage;
+        } catch (error) {
+            console.log(error);
+        }
+    };
+
     const handleEmojiClick = (event, emojiObject) => {
         setText((a) => a + emojiObject.emoji);
         //setshowEmoji(false);
@@ -227,7 +249,7 @@ const ChatContent = ({ isOpenSetting, setIsOpenSetting, isShowPopup, setIsShowPo
         setImage(window.URL.createObjectURL(e.target.files[0]));
         const url = await uploadImage(e.target.files[0]);
         const result = await dispatch(
-            createMessage({ content: url, conversationId: params.id, isImage: true, userId: currentUser._id })
+            createMessage({ content: url, conversationId: params.id, messType: 'image', userId: currentUser._id })
         ).unwrap();
         setUploading(false);
         console.log(result);

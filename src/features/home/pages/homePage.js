@@ -18,6 +18,7 @@ import HomeSkeleton from "../../../shareComponents/skeletonLoading/HomeSkeleton"
 const HomePage = () => {
   const [showB, setShowB] = useState(false);
   const [refresh, setRefresh] = useState(false);
+  const [isShowPopup, setIsShowPopup] = useState(false);
 
   const toggleShowB = () => setShowB(!showB);
   const current = JSON.parse(localStorage.getItem("LoginUser"));
@@ -80,6 +81,8 @@ const HomePage = () => {
                         key={post._id}
                         postId={post._id}
                         content={post}
+                        isShowPopup={isShowPopup}
+                        setIsShowPopup={setIsShowPopup}
                       />
                     );
                   })}

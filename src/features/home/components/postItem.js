@@ -28,6 +28,7 @@ import {
 
 import ReportModal from "./reportModal";
 import { socket } from "../../../App";
+import MessagePopup from "../../chat/components/MessagePopup";
 
 const PostItem = ({ postId, content }) => {
   const dispatch = useDispatch();
@@ -36,6 +37,8 @@ const PostItem = ({ postId, content }) => {
   const current = JSON.parse(localStorage.getItem("LoginUser"));
 
   const [isLike, setisLike] = useState(content.likes.includes(current._id));
+
+  const [isShowMessagePopup, setIsShowMessagePopup] = useState(false);
 
   //hàm xử lý show phần comment khi show tất cả phần comment
 
@@ -136,7 +139,7 @@ const PostItem = ({ postId, content }) => {
 
             <AddCommentOutlined onClick={() => showDetail(postId)} />
 
-            <SendOutlined />
+            <SendOutlined onClick={() => setIsShowMessagePopup(true)}/>
           </Col>
           <Col md={3} style={{ textAlign: "right" }}>
             <BookmarkBorderOutlined />
@@ -163,6 +166,9 @@ const PostItem = ({ postId, content }) => {
         </div>
       </Col>
       <ReportModal userPostId={content.user._id} />
+      {isShowMessagePopup && (
+          <MessagePopup setIsShowPopup={setIsShowMessagePopup} type="forward" content={{text: postId, messType: "post"}} />
+      )}
     </Row>
   );
 };
