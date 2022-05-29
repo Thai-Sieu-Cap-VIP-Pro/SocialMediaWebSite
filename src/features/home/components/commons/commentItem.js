@@ -22,6 +22,7 @@ import useCloseOutSideToClose from "../../../../hooks/useCloseOutSideToClose";
 import { socket } from "../../../../App";
 
 const CommentItem = ({ CmtItem }) => {
+  const dispatch = useDispatch();
   const LoginUser = JSON.parse(localStorage.getItem("LoginUser"));
   let islike = CmtItem.likes.includes(LoginUser._id);
 
