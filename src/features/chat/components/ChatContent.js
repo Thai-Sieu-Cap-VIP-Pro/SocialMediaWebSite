@@ -2,7 +2,15 @@ import React, { useEffect, useRef, useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFaceGrinWide, faImage, faHeart, faPaperPlane } from '@fortawesome/free-regular-svg-icons';
 import { InfoOutlined, Call } from '@material-ui/icons';
-import { createMessage, deleteMessage, getMessageInCons, seenAllMessages, seenMessage, tymMessage, unTymMessage } from '../ChatSlice';
+import {
+    createMessage,
+    deleteMessage,
+    getMessageInCons,
+    seenAllMessages,
+    seenMessage,
+    tymMessage,
+    unTymMessage,
+} from '../ChatSlice';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { checkText } from 'smile2emoji';
@@ -84,7 +92,7 @@ const ChatContent = ({ isOpenSetting, setIsOpenSetting, isShowPopup, setIsShowPo
         setIsOpenSetting(false);
         setPage(0);
         setCurrentConversation(conversations.find((conversation) => conversation._id === params.id));
-        socket.emit('sendNotice', [currentUser])
+        socket.emit('sendNotice', [currentUser]);
         return () => {
             socket.emit('leaveRoom', params.id);
         };
@@ -177,8 +185,8 @@ const ChatContent = ({ isOpenSetting, setIsOpenSetting, isShowPopup, setIsShowPo
 
     const seenAll = async () => {
         try {
-            const result = await dispatch(seenAllMessages({id : params.id})).unwrap();
-            console.log("seen tin nhan")
+            const result = await dispatch(seenAllMessages({ id: params.id })).unwrap();
+            console.log('seen tin nhan');
         } catch (error) {
             console.log(error);
         }
@@ -186,9 +194,9 @@ const ChatContent = ({ isOpenSetting, setIsOpenSetting, isShowPopup, setIsShowPo
 
     const seenMess = async (id) => {
         try {
-            console.log(id)
-            const result = await dispatch(seenMessage({messId : id})).unwrap();
-            console.log(result.seenMessage)
+            console.log(id);
+            const result = await dispatch(seenMessage({ messId: id })).unwrap();
+            console.log(result.seenMessage);
             return result.seenMessage;
         } catch (error) {
             console.log(error);
@@ -399,7 +407,7 @@ const ChatContent = ({ isOpenSetting, setIsOpenSetting, isShowPopup, setIsShowPo
                             <label htmlFor="image-input" className="rightPanel__inputContainer__icon image">
                                 <FontAwesomeIcon icon={faImage} size="lg" cursor="pointer" />
                             </label>
-                            <input type="file" id="image-input" onChange={handleFileChange} />
+                            <input type="file" id="image-input" onChange={handleFileChange} accept="image/*, video/*" />
                             <FontAwesomeIcon
                                 className="rightPanel__inputContainer__icon heart"
                                 icon={faHeart}

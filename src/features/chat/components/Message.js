@@ -23,18 +23,17 @@ const Message = ({ message, handleImagePopup, handleTymMessage, handleUnTymMessa
         setIsClosePopup(true);
     };
 
-    useEffect( () => {
+    useEffect(() => {
         if (message.content.messType === 'post') {
-            getPost(message.content.text)
-
+            getPost(message.content.text);
         }
-    }, [])
+    }, []);
 
     const getPost = async (id) => {
-        const result = await dispatch(getPostById({postId: id})).unwrap();
-        setPost(result.post[0])
-        console.log(result)
-    }
+        const result = await dispatch(getPostById({ postId: id })).unwrap();
+        setPost(result.post[0]);
+        console.log(result);
+    };
 
     if (!message.sender) {
         return <div className="rightPanel__conversation__content BOT">{message.content.text}</div>;
@@ -67,15 +66,29 @@ const Message = ({ message, handleImagePopup, handleTymMessage, handleUnTymMessa
                         loading="lazy"
                     />
                 ) : message.content.messType === 'post' ? (
-                    <div>
-                        
-                        <p>Day la bai post cua {post?.user?.name}</p>
-                        <div>
-                            <img src={post?.images?.length>0 ? (post?.images[0]) : '' }></img>
+                    <div
+                        className={`rightPanel__conversation__content__post ${
+                            message.sender?._id === currentUser._id ? 'mine' : ''
+                        }`}
+                    >
+                        <div className="rightPanel__conversation__content__post__header">
+                            <div className="rightPanel__conversation__content__post__header__ownerAvatar">
+                                <img src={post?.user?.avatar} alt="ownerAvatar"></img>
+                            </div>
+                            <p className="rightPanel__conversation__content__post__header__ownerName">
+                                {post?.user?.name}
+                            </p>
+                        </div>
+                        <div className="rightPanel__conversation__content__post__body">
+                            <img src={post?.images?.length > 0 ? post?.images[0] : ''} alt="thumbnail of the POST" />
+                        </div>
+                        <div className="rightPanel__conversation__content__post__footer">
+                            <p className="rightPanel__conversation__content__post__footer__postContent">
+                                <span>{post?.user?.name}</span> {post?.content}
+                            </p>
                         </div>
                     </div>
-                )
-                 : (
+                ) : (
                     <p
                         className={`rightPanel__conversation__content__text ${
                             message.sender?._id === currentUser._id ? 'mine' : ''
