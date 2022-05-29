@@ -116,6 +116,7 @@ const MessagePopup = ({ setIsShowPopup, type = 'create', listUserId = [], setIsO
             socket.emit('sendMessage', newMessage.newMessage);
             socket.emit('sendNotice', conversation.members);
             handleClosePopup();
+            alert('Chia sẻ thành công!');
         }
     };
 
