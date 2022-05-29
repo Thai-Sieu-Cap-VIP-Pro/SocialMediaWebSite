@@ -67,7 +67,7 @@ const PostItem = ({ postId, content }) => {
     } else {
       setnumLikes(++numLikes);
       const action1 = handleLike(id);
-      dispatch(action1);
+      await dispatch(action1).unwrap();
 
       const paramsCreate = {
         receiver: userid,
@@ -76,8 +76,7 @@ const PostItem = ({ postId, content }) => {
       };
 
       const action = createNotification(paramsCreate);
-      let newNoti = await dispatch(action).unwrap();
-      console.log(newNoti);
+      await dispatch(action).unwrap();
 
       let notification = {
         postId,
@@ -110,11 +109,18 @@ const PostItem = ({ postId, content }) => {
           {content.images.map((contenItem, index) => {
             return (
               <Carousel.Item key={index}>
-                <img
-                  className="d-block w-100"
-                  src={contenItem}
-                  alt="First slide"
-                />
+                {contenItem.split(".")[contenItem.split(".").length - 1] ===
+                "mp4" ? (
+                  <video height="500" width="665" controls>
+                    <source src={contenItem} type="video/mp4"></source>
+                  </video>
+                ) : (
+                  <img
+                    className="d-block w-100"
+                    src={contenItem}
+                    alt="First slide"
+                  />
+                )}
               </Carousel.Item>
             );
           })}
