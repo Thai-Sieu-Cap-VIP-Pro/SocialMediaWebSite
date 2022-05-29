@@ -2,7 +2,15 @@ import React, { useEffect, useRef, useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFaceGrinWide, faImage, faHeart, faPaperPlane } from '@fortawesome/free-regular-svg-icons';
 import { InfoOutlined, Call } from '@material-ui/icons';
-import { createMessage, deleteMessage, getMessageInCons, tymMessage, unTymMessage } from '../ChatSlice';
+import {
+    createMessage,
+    deleteMessage,
+    getMessageInCons,
+    seenAllMessages,
+    seenMessage,
+    tymMessage,
+    unTymMessage,
+} from '../ChatSlice';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { checkText } from 'smile2emoji';
@@ -16,9 +24,10 @@ import WarningPopup from '../../../shareComponents/WarningPopup/WarningPopup';
 import Message from './Message';
 import { socket } from '../../../App';
 
-const ChatContent = ({ isOpenSetting, setIsOpenSetting }) => {
+const ChatContent = ({ isOpenSetting, setIsOpenSetting, isShowPopup, setIsShowPopup }) => {
     const [text, setText] = useState('');
     const [uploading, setUploading] = useState(false);
+    const [isFetchingMessages, setIsFetchingMessages] = useState(false);
     const [image, setImage] = useState('');
     const [isTyping, setIsTyping] = useState(false);
     const [showEmojiPicker, setShowEmojiPicker] = useState(false);
@@ -30,6 +39,8 @@ const ChatContent = ({ isOpenSetting, setIsOpenSetting }) => {
     const [videoId, setVideoId] = useState(uuid());
     const [isCalling, setIsCalling] = useState(false);
     const currentUser = useSelector((state) => state.auth.current);
+    const [isEnough, setIsEnough] = useState(false);
+    const [page, setPage] = useState(0);
     const params = useParams();
     const dispatch = useDispatch();
     const navigate = useNavigate();
@@ -37,18 +48,51 @@ const ChatContent = ({ isOpenSetting, setIsOpenSetting }) => {
 
     const ref = useRef();
 
-  // useEffect
-  useEffect(() => {
-    if (ref.current) {
-      ref.current.scrollTop = ref.current.scrollHeight;
-    }
-  }, [data, socket, image]);
-
+    // useEffect
 
     useEffect(() => {
+        document.title = 'Tiha • Chats';
+    }, []);
+
+    useEffect(() => {
+        if (ref.current) {
+            ref.current.scrollTop = ref.current.scrollHeight;
+        }
+    }, [socket, image]);
+
+    const handleScroll = async (e) => {
+        if (e.target.scrollTop === 0) {
+            if (!isEnough) {
+                try {
+                    setIsFetchingMessages(true);
+                    console.log('Fetch More Data');
+                    const lmao = page + 1;
+                    const result = await dispatch(getMessageInCons({ id: params.id, page: lmao })).unwrap();
+                    const newMessages = await result.messages;
+                    setIsFetchingMessages(false);
+                    if (newMessages.length === 0) {
+                        setIsEnough(true);
+                    } else {
+                        setData((prev) => {
+                            return [...prev, ...newMessages];
+                        });
+                        setPage((prev) => prev + 1);
+                    }
+                } catch (error) {
+                    throw error;
+                }
+            }
+        }
+    };
+
+    useEffect(() => {
+        setIsEnough(false);
+        seenAll();
         getMessagesInCons();
         setIsOpenSetting(false);
+        setPage(0);
         setCurrentConversation(conversations.find((conversation) => conversation._id === params.id));
+        socket.emit('sendNotice', [currentUser]);
         return () => {
             socket.emit('leaveRoom', params.id);
         };
@@ -56,8 +100,8 @@ const ChatContent = ({ isOpenSetting, setIsOpenSetting }) => {
 
     useEffect(() => {
         socket.on('recieveMessage', (mess) => {
-            setData((prev) => [...prev, mess]);
-            console.log(mess);
+            seenMess(mess._id);
+            setData((prev) => [mess, ...prev]);
         });
         return () => {
             socket.off('recieveMessage');
@@ -98,7 +142,7 @@ const ChatContent = ({ isOpenSetting, setIsOpenSetting }) => {
             setData((prev) => {
                 return prev.map((item) => {
                     if (item._id === mess._id) {
-                        item.content.text = '';
+                        return mess;
                     }
                     return item;
                 });
@@ -131,9 +175,29 @@ const ChatContent = ({ isOpenSetting, setIsOpenSetting }) => {
     const getMessagesInCons = async () => {
         try {
             socket.emit('joinRoom', params.id);
-            const result = await dispatch(getMessageInCons(params.id)).unwrap();
+            const result = await dispatch(getMessageInCons({ id: params.id, page: 0 })).unwrap();
             //console.log(result.messages);
             setData(result.messages);
+        } catch (error) {
+            console.log(error);
+        }
+    };
+
+    const seenAll = async () => {
+        try {
+            const result = await dispatch(seenAllMessages({ id: params.id })).unwrap();
+            console.log('seen tin nhan');
+        } catch (error) {
+            console.log(error);
+        }
+    };
+
+    const seenMess = async (id) => {
+        try {
+            console.log(id);
+            const result = await dispatch(seenMessage({ messId: id })).unwrap();
+            console.log(result.seenMessage);
+            return result.seenMessage;
         } catch (error) {
             console.log(error);
         }
@@ -163,7 +227,9 @@ const ChatContent = ({ isOpenSetting, setIsOpenSetting }) => {
 
     const handleSubmit = async () => {
         try {
-            const result = await dispatch(createMessage({ content: text, conversationId: params.id })).unwrap();
+            const result = await dispatch(
+                createMessage({ content: text, conversationId: params.id, userId: currentUser._id })
+            ).unwrap();
             console.log(result);
             console.log(currentConversation);
             socket.emit('sendMessage', result.newMessage);
@@ -178,6 +244,7 @@ const ChatContent = ({ isOpenSetting, setIsOpenSetting }) => {
     const handleDeleteMessage = async (id) => {
         try {
             const result = await dispatch(deleteMessage({ id })).unwrap();
+            console.log(result.deletedMessage);
             socket.emit('sendDeleteMsg', result.deletedMessage);
             socket.emit('sendNotice', conversations.find((conversation) => conversation._id === params.id)?.members);
         } catch (error) {
@@ -190,7 +257,7 @@ const ChatContent = ({ isOpenSetting, setIsOpenSetting }) => {
         setImage(window.URL.createObjectURL(e.target.files[0]));
         const url = await uploadImage(e.target.files[0]);
         const result = await dispatch(
-            createMessage({ content: url, conversationId: params.id, isImage: true })
+            createMessage({ content: url, conversationId: params.id, messType: 'image', userId: currentUser._id })
         ).unwrap();
         setUploading(false);
         console.log(result);
@@ -218,7 +285,12 @@ const ChatContent = ({ isOpenSetting, setIsOpenSetting }) => {
     };
 
     if (isOpenSetting) {
-        return <ChatSetting setIsOpenSetting={setIsOpenSetting} currentConversation={currentConversation} />;
+        return (
+            <ChatSetting
+                setIsOpenSetting={setIsOpenSetting}
+                currentConversation={conversations.find((con) => con._id === params.id)}
+            />
+        );
     } else {
         return (
             <div className="rightPanel" style={{ position: 'relative' }}>
@@ -267,19 +339,28 @@ const ChatContent = ({ isOpenSetting, setIsOpenSetting }) => {
                     </div>
                     <InfoOutlined fontSize="medium" cursor="pointer" onClick={() => setIsOpenSetting(true)} />
                 </div>
-                <div className="rightPanel__conversation" ref={ref}>
-                    {data.map((item, index) => {
-                        return (
-                            <Message
-                                message={item}
-                                key={index}
-                                handleImagePopup={handleImagePopup}
-                                handleTymMessage={handleTymMessage}
-                                handleUnTymMessage={handleUnTymMessage}
-                                handleDeleteMessage={handleDeleteMessage}
-                            />
-                        );
-                    })}
+                <div className="rightPanel__conversation" ref={ref} onScroll={handleScroll}>
+                    {isFetchingMessages && (
+                        <img
+                            src="https://res.cloudinary.com/wjbucloud/image/upload/v1653588935/Ball-Drop-Preloader-1-1_kvobub.gif"
+                            style={{ width: '50px', height: 'auto', alignSelf: 'center' }}
+                        ></img>
+                    )}
+                    {data
+                        .slice(0)
+                        .reverse()
+                        .map((item, index) => {
+                            return (
+                                <Message
+                                    message={item}
+                                    key={index}
+                                    handleImagePopup={handleImagePopup}
+                                    handleTymMessage={handleTymMessage}
+                                    handleUnTymMessage={handleUnTymMessage}
+                                    handleDeleteMessage={handleDeleteMessage}
+                                />
+                            );
+                        })}
                     {uploading && (
                         <img
                             src={image}
@@ -326,7 +407,7 @@ const ChatContent = ({ isOpenSetting, setIsOpenSetting }) => {
                             <label htmlFor="image-input" className="rightPanel__inputContainer__icon image">
                                 <FontAwesomeIcon icon={faImage} size="lg" cursor="pointer" />
                             </label>
-                            <input type="file" id="image-input" onChange={handleFileChange} />
+                            <input type="file" id="image-input" onChange={handleFileChange} accept="image/*, video/*" />
                             <FontAwesomeIcon
                                 className="rightPanel__inputContainer__icon heart"
                                 icon={faHeart}

@@ -19,7 +19,7 @@ const ChatAPI = {
         return axiosClient.post(url, params);
     },
     getMessageInCon: (params) => {
-        const url = `http://localhost:3001/api/chat/${params}`;
+        const url = `http://localhost:3001/api/chat/${params.id}?page=${params.page}`;
         return axiosClient.get(url);
     },
     getMembersInCon: (params) => {
@@ -34,7 +34,7 @@ const ChatAPI = {
         const url = 'http://localhost:3001/api/chat/removeUser';
         return axiosClient.patch(url, params);
     },
-    addUserInCon: (params) => {
+    addUserIntoCon: (params) => {
         const url = 'http://localhost:3001/api/chat/addUser';
         return axiosClient.patch(url, params);
     },
@@ -58,6 +58,14 @@ const ChatAPI = {
         const url = `http://localhost:3001/api/chat/deleteMessage/${params.id}`;
         return axiosClient.delete(url);
     },
+    seenAllMessages: (params) => {
+        const url = `http://localhost:3001/api/chat/seenAllMessages/${params.id}`
+        return axiosClient.patch(url, {});
+    },
+    seenMessage: (params) => {
+        const url = `http://localhost:3001/api/chat/seenMessage`
+        return axiosClient.patch(url, {messId: params.messId});
+    }
 };
 
 export default ChatAPI;

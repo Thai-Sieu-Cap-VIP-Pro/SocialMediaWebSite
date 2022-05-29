@@ -22,8 +22,6 @@ import useCloseOutSideToClose from "../../../../hooks/useCloseOutSideToClose";
 import { socket } from "../../../../App";
 
 const CommentItem = ({ CmtItem }) => {
-  const dispatch = useDispatch();
-
   const LoginUser = JSON.parse(localStorage.getItem("LoginUser"));
   let islike = CmtItem.likes.includes(LoginUser._id);
 
@@ -67,7 +65,13 @@ const CommentItem = ({ CmtItem }) => {
       setNumLikes(--NumLikes);
     } else {
       setNumLikes(++NumLikes);
-
+      let notification = {
+        postId: activePost._id,
+        userId: CmtItem.user._id,
+        type: 6,
+        senderName: LoginUser.name,
+        img: LoginUser.avatar,
+      };
       let paramsCreate = {
         receiver: CmtItem.user._id,
         notiType: 6,
@@ -76,22 +80,16 @@ const CommentItem = ({ CmtItem }) => {
 
       const actionCreateNoti = createNotification(paramsCreate);
       await dispatch(actionCreateNoti).unwrap();
-
-      let notification = {
-        postId: activePost._id,
-        userId: CmtItem.user._id,
-        type: 6,
-        senderName: LoginUser.name,
-        img: LoginUser.avatar,
-      };
       socket.emit("send_notificaton", notification);
     }
 
     try {
-      await dispatch(action).unwrap();
+      await dispatch(action);
     } catch (error) {
       console.log(error);
     }
+
+    setisLike(!isLike);
   };
 
   // const handleEditCmt = (id) => {

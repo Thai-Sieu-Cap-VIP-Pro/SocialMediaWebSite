@@ -3,13 +3,14 @@ import { Close } from '@material-ui/icons';
 import { Col, Container, Row } from 'react-bootstrap';
 import SingleTag from './SingleTag';
 import SingleDestination from './SingleDestination';
-import { createConversation, getUserContact } from '../ChatSlice';
+import { addUserIntoCon, createConversation, createMessage, getUserContact } from '../ChatSlice';
 import { useSelector, useDispatch } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { resetTag } from '../ChatSlice';
 import PopupOverlay from '../../../shareComponents/PopupOverlay/PopupOverlay';
+import { socket } from '../../../App';
 
-const MessagePopup = ({ setIsShowPopup }) => {
+const MessagePopup = ({ setIsShowPopup, type = 'create', listUserId = [], setIsOpenSetting, content = {} }) => {
     const currentUser = useSelector((state) => state.auth.current);
     const userContact = useSelector((state) => state.chat.userFollowing);
     const [searchValue, setSearchValue] = useState('');
@@ -19,6 +20,7 @@ const MessagePopup = ({ setIsShowPopup }) => {
     const dispatch = useDispatch();
     const tags = useSelector((state) => state.chat.tags);
     const conversations = useSelector((state) => state.chat.conversations);
+    const params = useParams();
 
     const handleClick = () => {
         let exist = [];
@@ -69,15 +71,53 @@ const MessagePopup = ({ setIsShowPopup }) => {
         console.log(tags);
     }, []);
 
-    const handleSearch = (searchValue) => {
-        setSearchValue(searchValue);
+    const handleSearch = (value) => {
+        setSearchValue(value);
         const searchUser = listUser.filter((user) => {
-            if (user.name.toLowerCase().includes(searchValue.toLowerCase())) {
+            console.log(user);
+            if (user.name.toLowerCase().includes(value.toLowerCase())) {
                 return user;
             }
         });
         console.log(searchUser);
         setBruh(searchUser);
+    };
+
+    const handleAdd = async () => {
+        try {
+            const usersId = tags.map((tag) => tag._id);
+            const result = await dispatch(addUserIntoCon({ usersId, conversationId: params.id })).unwrap();
+            const memberNames = tags.map((tag) => tag.name).join(', ');
+            const newMessage = await dispatch(
+                createMessage({
+                    content: `${currentUser.name} đã thêm ${memberNames} vào cuộc trò chuyện`,
+                    conversationId: params.id,
+                })
+            ).unwrap();
+            socket.emit('sendMessage', newMessage.newMessage);
+            socket.emit('sendNotice', result.newConversation.members);
+            setIsOpenSetting(false);
+            handleClosePopup();
+        } catch (error) {
+            throw error;
+        }
+    };
+
+    const handleForward = async () => {
+        for await (const conversation of tags) {
+            const newMessage = await dispatch(
+                createMessage({
+                    content: content.text,
+                    conversationId: conversation._id,
+                    messType: content.messType,
+                    userId: currentUser._id,
+                })
+            ).unwrap();
+            socket.emit('sendMessage', newMessage.newMessage);
+            socket.emit('sendNotice', conversation.members);
+            handleClosePopup();
+            alert('Chia sẻ thành công!');
+        }
     };
 
     return (
@@ -86,13 +126,43 @@ const MessagePopup = ({ setIsShowPopup }) => {
             <div className="messagePopup">
                 <div className="messagePopup__titleContainer">
                     <Close onClick={handleClosePopup} fontSize="large" style={{ cursor: 'pointer' }} />
-                    <h5>New Message</h5>
-                    <button
-                        className={`messagePopup__titleContainer__button ${tags.length === 0 ? 'disabled' : ''}`}
-                        onClick={handleClick}
-                    >
-                        Next
-                    </button>
+                    {type === 'create' ? (
+                        <>
+                            <h5>New Message</h5>
+                            <button
+                                className={`messagePopup__titleContainer__button ${
+                                    tags.length === 0 ? 'disabled' : ''
+                                }`}
+                                onClick={handleClick}
+                            >
+                                Next
+                            </button>
+                        </>
+                    ) : type === 'add' ? (
+                        <>
+                            <h5>Add People</h5>
+                            <button
+                                className={`messagePopup__titleContainer__button ${
+                                    tags.length === 0 ? 'disabled' : ''
+                                }`}
+                                onClick={handleAdd}
+                            >
+                                Next
+                            </button>
+                        </>
+                    ) : (
+                        <>
+                            <h5>Forward Message</h5>
+                            <button
+                                className={`messagePopup__titleContainer__button ${
+                                    tags.length === 0 ? 'disabled' : ''
+                                }`}
+                                onClick={handleForward}
+                            >
+                                Next
+                            </button>
+                        </>
+                    )}
                 </div>
                 <Container className="messagePopup__destinations" fluid="md">
                     <Row style={{ padding: '10px 0' }}>
@@ -120,13 +190,42 @@ const MessagePopup = ({ setIsShowPopup }) => {
                 </Container>
                 <div className="messagePopup__destinationList">
                     <h6 style={{ padding: '10px 20px 10px 20px' }}>Suggested</h6>
-                    {searchValue === ''
-                        ? userContact.map((follow, index) => {
-                              return <SingleDestination follow={follow} key={index} />;
-                          })
-                        : bruh.map((user, index) => {
-                              return <SingleDestination follow={user} key={index} />;
-                          })}
+                    {type === 'create'
+                        ? searchValue === ''
+                            ? userContact.map((follow, index) => {
+                                  return <SingleDestination follow={follow} key={index} />;
+                              })
+                            : bruh.map((user, index) => {
+                                  return <SingleDestination follow={user} key={index} />;
+                              })
+                        : type === 'add'
+                        ? searchValue === ''
+                            ? userContact
+                                  .filter((item) => {
+                                      if (!listUserId?.includes(item._id)) {
+                                          return item;
+                                      }
+                                  })
+                                  .map((follow, index) => {
+                                      return <SingleDestination follow={follow} key={index} />;
+                                  })
+                            : bruh
+                                  .filter((item) => {
+                                      return !listUserId?.includes(item._id);
+                                  })
+                                  .map((user, index) => {
+                                      return <SingleDestination follow={user} key={index} />;
+                                  })
+                        : type === 'forward'
+                        ? conversations
+                              .filter((con) => {
+                                  const memberIds = con.members.map((mem) => mem._id);
+                                  return memberIds.includes(currentUser._id);
+                              })
+                              .map((con, index) => {
+                                  return <SingleDestination follow={con} key={index} isForward={true} />;
+                              })
+                        : ''}
                 </div>
             </div>
         </>

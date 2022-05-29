@@ -24,7 +24,7 @@ const SingleChat = ({ conversation = null, handleClick = null, setId = null, cur
 
     useEffect(() => {
         socket.on('recieveNotice', (leaved) => {
-            dispatch(getMessageInCons(conversation._id))
+            dispatch(getMessageInCons({ id: conversation._id, page: 0 }))
                 .unwrap()
                 .then((resultValue) => {
                     setMessages(resultValue.messages);
@@ -38,7 +38,7 @@ const SingleChat = ({ conversation = null, handleClick = null, setId = null, cur
     }, [socket]);
 
     useEffect(() => {
-        dispatch(getMessageInCons(conversation._id))
+        dispatch(getMessageInCons({ id: conversation._id, page: 0 }))
             .unwrap()
             .then((resultValue) => {
                 setMessages(resultValue.messages);
@@ -85,14 +85,33 @@ const SingleChat = ({ conversation = null, handleClick = null, setId = null, cur
                               .join(', ')}
                 </h6>
                 <div className="singleChat__user__content">
-                    <p className="singleChat__user__content__summary">
-                        {messages[messages.length - 1]?.content.isImage === true
-                            ? 'Đã gửi hình ảnh'
-                            : messages[messages.length - 1]?.content.text}{' '}
-                    </p>
+                    {messages[0]?.isSeen.includes(currentUser._id) ? (
+                        <p className="singleChat__user__content__summary">
+                            {messages[0]?.content.messType === 'image'
+                                ? 'Đã gửi hình ảnh'
+                                : messages[0]?.content.messType === 'post'
+                                ? `${messages[0]?.sender.name} vừa chia sẻ một bài đăng`
+                                : messages[0]?.isDeleted
+                                ? `${messages[0]?.sender.name} đã thu hồi tin nhắn`
+                                : messages[0]?.content.text}{' '}
+                        </p>
+                    ) : (
+                        <p
+                            style={{ fontWeight: 'bold', color: 'black' }}
+                            className="singleChat__user__content__summary"
+                        >
+                            {messages[0]?.content.messType === 'image'
+                                ? 'Đã gửi hình ảnh'
+                                : messages[0]?.content.messType === 'post'
+                                ? `${messages[0]?.sender.name} vừa chia sẻ một bài đăng`
+                                : messages[0]?.isDeleted
+                                ? `${messages[0]?.sender.name} đã thu hồi tin nhắn`
+                                : messages[0]?.content.text}{' '}
+                        </p>
+                    )}
+
                     <span className="singleChat__user__content__time">
-                        {messages[messages.length - 1] &&
-                            '•' + timeAgo.format(Date.parse(messages[messages.length - 1]?.createdAt), 'mini-now')}
+                        {messages[0] && '•' + timeAgo.format(Date.parse(messages[0]?.createdAt), 'mini-now')}
                     </span>
                 </div>
             </div>
