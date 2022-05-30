@@ -9,7 +9,8 @@ const NewpostHeader = ({ listImg, content }) => {
     const navigate = useNavigate();
     const handleCreatePost = async () => {
         try {
-            const result = await dispatch(createPost({ images: listImg, content })).unwrap();
+            const listUrl = listImg.map((item) => item.url);
+            const result = await dispatch(createPost({ images: listUrl, content })).unwrap();
             console.log({ result });
             alert(result.message);
             navigate('/');
