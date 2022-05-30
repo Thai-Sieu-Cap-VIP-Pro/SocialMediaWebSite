@@ -10,17 +10,18 @@ const UserHeader = () => {
   const [showModalFollow, setShowModalFollow] = useState(false);
   const [isShowFollowers, setIsShowFollowers] = useState(false);
 
+  const authUserId = useSelector((state) => state.auth.current._id);
   const UserInfo = useSelector((state) => state.user.userInfo);
-  const posts = useSelector((state) => state.user.posts)
+  const posts = useSelector((state) => state.user.posts);
 
-  const { name, avatar } = UserInfo;
+  const { name, avatar, _id } = UserInfo;
   const totalFollower = UserInfo.followers?.length;
   const totalFollowing = UserInfo.following?.length;
 
   const handleShowFollow = (isFollowers) => {
-    setIsShowFollowers(isFollowers)
-    setShowModalFollow(true)
-  }
+    setIsShowFollowers(isFollowers);
+    setShowModalFollow(true);
+  };
 
   return (
     <div>
@@ -54,12 +55,14 @@ const UserHeader = () => {
                 <div className="">
                   <div className="d-flex  flex-row ">
                     <div className="p-2 username ">{name}</div>
-                    <div
-                      className="p-2  span align-self-center"
-                      onClick={() => setShowModal(true)}
-                    >
-                      <button className="edit_button">Edit profile </button>
-                    </div>
+                    {authUserId === _id && (
+                      <div
+                        className="p-2  span align-self-center"
+                        onClick={() => setShowModal(true)}
+                      >
+                        <button className="edit_button">Edit profile </button>
+                      </div>
+                    )}
                     <div className="p-2  span align-self-center">
                       <InsertEmoticonOutlined />
                     </div>

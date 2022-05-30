@@ -12,7 +12,7 @@ const UserProfile = () => {
   useEffect(async () => {
     const action = getUserById(activeId);
     await dispatch(action);
-  }, []);
+  }, [activeId]);
   return (
     <>
       <UserHeader />
