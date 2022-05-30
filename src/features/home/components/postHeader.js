@@ -7,11 +7,13 @@ import { useDispatch, useSelector } from 'react-redux';
 import { ShowReportModal, HideDetailEdit, deletePost } from '../homeSlice';
 import ReportModal from './reportModal';
 import { addActiveId, getPostsByUserId } from '../../user/profileSlice';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 
 const PostHeader = ({ postId, postUser }) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+
+  const currentPost = useSelector((state) => state.home.post);
 
   const userInfoId = useSelector((state) => state.auth.current._id);
 
@@ -76,9 +78,16 @@ const PostHeader = ({ postId, postUser }) => {
                 id="more"
                 onClick={() => showModal(postId)}
               />
-              <div className="button edit_btn" onClick={() => handleEditPost()}>
+              <Link
+                to={`/new`}
+                state={{
+                  post: currentPost,
+                }}
+                className="button edit_btn"
+                // onClick={() => handleEditPost()}
+              >
                 Edit
-              </div>
+              </Link>
               <div
                 className="button delete_btn"
                 onClick={() => handleDeletePost()}
@@ -91,11 +100,7 @@ const PostHeader = ({ postId, postUser }) => {
       }
       {
         // check show delete modal
-        <Modal
-          centered
-          show={showDeleteModal}
-          onHide={closeDialog}
-        >
+        <Modal centered show={showDeleteModal} onHide={closeDialog}>
           <Modal.Header closeButton>
             <Modal.Title>Xóa bài viết?</Modal.Title>
           </Modal.Header>

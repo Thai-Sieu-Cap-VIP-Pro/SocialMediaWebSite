@@ -1,8 +1,16 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFaceGrinWide, faImage, faHeart, faPaperPlane } from '@fortawesome/free-regular-svg-icons';
-import { InfoOutlined, Call } from '@material-ui/icons';
-import { createMessage, deleteMessage, getMessageInCons, tymMessage, unTymMessage } from '../ChatSlice';
+import { InfoOutlined, Call, ArrowDownward } from '@material-ui/icons';
+import {
+    createMessage,
+    deleteMessage,
+    getMessageInCons,
+    seenAllMessages,
+    seenMessage,
+    tymMessage,
+    unTymMessage,
+} from '../ChatSlice';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { checkText } from 'smile2emoji';
@@ -15,11 +23,13 @@ import useImageUpload from '../../../hooks/useImageUpload';
 import WarningPopup from '../../../shareComponents/WarningPopup/WarningPopup';
 import Message from './Message';
 import { socket } from '../../../App';
+import useVideoUpload from '../../../hooks/useVideoUpload';
 
 const ChatContent = ({ isOpenSetting, setIsOpenSetting, isShowPopup, setIsShowPopup }) => {
     const [text, setText] = useState('');
     const [uploading, setUploading] = useState(false);
-    const [image, setImage] = useState('');
+    const [isFetchingMessages, setIsFetchingMessages] = useState(false);
+    const [media, setMedia] = useState({ url: '', type: '' });
     const [isTyping, setIsTyping] = useState(false);
     const [showEmojiPicker, setShowEmojiPicker] = useState(false);
     const [openImagePopup, setOpenImagePopup] = useState(false);
@@ -30,12 +40,17 @@ const ChatContent = ({ isOpenSetting, setIsOpenSetting, isShowPopup, setIsShowPo
     const [videoId, setVideoId] = useState(uuid());
     const [isCalling, setIsCalling] = useState(false);
     const currentUser = useSelector((state) => state.auth.current);
+    const [showScrollButton, setShowScrollButton] = useState(false);
+    const [isEnough, setIsEnough] = useState(false);
+    const [page, setPage] = useState(0);
     const params = useParams();
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const uploadImage = useImageUpload();
+    const uploadVideo = useVideoUpload();
 
     const ref = useRef();
+    const chatContentRef = useRef();
 
     // useEffect
 
@@ -43,16 +58,52 @@ const ChatContent = ({ isOpenSetting, setIsOpenSetting, isShowPopup, setIsShowPo
         document.title = 'Tiha • Chats';
     }, []);
 
-    useEffect(() => {
-        if (ref.current) {
-            ref.current.scrollTop = ref.current.scrollHeight;
+    const handleScroll = async (e) => {
+        if (e.target.scrollTop === 0) {
+            if (!isEnough) {
+                try {
+                    const height1 = chatContentRef.current.scrollHeight;
+                    console.log({ height1 });
+                    setIsFetchingMessages(true);
+                    const lmao = page + 1;
+                    const result = await dispatch(getMessageInCons({ id: params.id, page: lmao })).unwrap();
+                    const newMessages = await result.messages;
+                    setIsFetchingMessages(false);
+                    if (newMessages.length === 0) {
+                        setIsEnough(true);
+                    } else {
+                        setData((prev) => {
+                            return [...prev, ...newMessages];
+                        });
+                        setPage((prev) => prev + 1);
+                    }
+                    chatContentRef.current.scrollTop = chatContentRef.current.scrollHeight - height1;
+                } catch (error) {
+                    throw error;
+                }
+            }
+        } else {
+            if (
+                chatContentRef.current.scrollHeight -
+                    chatContentRef.current.scrollTop -
+                    chatContentRef.current.clientHeight >
+                300
+            ) {
+                setShowScrollButton(true);
+            } else {
+                setShowScrollButton(false);
+            }
         }
-    }, [data, socket, image]);
+    };
 
     useEffect(() => {
+        setIsEnough(false);
+        seenAll();
         getMessagesInCons();
         setIsOpenSetting(false);
+        setPage(0);
         setCurrentConversation(conversations.find((conversation) => conversation._id === params.id));
+        socket.emit('sendNotice', [currentUser]);
         return () => {
             socket.emit('leaveRoom', params.id);
         };
@@ -60,8 +111,16 @@ const ChatContent = ({ isOpenSetting, setIsOpenSetting, isShowPopup, setIsShowPo
 
     useEffect(() => {
         socket.on('recieveMessage', (mess) => {
-            setData((prev) => [...prev, mess]);
-            console.log(mess);
+            seenMess(mess._id);
+            setData((prev) => [mess, ...prev]);
+            if (
+                chatContentRef.current.scrollHeight -
+                    chatContentRef.current.scrollTop -
+                    chatContentRef.current.clientHeight <=
+                300
+            ) {
+                ref.current?.scrollIntoView({ behavior: 'smooth' });
+            }
         });
         return () => {
             socket.off('recieveMessage');
@@ -102,7 +161,7 @@ const ChatContent = ({ isOpenSetting, setIsOpenSetting, isShowPopup, setIsShowPo
             setData((prev) => {
                 return prev.map((item) => {
                     if (item._id === mess._id) {
-                        item.isDeleted = true;
+                        return mess;
                     }
                     return item;
                 });
@@ -135,9 +194,29 @@ const ChatContent = ({ isOpenSetting, setIsOpenSetting, isShowPopup, setIsShowPo
     const getMessagesInCons = async () => {
         try {
             socket.emit('joinRoom', params.id);
-            const result = await dispatch(getMessageInCons(params.id)).unwrap();
+            const result = await dispatch(getMessageInCons({ id: params.id, page: 0 })).unwrap();
             //console.log(result.messages);
             setData(result.messages);
+        } catch (error) {
+            console.log(error);
+        }
+    };
+
+    const seenAll = async () => {
+        try {
+            const result = await dispatch(seenAllMessages({ id: params.id })).unwrap();
+            console.log('seen tin nhan');
+        } catch (error) {
+            console.log(error);
+        }
+    };
+
+    const seenMess = async (id) => {
+        try {
+            console.log(id);
+            const result = await dispatch(seenMessage({ messId: id })).unwrap();
+            console.log(result.seenMessage);
+            return result.seenMessage;
         } catch (error) {
             console.log(error);
         }
@@ -184,6 +263,7 @@ const ChatContent = ({ isOpenSetting, setIsOpenSetting, isShowPopup, setIsShowPo
     const handleDeleteMessage = async (id) => {
         try {
             const result = await dispatch(deleteMessage({ id })).unwrap();
+            console.log(result.deletedMessage);
             socket.emit('sendDeleteMsg', result.deletedMessage);
             socket.emit('sendNotice', conversations.find((conversation) => conversation._id === params.id)?.members);
         } catch (error) {
@@ -192,16 +272,39 @@ const ChatContent = ({ isOpenSetting, setIsOpenSetting, isShowPopup, setIsShowPo
     };
 
     const handleFileChange = async (e) => {
-        setUploading(true);
-        setImage(window.URL.createObjectURL(e.target.files[0]));
-        const url = await uploadImage(e.target.files[0]);
-        const result = await dispatch(
-            createMessage({ content: url, conversationId: params.id, isImage: true, userId: currentUser._id })
-        ).unwrap();
-        setUploading(false);
-        console.log(result);
-        socket.emit('sendMessage', result.newMessage);
-        socket.emit('sendNotice', currentConversation.members);
+        if (e.target.files[0].size <= 52428800) {
+            setUploading(true);
+            if (e.target.files[0].type.includes('image')) {
+                setMedia({ url: window.URL.createObjectURL(e.target.files[0]), type: 'image' });
+                const url = await uploadImage(e.target.files[0]);
+                const result = await dispatch(
+                    createMessage({
+                        content: url,
+                        conversationId: params.id,
+                        messType: 'image',
+                        userId: currentUser._id,
+                    })
+                ).unwrap();
+                socket.emit('sendMessage', result.newMessage);
+                socket.emit('sendNotice', currentConversation.members);
+            } else {
+                setMedia({ url: window.URL.createObjectURL(e.target.files[0]), type: 'video' });
+                const url = await uploadVideo(e.target.files[0]);
+                const result = await dispatch(
+                    createMessage({
+                        content: url,
+                        conversationId: params.id,
+                        messType: 'video',
+                        userId: currentUser._id,
+                    })
+                ).unwrap();
+                socket.emit('sendMessage', result.newMessage);
+                socket.emit('sendNotice', currentConversation.members);
+            }
+            setUploading(false);
+        } else {
+            alert('Kích thước của file quá lớn!');
+        }
     };
 
     const handleImagePopup = (src) => {
@@ -222,6 +325,15 @@ const ChatContent = ({ isOpenSetting, setIsOpenSetting, isShowPopup, setIsShowPo
     const handleDeny = () => {
         setIsCalling(false);
     };
+
+    const handleScrollBottom = () => {
+        ref.current.scrollIntoView({ behavior: 'smooth' });
+        setShowScrollButton(false);
+    };
+
+    // useEffect(() => {
+    //     ref.current?.scrollIntoView({ behavior: 'smooth' });
+    // }, [handleFileChange, handleSubmit]);
 
     if (isOpenSetting) {
         return (
@@ -278,32 +390,72 @@ const ChatContent = ({ isOpenSetting, setIsOpenSetting, isShowPopup, setIsShowPo
                     </div>
                     <InfoOutlined fontSize="medium" cursor="pointer" onClick={() => setIsOpenSetting(true)} />
                 </div>
-                <div className="rightPanel__conversation" ref={ref}>
-                    {data.map((item, index) => {
-                        return (
-                            <Message
-                                message={item}
-                                key={index}
-                                handleImagePopup={handleImagePopup}
-                                handleTymMessage={handleTymMessage}
-                                handleUnTymMessage={handleUnTymMessage}
-                                handleDeleteMessage={handleDeleteMessage}
-                            />
-                        );
-                    })}
-                    {uploading && (
+                <div className="rightPanel__conversation" ref={chatContentRef} onScroll={handleScroll}>
+                    {isFetchingMessages && (
                         <img
-                            src={image}
-                            alt="collections"
-                            style={{
-                                opacity: 0.5,
-                                maxWidth: '40%',
-                                alignSelf: 'flex-end',
-                                borderRadius: '10px',
-                            }}
-                            loading="lazy"
-                        />
+                            src="https://res.cloudinary.com/wjbucloud/image/upload/v1653588935/Ball-Drop-Preloader-1-1_kvobub.gif"
+                            style={{ width: '50px', height: 'auto', alignSelf: 'center' }}
+                        ></img>
                     )}
+                    {data
+                        .slice(0)
+                        .reverse()
+                        .map((item, index) => {
+                            return (
+                                <Message
+                                    message={item}
+                                    key={index}
+                                    handleImagePopup={handleImagePopup}
+                                    handleTymMessage={handleTymMessage}
+                                    handleUnTymMessage={handleUnTymMessage}
+                                    handleDeleteMessage={handleDeleteMessage}
+                                />
+                            );
+                        })}
+                    {uploading ? (
+                        media.type === 'image' ? (
+                            <img
+                                src={media.url}
+                                alt="collections"
+                                style={{
+                                    opacity: 0.5,
+                                    maxWidth: '40%',
+                                    alignSelf: 'flex-end',
+                                    borderRadius: '10px',
+                                }}
+                                loading="lazy"
+                            />
+                        ) : media.type === 'video' ? (
+                            <video
+                                src={media.url}
+                                style={{
+                                    opacity: 0.5,
+                                    maxWidth: '40%',
+                                    alignSelf: 'flex-end',
+                                    borderRadius: '10px',
+                                }}
+                            ></video>
+                        ) : null
+                    ) : null}
+                    {showScrollButton && (
+                        <div
+                            style={{
+                                position: 'absolute',
+                                bottom: '100px',
+                                left: '50%',
+                                transform: 'translateX(-50%)',
+                                borderRadius: '50%',
+                                backgroundColor: '#EEEEEE',
+                                cursor: 'pointer',
+                                zIndex: 5,
+                                padding: '5px',
+                            }}
+                            onClick={handleScrollBottom}
+                        >
+                            <ArrowDownward fontSize="large" htmlColor="#2BC891" />
+                        </div>
+                    )}
+                    <div ref={ref} />
                 </div>
                 {showEmojiPicker && (
                     <div
@@ -337,7 +489,12 @@ const ChatContent = ({ isOpenSetting, setIsOpenSetting, isShowPopup, setIsShowPo
                             <label htmlFor="image-input" className="rightPanel__inputContainer__icon image">
                                 <FontAwesomeIcon icon={faImage} size="lg" cursor="pointer" />
                             </label>
-                            <input type="file" id="image-input" onChange={handleFileChange} />
+                            <input
+                                type="file"
+                                id="image-input"
+                                onChange={handleFileChange}
+                                accept="image/*, video/mp4"
+                            />
                             <FontAwesomeIcon
                                 className="rightPanel__inputContainer__icon heart"
                                 icon={faHeart}

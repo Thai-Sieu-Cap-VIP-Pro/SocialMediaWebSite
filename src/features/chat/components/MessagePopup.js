@@ -109,13 +109,14 @@ const MessagePopup = ({ setIsShowPopup, type = 'create', listUserId = [], setIsO
                 createMessage({
                     content: content.text,
                     conversationId: conversation._id,
-                    isImage: content.isImage,
+                    messType: content.messType,
                     userId: currentUser._id,
                 })
             ).unwrap();
             socket.emit('sendMessage', newMessage.newMessage);
             socket.emit('sendNotice', conversation.members);
             handleClosePopup();
+            alert('Chia sẻ thành công!');
         }
     };
 

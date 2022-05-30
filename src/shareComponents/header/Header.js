@@ -30,10 +30,15 @@ import {
 import SingleDestination from '../../features/chat/components/SingleDestination';
 import { socket } from '../../App';
 import NotificationItem from './notificationItem';
-
 import { addActiveId } from '../../features/user/profileSlice';
 
 const Header = () => {
+  const activeUserId = useSelector((state) => state.auth.current._id);
+  const handleChangeToProfilePage = () => {
+    const action = addActiveId(activeUserId);
+    dispatch(action);
+  };
+
   const [refresh, setFefresh] = useState(false);
   let [numNotifications, setNumNotifications] = useState(0);
   const current = JSON.parse(localStorage.getItem('LoginUser'));
@@ -43,8 +48,6 @@ const Header = () => {
   );
 
   const { listNotification } = useSelector((state) => state.home);
-
-  const activeUserId = useSelector((state) => state.auth.current._id);
 
   useEffect(() => {
     setNumNotifications(0);
@@ -71,11 +74,6 @@ const Header = () => {
       }
     });
     setBruh(searchUser);
-  };
-
-  const handleChangeToProfilePage = () => {
-    const action = addActiveId(activeUserId);
-    dispatch(action);
   };
 
   const [isShowNotificationPanel, setIsShowNotificationPanel] = useState(false);
@@ -135,9 +133,13 @@ const Header = () => {
           <>
             <div className="header__search__triangleUp"></div>
             <div className="header__search__resultContainer">
-              {bruh.map((user) => (
+              {bruh.map((user, index) => (
                 <div>
-                  <SingleDestination follow={user} forRenderSearch={true} />
+                  <SingleDestination
+                    follow={user}
+                    forRenderSearch={true}
+                    key={index}
+                  />
                 </div>
               ))}
             </div>

@@ -1,170 +1,167 @@
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import React, { useEffect, useState } from "react";
-import { Carousel, Col, Row } from "react-bootstrap";
-import "./post.scss";
-import { useDispatch, useSelector } from "react-redux";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import React, { useEffect, useState } from 'react';
+import { Carousel, Col, Row } from 'react-bootstrap';
+import './post.scss';
+import { useDispatch, useSelector } from 'react-redux';
 import {
-  createNotification,
-  getCommentsByPostID,
-  getListUser,
-  handleLike,
-  handleUnLike,
-  ShowDetail,
-} from "../homeSlice";
+    createNotification,
+    getCommentsByPostID,
+    getListUser,
+    handleLike,
+    handleUnLike,
+    ShowDetail,
+} from '../homeSlice';
 
 import {
-  FavoriteBorderOutlined,
-  SendOutlined,
-  AddCommentOutlined,
-  Favorite,
-  BookmarkBorderOutlined,
-} from "@material-ui/icons";
-import PostHeader from "./postHeader";
-import { format } from "timeago.js";
-import {
-  faCircleChevronLeft,
-  faCircleChevronRight,
-} from "@fortawesome/free-solid-svg-icons";
+    FavoriteBorderOutlined,
+    SendOutlined,
+    AddCommentOutlined,
+    Favorite,
+    BookmarkBorderOutlined,
+} from '@material-ui/icons';
+import PostHeader from './postHeader';
+import { format } from 'timeago.js';
+import { faCircleChevronLeft, faCircleChevronRight } from '@fortawesome/free-solid-svg-icons';
 
-import ReportModal from "./reportModal";
-import { socket } from "../../../App";
+import ReportModal from './reportModal';
+import { socket } from '../../../App';
+import MessagePopup from '../../chat/components/MessagePopup';
 
 const PostItem = ({ postId, content }) => {
-  const dispatch = useDispatch();
-  let [numLikes, setnumLikes] = useState(content.likes.length);
+    const dispatch = useDispatch();
+    let [numLikes, setnumLikes] = useState(content.likes.length);
 
-  const current = JSON.parse(localStorage.getItem("LoginUser"));
+    const current = JSON.parse(localStorage.getItem('LoginUser'));
 
-  const [isLike, setisLike] = useState(content.likes.includes(current._id));
+    const [isLike, setisLike] = useState(content.likes.includes(current._id));
 
-  //hàm xử lý show phần comment khi show tất cả phần comment
+    const [isShowMessagePopup, setIsShowMessagePopup] = useState(false);
 
-  const showDetail = (a) => {
-    const action1 = getCommentsByPostID(postId);
-    dispatch(action1);
+    //hàm xử lý show phần comment khi show tất cả phần comment
 
-    const action = ShowDetail(postId);
-    dispatch(action);
+    const showDetail = (a) => {
+        const action1 = getCommentsByPostID(postId);
+        dispatch(action1);
 
-    // const message = { room: a };
-    socket.emit("joinComment", a);
-  };
-  //phần react
-  const { listPosts } = useSelector((state) => state.home);
+        const action = ShowDetail(postId);
+        dispatch(action);
 
-  //get list like of the post
-  const activePost = listPosts.find((post) => post._id == postId);
-  const likes = activePost.likes;
+        // const message = { room: a };
+        socket.emit('joinComment', a);
+    };
+    //phần react
+    const { listPosts } = useSelector((state) => state.home);
 
-  //hàm xử lý show phần comment khi show tất cả phần comment
+    //get list like of the post
+    const activePost = listPosts.find((post) => post._id == postId);
+    const likes = activePost.likes;
 
-  //hàm xử lý like hay không like bài post
-  const HandleLikePost = async (id, userid) => {
-    if (isLike) {
-      setnumLikes(--numLikes);
-      const action1 = handleUnLike(id);
-      dispatch(action1);
-    } else {
-      setnumLikes(++numLikes);
-      const action1 = handleLike(id);
-      dispatch(action1);
+    //hàm xử lý show phần comment khi show tất cả phần comment
 
-      const paramsCreate = {
-        receiver: userid,
-        notiType: 2,
-        desId: postId,
-      };
+    //hàm xử lý like hay không like bài post
+    const HandleLikePost = async (id, userid) => {
+        if (isLike) {
+            setnumLikes(--numLikes);
+            const action1 = handleUnLike(id);
+            dispatch(action1);
+        } else {
+            setnumLikes(++numLikes);
+            const action1 = handleLike(id);
+            await dispatch(action1).unwrap();
 
-      const action = createNotification(paramsCreate);
-      let newNoti = await dispatch(action).unwrap();
-      console.log(newNoti);
+            const paramsCreate = {
+                receiver: userid,
+                notiType: 2,
+                desId: postId,
+            };
 
-      let notification = {
-        postId,
-        userId: userid, // cái này là id của thằng cần gửi thông báo tới
-        type: 2,
-        senderName: current.name,
-        img: current.avatar,
-      };
-      socket.emit("send_notificaton", notification);
-    }
+            const action = createNotification(paramsCreate);
+            await dispatch(action).unwrap();
 
-    setisLike(!isLike);
-  };
+            let notification = {
+                postId,
+                userId: userid, // cái này là id của thằng cần gửi thông báo tới
+                type: 2,
+                senderName: current.name,
+                img: current.avatar,
+            };
+            socket.emit('send_notificaton', notification);
+        }
 
-  const ShowAlllikesModal = async (a) => {
-    const action = getListUser(a);
-    await dispatch(action).unwrap();
-  };
+        setisLike(!isLike);
+    };
 
-  return (
-    <Row className="postItem">
-      <Col md={12} className="postItem__header">
-        <PostHeader postId={postId} postUser={content.user} />
-      </Col>
-      <Col md={12} className="postItem__slide">
-        <Carousel
-          prevIcon={<FontAwesomeIcon icon={faCircleChevronLeft} />}
-          nextIcon={<FontAwesomeIcon icon={faCircleChevronRight} />}
-        >
-          {content.images.map((contenItem, index) => {
-            return (
-              <Carousel.Item key={index}>
-                <img
-                  className="d-block w-100"
-                  src={contenItem}
-                  alt="First slide"
+    const ShowAlllikesModal = async (a) => {
+        const action = getListUser(a);
+        await dispatch(action).unwrap();
+    };
+
+    return (
+        <>
+            <Row className="postItem">
+                <Col md={12} className="postItem__header">
+                    <PostHeader postId={postId} postUser={content.user} />
+                </Col>
+                <Col md={12} className="postItem__slide">
+                    <Carousel
+                        prevIcon={<FontAwesomeIcon icon={faCircleChevronLeft} />}
+                        nextIcon={<FontAwesomeIcon icon={faCircleChevronRight} />}
+                    >
+                        {content.images.map((contenItem, index) => {
+                            return (
+                                <Carousel.Item key={index}>
+                                    {contenItem.split('.')[contenItem.split('.').length - 1] === 'mp4' ? (
+                                        <video height="500" width="665" controls>
+                                            <source src={contenItem} type="video/mp4"></source>
+                                        </video>
+                                    ) : (
+                                        <img className="d-block w-100" src={contenItem} alt="First slide" />
+                                    )}
+                                </Carousel.Item>
+                            );
+                        })}
+                    </Carousel>
+                </Col>
+                <Col className="postItem__react">
+                    <Row className="reactIcon">
+                        <Col md={9}>
+                            {isLike === true ? (
+                                <Favorite style={{ color: '#ed4956' }} onClick={() => HandleLikePost(postId)} />
+                            ) : (
+                                <FavoriteBorderOutlined onClick={() => HandleLikePost(postId, content.user._id)} />
+                            )}
+
+                            <AddCommentOutlined onClick={() => showDetail(postId)} />
+
+                            <SendOutlined onClick={() => setIsShowMessagePopup(true)} />
+                        </Col>
+                        <Col md={3} style={{ textAlign: 'right' }}>
+                            <BookmarkBorderOutlined />
+                        </Col>
+                    </Row>
+                </Col>
+
+                <Col md={12} className="postItem__content">
+                    <div className="postItem__content__likes" onClick={() => ShowAlllikesModal(content.likes)}>
+                        {numLikes} lượt thích
+                    </div>
+                    <div className="postItem__content__caption">{content.content}</div>
+                    <div className="postItem__content__allCmt" onClick={() => showDetail(postId)}>
+                        Xem tất cả 100 bình luận
+                    </div>
+                    <div className="postItem__content__time">{format(content.createdAt)}</div>
+                </Col>
+                <ReportModal userPostId={content.user._id} />
+            </Row>
+            {isShowMessagePopup && (
+                <MessagePopup
+                    setIsShowPopup={setIsShowMessagePopup}
+                    type="forward"
+                    content={{ text: postId, messType: 'post' }}
                 />
-              </Carousel.Item>
-            );
-          })}
-        </Carousel>
-      </Col>
-      <Col className="postItem__react">
-        <Row className="reactIcon">
-          <Col md={9}>
-            {isLike === true ? (
-              <Favorite
-                style={{ color: "#ed4956" }}
-                onClick={() => HandleLikePost(postId)}
-              />
-            ) : (
-              <FavoriteBorderOutlined
-                onClick={() => HandleLikePost(postId, content.user._id)}
-              />
             )}
-
-            <AddCommentOutlined onClick={() => showDetail(postId)} />
-
-            <SendOutlined />
-          </Col>
-          <Col md={3} style={{ textAlign: "right" }}>
-            <BookmarkBorderOutlined />
-          </Col>
-        </Row>
-      </Col>
-
-      <Col md={12} className="postItem__content">
-        <div
-          className="postItem__content__likes"
-          onClick={() => ShowAlllikesModal(content.likes)}
-        >
-          {numLikes} lượt thích
-        </div>
-        <div className="postItem__content__caption">{content.content}</div>
-        <div
-          className="postItem__content__allCmt"
-          onClick={() => showDetail(postId)}
-        >
-          Xem tất cả 100 bình luận
-        </div>
-        <div className="postItem__content__time">
-          {format(content.createdAt)}
-        </div>
-      </Col>
-      <ReportModal userPostId={content.user._id} />
-    </Row>
-  );
+        </>
+    );
 };
 
 export default PostItem;
