@@ -189,7 +189,6 @@ h6 {
     &__conversation {
         flex: 8;
         overflow-y: auto;
-        scroll-behavior: auto;
         display: flex;
         flex-flow: column nowrap;
         padding: 1rem;

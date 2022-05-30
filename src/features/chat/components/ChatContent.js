@@ -54,16 +54,15 @@ const ChatContent = ({ isOpenSetting, setIsOpenSetting, isShowPopup, setIsShowPo
         document.title = 'Tiha • Chats';
     }, []);
 
-    useEffect(() => {
-        if (ref.current) {
-            ref.current.scrollTop = ref.current.scrollHeight;
-        }
-    }, [socket, image]);
-
     const handleScroll = async (e) => {
+        // console.log(ref.current.firstChild.getBoundingClientRect().top, ref.current.getBoundingClientRect().top);
         if (e.target.scrollTop === 0) {
             if (!isEnough) {
                 try {
+                    const firstChild = ref.current.firstChild;
+                    const parentFromTop = ref.current.getBoundingClientRect().top;
+                    const distance = firstChild.getBoundingClientRect().top;
+                    console.log({ distance });
                     setIsFetchingMessages(true);
                     console.log('Fetch More Data');
                     const lmao = page + 1;
@@ -78,6 +77,9 @@ const ChatContent = ({ isOpenSetting, setIsOpenSetting, isShowPopup, setIsShowPo
                         });
                         setPage((prev) => prev + 1);
                     }
+                    const distance2 = firstChild.getBoundingClientRect().top;
+                    console.log({ distance2 }, ref.current.getBoundingClientRect().top);
+                    ref.current.scrollTop = 190;
                 } catch (error) {
                     throw error;
                 }
@@ -284,6 +286,10 @@ const ChatContent = ({ isOpenSetting, setIsOpenSetting, isShowPopup, setIsShowPo
         setIsCalling(false);
     };
 
+    // useEffect(() => {
+    //     ref.current?.scrollIntoView({ behavior: 'smooth' });
+    // }, [handleFileChange, handleSubmit]);
+
     if (isOpenSetting) {
         return (
             <ChatSetting
@@ -374,6 +380,7 @@ const ChatContent = ({ isOpenSetting, setIsOpenSetting, isShowPopup, setIsShowPo
                             loading="lazy"
                         />
                     )}
+                    {/* <div ref={ref} /> */}
                 </div>
                 {showEmojiPicker && (
                     <div
