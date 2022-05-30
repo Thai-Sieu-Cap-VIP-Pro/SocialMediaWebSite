@@ -1,16 +1,16 @@
-import { createSlice, createAsyncThunk, current } from "@reduxjs/toolkit";
-import NotificationAPI from "../../api/NotificationApi";
-import postAPI from "../../api/PostApi";
+import { createSlice, createAsyncThunk, current } from '@reduxjs/toolkit';
+import NotificationAPI from '../../api/NotificationApi';
+import postAPI from '../../api/PostApi';
 
 //hàm lấy tất cả bài post khi vào trang chủ
-export const getPosts = createAsyncThunk("post/getPosts", async () => {
+export const getPosts = createAsyncThunk('post/getPosts', async () => {
   const listPosts = await postAPI.getPosts();
   return listPosts;
 });
 
 //hàm lấy tất cả comment của bài post
 export const getCommentsByPostID = createAsyncThunk(
-  "post/getComments",
+  'post/getComments',
   async (params) => {
     const listComment = await postAPI.getCommentByPostID(params);
     return listComment;
@@ -19,18 +19,18 @@ export const getCommentsByPostID = createAsyncThunk(
 
 //hàm xử lý like hay bỏ like bài post
 
-export const handleLike = createAsyncThunk("post/Like", async (params) => {
+export const handleLike = createAsyncThunk('post/Like', async (params) => {
   const listComment = await postAPI.likePost(params);
   return params;
 });
 
-export const handleUnLike = createAsyncThunk("post/UnLike", async (params) => {
+export const handleUnLike = createAsyncThunk('post/UnLike', async (params) => {
   const listComment = await postAPI.unLikePost(params);
 });
 
 //hàm lấy danh sách gợi ý kết bạn
 export const getListRecommendFriends = createAsyncThunk(
-  "home/getListRecommendFriends",
+  'home/getListRecommendFriends',
   async () => {
     const listRecommend = await postAPI.recommendFriends();
     return listRecommend;
@@ -39,7 +39,7 @@ export const getListRecommendFriends = createAsyncThunk(
 
 //hàm add comment
 export const addNewComment = createAsyncThunk(
-  "home/addNewComments",
+  'home/addNewComments',
   async (params) => {
     const listRecommend = await postAPI.addComment(params);
     return listRecommend;
@@ -48,7 +48,7 @@ export const addNewComment = createAsyncThunk(
 
 //like or unlike comment
 export const likeOrUnlikeCmt = createAsyncThunk(
-  "comment/likeOrUnlikeCmt",
+  'comment/likeOrUnlikeCmt',
   async (params) => {
     const listRecommend = await postAPI.handleLikeCmt(params);
     return listRecommend;
@@ -56,14 +56,14 @@ export const likeOrUnlikeCmt = createAsyncThunk(
 );
 
 //editcomment
-export const editComment = createAsyncThunk("comment/edit", async (params) => {
+export const editComment = createAsyncThunk('comment/edit', async (params) => {
   const listRecommend = await postAPI.editCmt(params);
   return listRecommend;
 });
 
 //delete comment
 export const deleteComment = createAsyncThunk(
-  "comment/delete",
+  'comment/delete',
   async (params) => {
     const listRecommend = await postAPI.deleteCmt(params);
     return listRecommend;
@@ -71,17 +71,17 @@ export const deleteComment = createAsyncThunk(
 );
 
 //unfollow
-export const unFollow = createAsyncThunk("user/unfollow", async (params) => {
+export const unFollow = createAsyncThunk('user/unfollow', async (params) => {
   const listRecommend = await postAPI.unnFollowFriends(params);
 });
 //unfollow
-export const follow = createAsyncThunk("user/follow", async (params) => {
+export const follow = createAsyncThunk('user/follow', async (params) => {
   const listRecommend = await postAPI.followFriends(params);
 });
 
 //getListLike
 export const getListUser = createAsyncThunk(
-  "user/getlistLike",
+  'user/getlistLike',
   async (params) => {
     const listRecommend = await postAPI.getlistLike(params);
     return listRecommend;
@@ -89,7 +89,7 @@ export const getListUser = createAsyncThunk(
 );
 
 export const createPost = createAsyncThunk(
-  "post/createNew",
+  'post/createNew',
   async (args, thunkAPI) => {
     try {
       const response = await postAPI.createNewPost(args);
@@ -100,10 +100,27 @@ export const createPost = createAsyncThunk(
   }
 );
 
-export const getPostById = createAsyncThunk(
-  "post/getPostById",
+export const updatePost = createAsyncThunk(
+  'post/updatePost',
+  async (params) => {
+    const response = await postAPI.updatePost(params);
+    return response;
+  }
+);
+
+export const deletePost = createAsyncThunk(
+  'post/deletePost',
   async (params) => {
     console.log(params);
+    const response = await postAPI.deletePost(params);
+    console.log(response);
+    return response;
+  }
+);
+
+export const getPostById = createAsyncThunk(
+  'post/getPostById',
+  async (params) => {
     const post = await postAPI.getPostById(params);
     console.log(post);
     return post;
@@ -111,7 +128,7 @@ export const getPostById = createAsyncThunk(
 );
 
 export const getNotification = createAsyncThunk(
-  "notification/get",
+  'notification/get',
   async () => {
     const listNotification = await NotificationAPI.getNotification();
     return listNotification;
@@ -119,14 +136,14 @@ export const getNotification = createAsyncThunk(
 );
 
 export const createNotification = createAsyncThunk(
-  "notification/create",
+  'notification/create',
   async (params) => {
     const listNotification = await NotificationAPI.createNotification(params);
   }
 );
 
 export const seenNotification = createAsyncThunk(
-  "notification/seen",
+  'notification/seen',
   async (params) => {
     const Notification = await NotificationAPI.seenNotification(params);
     return Notification;
@@ -134,7 +151,7 @@ export const seenNotification = createAsyncThunk(
 );
 
 export const seenAllNotification = createAsyncThunk(
-  "notification/seenAll",
+  'notification/seenAll',
   async () => {
     const Notification = await NotificationAPI.seenAllNotification();
     return Notification;
@@ -142,12 +159,12 @@ export const seenAllNotification = createAsyncThunk(
 );
 
 const HomeSlice = createSlice({
-  name: "home",
+  name: 'home',
   initialState: {
     replingCmt: {
       CmtID: null,
-      CmtUserName: "",
-      CmtUserId: "",
+      CmtUserName: '',
+      CmtUserId: '',
     },
     editingCmt: {},
     post: {},
@@ -162,7 +179,7 @@ const HomeSlice = createSlice({
     listPosts: [],
     listComment: [],
     listRecommend: [],
-    activePostId: "",
+    activePostId: '',
     isShowDetail: false,
     isShowReportModal: false,
 
@@ -175,9 +192,12 @@ const HomeSlice = createSlice({
       state.isShowDetail = true;
       state.activePostId = action.payload;
     },
+    HideDetailEdit: (state, action) => {
+      state.isShowDetail = false;
+    },
     HideDetailReducer: (state, action) => {
       state.isShowDetail = false;
-      state.activePostId = "";
+      state.activePostId = '';
       state.post = {};
     },
     ShowReportModal: (state, action) => {
@@ -203,8 +223,8 @@ const HomeSlice = createSlice({
     CancelReplyCmd: (state, action) => {
       state.replingCmt = {
         CmtID: null,
-        CmtUserName: "",
-        CmtUserId: "",
+        CmtUserName: '',
+        CmtUserId: '',
       };
     },
 
@@ -219,7 +239,7 @@ const HomeSlice = createSlice({
       state.listNotification = [];
     },
     [getPosts.rejected]: (state) => {
-      console.log("Lỗi không lấy được post");
+      console.log('Lỗi không lấy được post');
       state.isLoading = false;
       state.loadListPostFail = true;
     },
@@ -242,13 +262,13 @@ const HomeSlice = createSlice({
 
     //handlelike
     [handleLike.pending]: (state, action) => {
-      console.log("Đang like");
+      console.log('Đang like');
     },
     [handleLike.rejected]: (state, action) => {
-      console.log("like thất bại");
+      console.log('like thất bại');
     },
     [handleLike.fulfilled]: (state, action) => {
-      const loginId = JSON.parse(localStorage.getItem("LoginUser"));
+      const loginId = JSON.parse(localStorage.getItem('LoginUser'));
       const index = current(state).listPosts.find(
         (item) => item._id == action.payload
       );
@@ -282,7 +302,7 @@ const HomeSlice = createSlice({
       state.isLoadingAddCmt = false;
       state.replingCmt = {
         CmtID: null,
-        CmtUserName: "",
+        CmtUserName: '',
       };
       // state.listComment = action.payload.newComment;
     },
@@ -298,20 +318,20 @@ const HomeSlice = createSlice({
 
     [deleteComment.pending]: (state, action) => {},
     [deleteComment.rejected]: (state, action) => {
-      console.log("xóa thất bại");
+      console.log('xóa thất bại');
     },
     [deleteComment.fulfilled]: (state, action) => {
-      console.log("Xóa thành công");
+      console.log('Xóa thành công');
     },
 
     //unfollow
     //delete comment
     [unFollow.pending]: (state, action) => {},
     [unFollow.rejected]: (state, action) => {
-      console.log("unfollow thất bại");
+      console.log('unfollow thất bại');
     },
     [unFollow.fulfilled]: (state, action) => {
-      console.log("Unfollow thành công");
+      console.log('Unfollow thành công');
       state.isShowReportModal = false;
     },
     //get post by id
@@ -335,7 +355,7 @@ const HomeSlice = createSlice({
     [createNotification.rejected]: (state, action) => {},
     [createNotification.fulfilled]: (state, action) => {
       //state.listNotification = action.payload;
-      console.log("Tạo notification thành công");
+      console.log('Tạo notification thành công');
     },
 
     [seenNotification.fulfilled]: (state, action) => {
@@ -380,6 +400,11 @@ const HomeSlice = createSlice({
         listUsers: action.payload.users,
       };
     },
+    [deletePost.pending]: (state, action) => {},
+    [deletePost.rejected]: (state, action) => {},
+    [deletePost.fulfilled]: (state, action) => {
+      console.log('Xóa thành công');
+    },
   },
 });
 
@@ -387,6 +412,7 @@ const HomeSlice = createSlice({
 const { reducer: HomeReducer, actions } = HomeSlice;
 export const {
   ShowDetail,
+  HideDetailEdit,
   HideDetailReducer,
   ShowReportModal,
   HideReportModal,

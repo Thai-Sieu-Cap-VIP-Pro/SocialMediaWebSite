@@ -4,7 +4,7 @@ import Form from 'react-bootstrap/Form';
 import { Row, Col, Container, Button } from 'react-bootstrap';
 import { useSelector, useDispatch } from 'react-redux';
 
-import './styles.scss'
+import './styles.scss';
 
 import { updateUser } from '../../profileSlice';
 
@@ -13,13 +13,13 @@ import useImageUpload from '../../../../hooks/useImageUpload';
 const UpdateProfile = () => {
   const dispatch = useDispatch();
   const uploadImage = useImageUpload();
-  
+
   const UserState = useSelector((state) => state.user.userInfo);
-  
-  const [imageAvt, setImageAvt] = useState("")
   const [userInfo, setUserInfo] = useState(UserState);
 
   const { name, email, mobile, role, avatar } = userInfo;
+
+  const [imageAvt, setImageAvt] = useState(avatar);
 
   const onChangeUserInfo = (e) => {
     setUserInfo({ ...userInfo, [e.target.name]: e.target.value });
@@ -33,7 +33,7 @@ const UpdateProfile = () => {
   const onSubmit = async (e) => {
     e.preventDefault();
     console.log(userInfo);
-    const action = updateUser({...userInfo, avatar: imageAvt});
+    const action = updateUser({ ...userInfo, avatar: imageAvt });
     await dispatch(action);
   };
 
@@ -88,7 +88,8 @@ const UpdateProfile = () => {
               <Form.Label>Email</Form.Label>
             </Col>
             <Col sm={10}>
-              <Form.Control disabled
+              <Form.Control
+                disabled
                 className="w-100"
                 type="text"
                 name="email"

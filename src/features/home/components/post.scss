@@ -488,3 +488,27 @@ button.btn.btn-primary.btn-sm {
 .detail__content__img .carousel .carousel-indicators [data-bs-target] {
   width: 5px;
 }
+
+.edit_container {
+  position: relative;
+}
+.edit_dialog {
+  z-index: 100;
+  position: absolute;
+  top: 45px;
+  right: 13px;
+  width: 120px;
+  height: 80px;
+  background-color: white;
+  box-shadow: 0px 0px 10px 10px rgba(0, 0, 0, 0.1);
+}
+
+.dialog_container {
+  display: flex;
+  justify-content: space-between;
+  gap: 5px;
+  align-items: center;
+}
+.button {
+  cursor: pointer;
+}

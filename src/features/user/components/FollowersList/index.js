@@ -20,14 +20,12 @@ const FollowersList = ({ showModal, setShowModal, isFollowers }) => {
     <Modal show={showModal} bsSize="large" onHide={handleCloseDialog} centered>
       <Modal.Header closeButton>
         <Modal.Title>
-          {isFollowers ? 'Your Followers' : 'Your Following'}
+          {isFollowers ? 'Followers List' : 'Following List'}
         </Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        {
-          (followersList.length == 0 || followingList.length == 0) && 
-          "Your list is empty"
-        }
+        {(followersList.length == 0 || followingList.length == 0) &&
+          'Your list is empty'}
         {isFollowers &&
           followersList.length &&
           followersList.map((item, index) => (

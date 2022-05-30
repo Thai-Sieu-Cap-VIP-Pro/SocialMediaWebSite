@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from "react";
-import "./Header.scss";
+import React, { useEffect, useState } from 'react';
+import './Header.scss';
 import {
   FavoriteBorderOutlined,
   HomeOutlined,
@@ -13,34 +13,38 @@ import {
   ModeComment,
   Favorite,
   PersonAdd,
-} from "@material-ui/icons";
-import IMAGES from "../../assets/images/imageStore";
-import { useNavigate, NavLink } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
-import { Logout } from "../../features/auth/authSlice";
-import { Button, Col } from "react-bootstrap";
-import Usecloseoutsidetoclose from "../../hooks/useCloseOutSideToClose";
+} from '@material-ui/icons';
+import IMAGES from '../../assets/images/imageStore';
+import { useNavigate, NavLink } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { Logout } from '../../features/auth/authSlice';
+import { Button, Col } from 'react-bootstrap';
+import Usecloseoutsidetoclose from '../../hooks/useCloseOutSideToClose';
 import {
   getCommentsByPostID,
   getNotification,
   seenAllNotification,
   getPostById,
   ShowDetail,
-} from "../../features/home/homeSlice";
-import SingleDestination from "../../features/chat/components/SingleDestination";
-import { socket } from "../../App";
-import NotificationItem from "./notificationItem";
+} from '../../features/home/homeSlice';
+import SingleDestination from '../../features/chat/components/SingleDestination';
+import { socket } from '../../App';
+import NotificationItem from './notificationItem';
+
+import { addActiveId } from '../../features/user/profileSlice';
 
 const Header = () => {
   const [refresh, setFefresh] = useState(false);
   let [numNotifications, setNumNotifications] = useState(0);
-  const current = JSON.parse(localStorage.getItem("LoginUser"));
+  const current = JSON.parse(localStorage.getItem('LoginUser'));
   const currentUser = useSelector((state) => state.auth.current);
   const listUser = useSelector((state) => state.auth.listUser).filter(
     (user) => user._id !== currentUser._id
   );
 
   const { listNotification } = useSelector((state) => state.home);
+
+  const activeUserId = useSelector((state) => state.auth.current._id);
 
   useEffect(() => {
     setNumNotifications(0);
@@ -55,7 +59,7 @@ const Header = () => {
   }, [listNotification]);
 
   const [bruh, setBruh] = useState([]);
-  const [searchValue, setSearchValue] = useState("");
+  const [searchValue, setSearchValue] = useState('');
   const dispatch = useDispatch();
   let navigate = useNavigate();
 
@@ -69,19 +73,24 @@ const Header = () => {
     setBruh(searchUser);
   };
 
+  const handleChangeToProfilePage = () => {
+    const action = addActiveId(activeUserId);
+    dispatch(action);
+  };
+
   const [isShowNotificationPanel, setIsShowNotificationPanel] = useState(false);
 
   const handleLogout = async () => {
     const action = Logout();
     await dispatch(action);
-    navigate("/auth/login");
+    navigate('/auth/login');
   };
 
   useEffect(async () => {
     socket
-      .off("receive_notification")
-      .on("receive_notification", async ({ postId }) => {
-        console.log("Nhận được thông báo");
+      .off('receive_notification')
+      .on('receive_notification', async ({ postId }) => {
+        console.log('Nhận được thông báo');
         const action = getPostById({ postId });
         await dispatch(action).unwrap();
 
@@ -122,7 +131,7 @@ const Header = () => {
           onChange={(e) => handleSearch(e.target.value)}
           value={searchValue}
         />
-        {searchValue !== "" && (
+        {searchValue !== '' && (
           <>
             <div className="header__search__triangleUp"></div>
             <div className="header__search__resultContainer">
@@ -191,7 +200,12 @@ const Header = () => {
           <ul>
             <li>
               <AccountCircleOutlined />
-              <NavLink to="/account">Trang cá nhân</NavLink>
+              <NavLink
+                onClick={() => handleChangeToProfilePage()}
+                to="/account"
+              >
+                Trang cá nhân
+              </NavLink>
             </li>
             <li>
               <SettingsOutlined />
