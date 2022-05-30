@@ -7,22 +7,25 @@ import PostItem from '../PostItem';
 import './styles.scss';
 
 const UserPost = () => {
-  const dispatch = useDispatch();
-  const activeId = useSelector((state) => state.user.activeId);
-  const posts = useSelector((state) => state.user.posts);
-  useEffect(async () => {
-    const action = getPostsByUserId(activeId);
-    await dispatch(action);
-  }, [activeId]);
+    const dispatch = useDispatch();
+    const activeId = useSelector((state) => state.user.activeId);
+    const posts = useSelector((state) => state.user.posts);
+    useEffect(async () => {
+        const action = getPostsByUserId(activeId);
+        await dispatch(action);
+    }, [activeId]);
 
-  return (
-    <Container>
-      <Row className="container">
-        {posts.length &&
-          posts.map((item, index) => <PostItem key={index} post={item} />)}
-      </Row>
-    </Container>
-  );
+    return (
+        <Container>
+            <Row className="container">
+                {posts.length &&
+                    posts
+                        .slice()
+                        .reverse()
+                        .map((item, index) => <PostItem key={index} post={item} />)}
+            </Row>
+        </Container>
+    );
 };
 
 export default UserPost;
