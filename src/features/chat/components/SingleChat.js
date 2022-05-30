@@ -90,7 +90,9 @@ const SingleChat = ({ conversation = null, handleClick = null, setId = null, cur
                             {messages[0]?.content.messType === 'image'
                                 ? 'Đã gửi hình ảnh'
                                 : messages[0]?.content.messType === 'post'
-                                ? `${messages[0]?.sender.name} vừa chia sẻ một bài đăng`
+                                ? `${messages[0]?.sender.name} vừa chia sẻ gì đó`
+                                : messages[0]?.content.messType === 'video'
+                                ? `${messages[0]?.sender.name} vừa gửi một video`
                                 : messages[0]?.isDeleted
                                 ? `${messages[0]?.sender.name} đã thu hồi tin nhắn`
                                 : messages[0]?.content.text}{' '}
@@ -103,7 +105,9 @@ const SingleChat = ({ conversation = null, handleClick = null, setId = null, cur
                             {messages[0]?.content.messType === 'image'
                                 ? 'Đã gửi hình ảnh'
                                 : messages[0]?.content.messType === 'post'
-                                ? `${messages[0]?.sender.name} vừa chia sẻ một bài đăng`
+                                ? `${messages[0]?.sender.name} vừa chia sẻ gì đó`
+                                : messages[0]?.content.messType === 'video'
+                                ? `${messages[0]?.sender.name} vừa gửi một video`
                                 : messages[0]?.isDeleted
                                 ? `${messages[0]?.sender.name} đã thu hồi tin nhắn`
                                 : messages[0]?.content.text}{' '}
