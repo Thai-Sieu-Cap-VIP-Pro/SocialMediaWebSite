@@ -1,24 +1,25 @@
 import axiosClient from "./AxiosClient";
+import { URL } from "../const/index";
 
 class notificationAPI {
   getNotification = () => {
-    const url = "http://localhost:3001/api/noti/getNoti";
+    const url = URL + "/noti/getNoti";
     return axiosClient.get(url, {});
   };
 
   createNotification = (params) => {
-    const url = "http://localhost:3001/api/noti/createNoti";
+    const url = URL + "/noti/createNoti";
     console.log(params);
     return axiosClient.post(url, params);
   };
 
   seenNotification = (params) => {
-    const url = "http://localhost:3001/api/noti/seenNoti";
+    const url = URL + "/noti/seenNoti";
     return axiosClient.patch(url, params);
   };
 
   seenAllNotification = () => {
-    const url = "http://localhost:3001/api/noti/seenAllNoti";
+    const url = URL + "/noti/seenAllNoti";
     return axiosClient.patch(url, {});
   };
 }

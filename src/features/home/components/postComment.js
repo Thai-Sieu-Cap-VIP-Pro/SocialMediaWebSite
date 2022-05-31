@@ -69,22 +69,23 @@ const PostComment = () => {
       const action1 = handleLike(id);
       await dispatch(action1).unwrap();
 
-      const paramsCreate = {
-        receiver: userid,
-        notiType: 2,
-        desId: activePostId,
-      };
-      const action = createNotification(paramsCreate);
-      await dispatch(action).unwrap();
-
-      let notification = {
-        postId: activePostId,
-        userId: userid, // cái này là id của thằng cần gửi thông báo tới
-        type: 2,
-        senderName: current.name,
-        img: current.avatar,
-      };
-      socket.emit("send_notificaton", notification);
+      if (userid != current._id) {
+        const paramsCreate = {
+          receiver: userid,
+          notiType: 2,
+          desId: activePostId,
+        };
+        const action = createNotification(paramsCreate);
+        await dispatch(action).unwrap();
+        let notification = {
+          postId: activePostId,
+          userId: userid, // cái này là id của thằng cần gửi thông báo tới
+          type: 2,
+          senderName: current.name,
+          img: current.avatar,
+        };
+        socket.emit("send_notificaton", notification);
+      }
     }
   };
 
