@@ -10,7 +10,7 @@ const persistConfig = {
     key: 'root',
     version: 1,
     storage,
-    whitelist: ['auth', 'chat'],
+    whitelist: ['auth', 'chat', 'user'],
 };
 
 // export const store = configureStore({
