@@ -39,7 +39,6 @@ const PostHeader = ({ postId, postUser }) => {
   };
 
   const handleEditPost = () => {
-    navigate('new/edit-post');
     hideDetail();
   };
   const handleDeletePost = () => {
@@ -50,12 +49,12 @@ const PostHeader = ({ postId, postUser }) => {
     setShowDeleteModal(false);
   };
 
-  const onSubmit = (e) => {
+  const onSubmit = async (e) => {
     e.preventDefault();
     const action1 = deletePost(postId);
-    dispatch(action1);
+    await dispatch(action1);
     const action2 = getPostsByUserId(postUser._id);
-    dispatch(action2);
+    await dispatch(action2);
     closeDialog();
     hideDetail();
   };
@@ -84,7 +83,7 @@ const PostHeader = ({ postId, postUser }) => {
                   post: currentPost,
                 }}
                 className="button edit_btn"
-                // onClick={() => handleEditPost()}
+                onClick={() => handleEditPost()}
               >
                 Edit
               </Link>

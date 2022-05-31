@@ -4,11 +4,13 @@ import { InsertEmoticonOutlined } from '@material-ui/icons';
 import Dialog from './Dialog';
 import { useSelector } from 'react-redux';
 import FollowersList from './FollowersList';
+import ChangeProfilePhotoPopup from './ChangeProfilePhotoPopup'
 
 const UserHeader = () => {
   const [showModal, setShowModal] = useState(false);
   const [showModalFollow, setShowModalFollow] = useState(false);
   const [isShowFollowers, setIsShowFollowers] = useState(false);
+  const [isShowChangeAvataPopup, setIsShowChangeAvataPopup] = useState(false);
 
   const authUserId = useSelector((state) => state.auth.current._id);
   const UserInfo = useSelector((state) => state.user.userInfo);
@@ -23,6 +25,10 @@ const UserHeader = () => {
     setShowModalFollow(true);
   };
 
+  const handleChangeAvt = () => {
+    setIsShowChangeAvataPopup(true)
+  }
+
   return (
     <div>
       {showModal && (
@@ -35,6 +41,12 @@ const UserHeader = () => {
           isFollowers={isShowFollowers}
         />
       )}
+      {isShowChangeAvataPopup && (
+        <ChangeProfilePhotoPopup
+          showModal={isShowChangeAvataPopup}
+          setShowModal={setIsShowChangeAvataPopup}
+        />
+      )}
       {/* {showModalFollow && isShowFollowers (
         <FollowersList
           showModal={showModalFollow}
@@ -45,7 +57,7 @@ const UserHeader = () => {
       <div className="header__container ">
         <div className="d-flex flex-row justify-content-center">
           <div className="p-2">
-            <div className="avatar__container">
+            <div className="avatar__container" onClick={() => handleChangeAvt()}>
               <img src={avatar} />
             </div>
           </div>

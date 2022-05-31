@@ -51,7 +51,7 @@ const UpdateProfile = () => {
                 type="file"
                 name="avatar"
                 onChange={handleFileChange}
-                placeholder="Enter your name"
+
               />
             </Col>
           </Row>
