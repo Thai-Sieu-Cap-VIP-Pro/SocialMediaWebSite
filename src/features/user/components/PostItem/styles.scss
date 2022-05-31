@@ -1,12 +1,60 @@
 .post-item {
-    cursor: pointer;
-    // width: 250px;
-    aspect-ratio: 1 / 1;
-    // height: 250px;
-    margin-bottom: 25px;
-    .post-image {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
+  cursor: pointer;
+  // width: 250px;
+  aspect-ratio: 1 / 1;
+  // height: 250px;
+  margin-bottom: 25px;
+  overflow: hidden;
+  position: relative;
+  .post-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .post-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: white;
+    opacity: 0.5;
+    margin: 0 12px;
+    border-radius: 10px;
+    display: none;
+  }
+
+  .content {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    display: none;
+    font-size: 20px;
+
+    .numtym {
+      margin-right: 20px;
+      svg {
+        color: rgb(243, 61, 61);
+        font-size: 24px;
+        margin-right: 5px;
+      }
     }
+
+    .numcomment {
+      svg {
+        color: #2bc891;
+      }
+    }
+  }
+}
+
+.post-item:hover {
+  .content {
+    display: block;
+  }
+  .post-overlay {
+    display: block;
+  }
 }

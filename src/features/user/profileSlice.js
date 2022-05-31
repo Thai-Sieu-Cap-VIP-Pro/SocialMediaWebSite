@@ -96,6 +96,7 @@ const UserSlice = createSlice({
     },
     [getPostsByUserId.fulfilled]: (state, action) => {
       state.posts = action.payload.listPost;
+      state.isLoading = false;
     },
     [getPostsByUserId.rejected]: (state, action) => {
       state.isLoading = false;
