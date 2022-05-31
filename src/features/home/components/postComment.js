@@ -1,9 +1,16 @@
-import React from "react";
-import { Carousel, Spinner } from "react-bootstrap";
+import React, { useState } from "react";
+import { Carousel, Col, Row, Spinner } from "react-bootstrap";
 import IMAGES from "../../../assets/images/imageStore";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useDispatch, useSelector } from "react-redux";
-import { HideDetailReducer } from "../homeSlice";
+import {
+  createNotification,
+  handleLike,
+  handleUnLike,
+  HideDetailReducer,
+  getListUser,
+} from "../homeSlice";
+
 import AddComment from "./addComment";
 import {
   faCircleChevronRight,
@@ -15,9 +22,21 @@ import PostHeader from "./postHeader";
 import ListComment from "./ListComment";
 import AlllikesPopup from "./commons/allLikesPopup";
 import CommentSkeleton from "../../../shareComponents/skeletonLoading/CommentSkeleton";
+import { format } from "timeago.js";
+import {
+  BookmarkBorderOutlined,
+  Favorite,
+  FavoriteBorderOutlined,
+  SendOutlined,
+} from "@material-ui/icons";
+import { socket } from "../../../App";
+import MessagePopup from "../../chat/components/MessagePopup";
 
 const PostComment = () => {
   const dispatch = useDispatch();
+
+  const current = JSON.parse(localStorage.getItem("LoginUser"));
+  const [isShowMessagePopup, setIsShowMessagePopup] = useState(false);
 
   const { isShowDetail, isLoadCmt, activePostId, listPosts, post } =
     useSelector((state) => state.home);
@@ -31,9 +50,47 @@ const PostComment = () => {
     activePost = post;
   }
 
+  const [isLike, setisLike] = useState(activePost.likes.includes(current._id));
+  let [numLikes, setnumLikes] = useState(activePost.likes.length);
+
   const HideDetail = () => {
     const action = HideDetailReducer();
     dispatch(action);
+  };
+
+  const HandleLikePost = async (id, userid) => {
+    setisLike(!isLike);
+    if (isLike) {
+      setnumLikes(--numLikes);
+      const action1 = handleUnLike(id);
+      await dispatch(action1).unwrap();
+    } else {
+      setnumLikes(++numLikes);
+      const action1 = handleLike(id);
+      await dispatch(action1).unwrap();
+
+      const paramsCreate = {
+        receiver: userid,
+        notiType: 2,
+        desId: activePostId,
+      };
+      const action = createNotification(paramsCreate);
+      await dispatch(action).unwrap();
+
+      let notification = {
+        postId: activePostId,
+        userId: userid, // cái này là id của thằng cần gửi thông báo tới
+        type: 2,
+        senderName: current.name,
+        img: current.avatar,
+      };
+      socket.emit("send_notificaton", notification);
+    }
+  };
+
+  const ShowAlllikesModal = async (a) => {
+    const action = getListUser(a);
+    await dispatch(action).unwrap();
   };
 
   return (
@@ -65,7 +122,47 @@ const PostComment = () => {
           <div className="detail__content__comment__body">
             {!isLoadCmt ? <ListComment /> : <CommentSkeleton />}
           </div>
+
           <div className="detail__content__comment__footer">
+            <div className="react">
+              <Row>
+                <Col className="postItem__react">
+                  <Row className="reactIcon">
+                    <Col md={9}>
+                      {isLike === true ? (
+                        <Favorite
+                          style={{ color: "#ed4956" }}
+                          onClick={() => HandleLikePost(activePostId)}
+                        />
+                      ) : (
+                        <FavoriteBorderOutlined
+                          onClick={() =>
+                            HandleLikePost(activePostId, activePost.user._id)
+                          }
+                        />
+                      )}
+
+                      <SendOutlined
+                        onClick={() => setIsShowMessagePopup(true)}
+                      />
+                    </Col>
+                  </Row>
+                </Col>
+              </Row>
+            </div>
+            <div
+              className="postItem__content__likes"
+              onClick={() => ShowAlllikesModal(activePost.likes)}
+            >
+              {numLikes} lượt thích
+            </div>
+            <div className="postItem__content__caption">
+              {activePost.content}
+            </div>
+
+            <div className="postItem__content__time">
+              {format(activePost.createdAt)}
+            </div>
             <AddComment
               postId={activePostId}
               userPostId={activePost.user._id}
@@ -77,6 +174,13 @@ const PostComment = () => {
         <FontAwesomeIcon icon={faCircleXmark} />
       </div>
       <AlllikesPopup />
+      {isShowMessagePopup && (
+        <MessagePopup
+          setIsShowPopup={setIsShowMessagePopup}
+          type="forward"
+          content={{ text: activePostId, messType: "post" }}
+        />
+      )}
     </div>
   );
 };

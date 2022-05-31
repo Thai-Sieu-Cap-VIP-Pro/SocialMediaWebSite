@@ -20,14 +20,15 @@ const Category = () => {
         </div>
         <div className="recommend__header">
           <p>Gợi ý cho bạn</p>
-          <a href="">Xem tất cả</a>
+          {/* <a href="">Xem tất cả</a> */}
         </div>
         <ul>
-          {listRecommend && listRecommend.map((user, index) => {
-            if (index < 4) {
-              return <RecommendItem key={index} user={user} />;
-            }
-          })}
+          {listRecommend &&
+            listRecommend.map((user, index) => {
+              if (index < 4) {
+                return <RecommendItem key={index} user={user} />;
+              }
+            })}
         </ul>
       </div>
     </Row>

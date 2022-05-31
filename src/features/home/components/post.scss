@@ -271,7 +271,7 @@ body {
 
       &__body {
         overflow-y: scroll;
-        height: calc(100% - 110px);
+        height: calc(100% - 210px);
         @include ScrollBarCustom;
         position: relative;
         overflow-x: hidden;
@@ -289,9 +289,36 @@ body {
         bottom: 0;
         left: 0;
         width: 100%;
-        height: 50px;
+        height: 160px;
         border-top: 1px solid $borderColor;
         background-color: white;
+
+        .postItem__react {
+          margin: 5px 0;
+
+          .reactIcon.row {
+            margin-top: 5px;
+          }
+        }
+
+        .react {
+          margin-left: 10px;
+        }
+
+        .postItem__content__likes {
+          font-size: 14px;
+          margin-left: 15px;
+        }
+
+        .postItem__content__caption {
+          font-size: 14px;
+          margin-left: 15px;
+        }
+
+        .postItem__content__time {
+          font-size: 10px;
+          margin-left: 15px;
+        }
 
         .info {
           padding: 10px;
@@ -476,7 +503,7 @@ body {
 
 button.btn.btn-primary.btn-sm {
   margin: 10px 0;
-  width: 80%;
+  width: 100%;
 }
 
 .recommend__expand {

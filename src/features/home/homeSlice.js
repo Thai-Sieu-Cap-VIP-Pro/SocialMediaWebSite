@@ -26,6 +26,7 @@ export const handleLike = createAsyncThunk("post/Like", async (params) => {
 
 export const handleUnLike = createAsyncThunk("post/UnLike", async (params) => {
   const listComment = await postAPI.unLikePost(params);
+  return params;
 });
 
 //hàm lấy danh sách gợi ý kết bạn
@@ -249,19 +250,24 @@ const HomeSlice = createSlice({
     },
     [handleLike.fulfilled]: (state, action) => {
       const loginId = JSON.parse(localStorage.getItem("LoginUser"));
-      const index = current(state).listPosts.find(
-        (item) => item._id == action.payload
-      );
-
-      current(state).listPosts.forEach((item) => {
-        if (item._id === index._id) {
-          //  item.likes = [...item.likes, loginId._id];
-          item.likes.push(loginId._id);
-          console.log(item.likes);
+      state.listPosts = state.listPosts.map((post) => {
+        if (post._id === action.payload) {
+          post.likes.push(loginId._id);
         }
+        return post;
       });
+    },
 
-      console.log(current(state).listPosts.likes);
+    [handleUnLike.fulfilled]: (state, action) => {
+      const loginId = JSON.parse(localStorage.getItem("LoginUser"));
+      state.listPosts = state.listPosts.map((post) => {
+        if (post._id === action.payload) {
+          post.likes = post.likes.filter((item) => {
+            return item !== loginId._id;
+          });
+        }
+        return post;
+      });
     },
 
     //get list recommend frieds

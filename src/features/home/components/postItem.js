@@ -66,7 +66,7 @@ const PostItem = ({ postId, content }) => {
     if (isLike) {
       setnumLikes(--numLikes);
       const action1 = handleUnLike(id);
-      dispatch(action1);
+      await dispatch(action1).unwrap();
     } else {
       setnumLikes(++numLikes);
       const action1 = handleLike(id);
@@ -145,7 +145,7 @@ const PostItem = ({ postId, content }) => {
 
             <AddCommentOutlined onClick={() => showDetail(postId)} />
 
-            <SendOutlined onClick={() => setIsShowMessagePopup(true)}/>
+            <SendOutlined onClick={() => setIsShowMessagePopup(true)} />
           </Col>
           <Col md={3} style={{ textAlign: "right" }}>
             <BookmarkBorderOutlined />
@@ -173,7 +173,11 @@ const PostItem = ({ postId, content }) => {
       </Col>
       <ReportModal userPostId={content.user._id} />
       {isShowMessagePopup && (
-          <MessagePopup setIsShowPopup={setIsShowMessagePopup} type="forward" content={{text: postId, messType: "post"}} />
+        <MessagePopup
+          setIsShowPopup={setIsShowMessagePopup}
+          type="forward"
+          content={{ text: postId, messType: "post" }}
+        />
       )}
     </Row>
   );

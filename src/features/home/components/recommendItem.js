@@ -2,6 +2,7 @@ import { current } from "@reduxjs/toolkit";
 import React, { useState } from "react";
 import { useDispatch } from "react-redux";
 import { socket } from "../../../App";
+
 import { createNotification, follow, unFollow } from "../homeSlice";
 import UserSumary from "./commons/userSumary";
 
@@ -67,7 +68,7 @@ const RecommendItem = ({ user }) => {
         </div>
       </div>
       <p className="recommend__folo" onClick={() => handleFollow(user._id)}>
-        {IsFollow == true ? "UnFollow" : "Follow"}
+        {IsFollow == true ? "Bỏ theo dõi" : "Theo dõi"}
       </p>
     </li>
   );

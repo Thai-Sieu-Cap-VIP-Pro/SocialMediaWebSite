@@ -27,9 +27,7 @@ export const unFollow = createAsyncThunk("user/unFollow", async (params) => {
 export const getPostsByUserId = createAsyncThunk(
   "user/getPostsByUserId",
   async (params) => {
-    console.log(params);
     const posts = await userAPI.getPostsByUserId(params);
-    console.log(posts);
     return posts;
   }
 );
@@ -81,6 +79,7 @@ const UserSlice = createSlice({
     },
     [getPostsByUserId.fulfilled]: (state, action) => {
       state.posts = action.payload.listPost;
+      state.isLoading = false;
     },
     [getPostsByUserId.rejected]: (state, action) => {
       state.isLoading = false;
