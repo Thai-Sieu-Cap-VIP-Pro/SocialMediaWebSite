@@ -1,1 +1,1 @@
-export const URL = "http://localhost:3001/api";
+export const URL = "https://server-social-ie213.herokuapp.com/api";
