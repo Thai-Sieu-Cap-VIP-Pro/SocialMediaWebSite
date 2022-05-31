@@ -13,6 +13,7 @@ import {
     ModeComment,
     Favorite,
     PersonAdd,
+    Close,
 } from '@material-ui/icons';
 import IMAGES from '../../assets/images/imageStore';
 import { useNavigate, NavLink } from 'react-router-dom';
@@ -30,8 +31,15 @@ import {
 import SingleDestination from '../../features/chat/components/SingleDestination';
 import { socket } from '../../App';
 import NotificationItem from './notificationItem';
+import { addActiveId } from '../../features/user/profileSlice';
 
 const Header = () => {
+    const activeUserId = useSelector((state) => state.auth.current._id);
+    const handleChangeToProfilePage = () => {
+        const action = addActiveId(activeUserId);
+        dispatch(action);
+    };
+
     const [refresh, setFefresh] = useState(false);
     let [numNotifications, setNumNotifications] = useState(0);
     const current = JSON.parse(localStorage.getItem('LoginUser'));
@@ -120,13 +128,44 @@ const Header = () => {
                 />
                 {searchValue !== '' && (
                     <>
+                        <div
+                            style={{
+                                backgroundColor: '#c7c7c7',
+                                position: 'absolute',
+                                right: 15,
+                                height: '25px',
+                                width: '25px',
+                                borderRadius: '50%',
+                                padding: '5px',
+                                display: 'grid',
+                                placeItems: 'center',
+                                cursor: 'pointer',
+                            }}
+                            onClick={() => setSearchValue('')}
+                        >
+                            <Close fontSize="large" htmlColor="white" />
+                        </div>
                         <div className="header__search__triangleUp"></div>
                         <div className="header__search__resultContainer">
-                            {bruh.map((user, index) => (
-                                <div>
-                                    <SingleDestination follow={user} forRenderSearch={true} key={index} />
+                            {bruh.length !== 0 ? (
+                                bruh.map((user, index) => (
+                                    <div>
+                                        <SingleDestination follow={user} forRenderSearch={true} key={index} />
+                                    </div>
+                                ))
+                            ) : (
+                                <div
+                                    style={{
+                                        textAlign: 'center',
+                                        width: '100%',
+                                        marginBottom: '15px',
+                                        color: 'grey',
+                                        fontStyle: 'italic',
+                                    }}
+                                >
+                                    Không tìm thấy kết quả phù hợp
                                 </div>
-                            ))}
+                            )}
                         </div>
                     </>
                 )}
@@ -175,7 +214,9 @@ const Header = () => {
                     <ul>
                         <li>
                             <AccountCircleOutlined />
-                            <NavLink to="/account">Trang cá nhân</NavLink>
+                            <NavLink onClick={() => handleChangeToProfilePage()} to="/account">
+                                Trang cá nhân
+                            </NavLink>
                         </li>
                         <li>
                             <SettingsOutlined />

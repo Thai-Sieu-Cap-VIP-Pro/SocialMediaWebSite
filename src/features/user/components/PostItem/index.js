@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Container, Row, Col } from 'react-bootstrap';
@@ -12,23 +11,18 @@ import { socket } from '../../../../App';
 const PostItem = ({ post }) => {
     const dispatch = useDispatch();
     const { isShowDetail } = useSelector((state) => state.home);
-    console.log(isShowDetail);
 
-    const showDialog = async (id) => {
-        //get post with id selected
-        const postSelectedAction = getPostById(id);
-        await dispatch(postSelectedAction);
+    const showDialog = async (a) => {
+        const action2 = getPostById({ postId: a });
+        await dispatch(action2).unwrap();
 
-        // get comments of post selected
-        const commentAction = getCommentsByPostID(id);
-        await dispatch(commentAction);
+        const action1 = getCommentsByPostID(a);
+        await dispatch(action1).unwrap();
 
-        // show dialog
-        const dialogAction = ShowDetail(id);
-        dispatch(dialogAction);
+        const action = ShowDetail(a);
+        dispatch(action);
 
-        //socket
-        socket.emit('joinRoom', id);
+        socket.emit('joinComment', a);
     };
 
     return (

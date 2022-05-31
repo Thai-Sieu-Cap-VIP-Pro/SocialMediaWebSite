@@ -1,5 +1,5 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Carousel, Col, Row } from "react-bootstrap";
 import "./post.scss";
 import { useDispatch, useSelector } from "react-redux";
@@ -32,6 +32,7 @@ import MessagePopup from "../../chat/components/MessagePopup";
 
 const PostItem = ({ postId, content }) => {
   const dispatch = useDispatch();
+  const captionRef = useRef();
   let [numLikes, setnumLikes] = useState(content.likes.length);
 
   const current = JSON.parse(localStorage.getItem("LoginUser"));
@@ -56,19 +57,24 @@ const PostItem = ({ postId, content }) => {
   const { listPosts } = useSelector((state) => state.home);
 
   //get list like of the post
-  const activePost = listPosts.find((post) => post._id == postId);
+  const activePost = listPosts.find((post) => post._id === postId);
   const likes = activePost.likes;
 
+  const isOverflow = () => {
+    return (
+      captionRef?.current?.offsetHeight < captionRef?.current?.scrollHeight
+    );
+  };
   //hàm xử lý show phần comment khi show tất cả phần comment
 
   //hàm xử lý like hay không like bài post
   const HandleLikePost = async (id, userid) => {
     if (isLike) {
-      setnumLikes(--numLikes);
+      setnumLikes((prev) => prev - 1);
       const action1 = handleUnLike(id);
       await dispatch(action1).unwrap();
     } else {
-      setnumLikes(++numLikes);
+      setnumLikes((prev) => prev + 1);
       const action1 = handleLike(id);
       await dispatch(action1).unwrap();
 
@@ -99,79 +105,96 @@ const PostItem = ({ postId, content }) => {
     await dispatch(action).unwrap();
   };
 
+  const handleWatchMore = (e) => {
+    e.target.previousElementSibling.style.overflow = "auto";
+    e.target.previousElementSibling.style.display = "block";
+    e.target.style.display = "none";
+  };
   return (
-    <Row className="postItem">
-      <Col md={12} className="postItem__header">
-        <PostHeader postId={postId} postUser={content.user} />
-      </Col>
-      <Col md={12} className="postItem__slide">
-        <Carousel
-          prevIcon={<FontAwesomeIcon icon={faCircleChevronLeft} />}
-          nextIcon={<FontAwesomeIcon icon={faCircleChevronRight} />}
-        >
-          {content.images.map((contenItem, index) => {
-            return (
-              <Carousel.Item key={index}>
-                {contenItem.split(".")[contenItem.split(".").length - 1] ===
-                "mp4" ? (
-                  <video height="500" width="665" controls>
-                    <source src={contenItem} type="video/mp4"></source>
-                  </video>
-                ) : (
-                  <img
-                    className="d-block w-100"
-                    src={contenItem}
-                    alt="First slide"
-                  />
-                )}
-              </Carousel.Item>
-            );
-          })}
-        </Carousel>
-      </Col>
-      <Col className="postItem__react">
-        <Row className="reactIcon">
-          <Col md={9}>
-            {isLike === true ? (
-              <Favorite
-                style={{ color: "#ed4956" }}
-                onClick={() => HandleLikePost(postId)}
-              />
-            ) : (
-              <FavoriteBorderOutlined
-                onClick={() => HandleLikePost(postId, content.user._id)}
-              />
-            )}
+    <>
+      <Row className="postItem">
+        <Col md={12} className="postItem__header">
+          <PostHeader postId={postId} postUser={content.user} />
+        </Col>
+        <Col md={12} className="postItem__slide">
+          <Carousel
+            prevIcon={<FontAwesomeIcon icon={faCircleChevronLeft} />}
+            nextIcon={<FontAwesomeIcon icon={faCircleChevronRight} />}
+          >
+            {content.images.map((contenItem, index) => {
+              return (
+                <Carousel.Item key={index}>
+                  {contenItem.split(".")[contenItem.split(".").length - 1] ===
+                  "mp4" ? (
+                    <video height="500" width="665" controls>
+                      <source src={contenItem} type="video/mp4"></source>
+                    </video>
+                  ) : (
+                    <img
+                      className="d-block w-100"
+                      src={contenItem}
+                      alt="First slide"
+                    />
+                  )}
+                </Carousel.Item>
+              );
+            })}
+          </Carousel>
+        </Col>
+        <Col className="postItem__react">
+          <Row className="reactIcon">
+            <Col md={9}>
+              {isLike === true ? (
+                <Favorite
+                  style={{ color: "#ed4956" }}
+                  onClick={() => HandleLikePost(postId)}
+                />
+              ) : (
+                <FavoriteBorderOutlined
+                  onClick={() => HandleLikePost(postId, content.user._id)}
+                />
+              )}
 
-            <AddCommentOutlined onClick={() => showDetail(postId)} />
+              <AddCommentOutlined onClick={() => showDetail(postId)} />
 
-            <SendOutlined onClick={() => setIsShowMessagePopup(true)} />
-          </Col>
-          <Col md={3} style={{ textAlign: "right" }}>
-            <BookmarkBorderOutlined />
-          </Col>
-        </Row>
-      </Col>
+              <SendOutlined onClick={() => setIsShowMessagePopup(true)} />
+            </Col>
+            <Col md={3} style={{ textAlign: "right" }}>
+              <BookmarkBorderOutlined />
+            </Col>
+          </Row>
+        </Col>
 
-      <Col md={12} className="postItem__content">
-        <div
-          className="postItem__content__likes"
-          onClick={() => ShowAlllikesModal(content.likes)}
-        >
-          {numLikes} lượt thích
-        </div>
-        <div className="postItem__content__caption">{content.content}</div>
-        <div
-          className="postItem__content__allCmt"
-          onClick={() => showDetail(postId)}
-        >
-          Xem tất cả 100 bình luận
-        </div>
-        <div className="postItem__content__time">
-          {format(content.createdAt)}
-        </div>
-      </Col>
-      <ReportModal userPostId={content.user._id} />
+        <Col md={12} className="postItem__content">
+          <div
+            className="postItem__content__likes"
+            onClick={() => ShowAlllikesModal(content.likes)}
+          >
+            {numLikes} lượt thích
+          </div>
+          <div className="postItem__content__caption" ref={captionRef}>
+            {content.content}
+          </div>
+          {isOverflow() && (
+            <span
+              className="postItem__content__watchMoreBtn"
+              onClick={(e) => handleWatchMore(e)}
+            >
+              Xem thêm
+            </span>
+          )}
+          <div
+            className="postItem__content__allCmt"
+            onClick={() => showDetail(postId)}
+          >
+            Xem tất cả 100 bình luận
+          </div>
+          <div className="postItem__content__time">
+            {format(content.createdAt)}
+          </div>
+        </Col>
+        <ReportModal userPostId={content.user._id} />
+      </Row>
       {isShowMessagePopup && (
         <MessagePopup
           setIsShowPopup={setIsShowMessagePopup}
@@ -179,7 +202,7 @@ const PostItem = ({ postId, content }) => {
           content={{ text: postId, messType: "post" }}
         />
       )}
-    </Row>
+    </>
   );
 };
 

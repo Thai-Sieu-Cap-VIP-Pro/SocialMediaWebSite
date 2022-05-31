@@ -101,10 +101,27 @@ export const createPost = createAsyncThunk(
   }
 );
 
+export const updatePost = createAsyncThunk(
+  "post/updatePost",
+  async (params) => {
+    const response = await postAPI.updatePost(params);
+    return response;
+  }
+);
+
+export const deletePost = createAsyncThunk(
+  "post/deletePost",
+  async (params) => {
+    console.log(params);
+    const response = await postAPI.deletePost(params);
+    console.log(response);
+    return response;
+  }
+);
+
 export const getPostById = createAsyncThunk(
   "post/getPostById",
   async (params) => {
-    console.log(params);
     const post = await postAPI.getPostById(params);
     console.log(post);
     return post;
@@ -393,6 +410,7 @@ const HomeSlice = createSlice({
 const { reducer: HomeReducer, actions } = HomeSlice;
 export const {
   ShowDetail,
+  HideDetailEdit,
   HideDetailReducer,
   ShowReportModal,
   HideReportModal,

@@ -18,6 +18,10 @@ class UserAPI {
     const url = `http://localhost:3001/api/user/user/${params}/unfollow`;
     return axiosClient.patch(url, {});
   };
+  removeFollow = (params) => {
+    const url = `http://localhost:3001/api/user/user/${params}/remove-follow`;
+    return axiosClient.patch(url, {});
+  }
   getListFollowings = (params) => {
 
     const url = "http://localhost:3001/api/list-followings";
@@ -35,6 +39,10 @@ class UserAPI {
     const url = "http://localhost:3001/api/user/users/getAllUsers";
     return axiosClient.get(url);
   };
+  changePassword = (params) => {
+    const url = "http://localhost:3001/api/user/change-password";
+    return axiosClient.post(url, params);
+  }
 
 }
 

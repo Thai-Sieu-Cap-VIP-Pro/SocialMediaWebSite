@@ -75,6 +75,24 @@ body {
       cursor: pointer;
     }
 
+    &__caption {
+      overflow-y: hidden;
+      text-overflow: ellipsis;
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      word-break: break-word;
+    }
+
+    &__watchMoreBtn {
+      cursor: pointer;
+      color: grey;
+      &:hover {
+        color: #2bc891;
+        text-decoration: underline;
+      }
+    }
+
     &__allCmt {
       color: gray;
       margin: 10px 0 0 0;
@@ -276,80 +294,90 @@ body {
         position: relative;
         overflow-x: hidden;
 
-        #load {
+        &__footer {
           position: absolute;
-          top: 50%;
-          left: 50%;
-          transform: translate(-50%, -50%);
-        }
-      }
+          bottom: 0;
+          left: 0;
+          width: 100%;
+          height: 50px;
+          border-top: 1px solid $borderColor;
+          background-color: white;
 
-      &__footer {
-        position: absolute;
-        bottom: 0;
-        left: 0;
-        width: 100%;
-        height: 160px;
-        border-top: 1px solid $borderColor;
-        background-color: white;
+          .info {
+            padding: 10px;
+            &__icon {
+              margin: 10px 0;
+            }
 
-        .postItem__react {
-          margin: 5px 0;
+            &__likes {
+              font-weight: 500;
+              font-size: 13px;
+              margin: 0;
+            }
 
-          .reactIcon.row {
-            margin-top: 5px;
-          }
-        }
-
-        .react {
-          margin-left: 10px;
-        }
-
-        .postItem__content__likes {
-          font-size: 14px;
-          margin-left: 15px;
-        }
-
-        .postItem__content__caption {
-          font-size: 14px;
-          margin-left: 15px;
-        }
-
-        .postItem__content__time {
-          font-size: 10px;
-          margin-left: 15px;
-        }
-
-        .info {
-          padding: 10px;
-          &__icon {
-            margin: 10px 0;
-          }
-
-          &__likes {
-            font-weight: 500;
-            font-size: 13px;
-            margin: 0;
-          }
-
-          &__time {
-            font-size: 13px;
-            margin: 0;
+            &__time {
+              font-size: 13px;
+              margin: 0;
+            }
           }
         }
       }
     }
-  }
 
-  &__icon {
-    position: absolute;
-    top: 10px;
-    right: 10px;
+    &__icon {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 160px;
+      border-top: 1px solid $borderColor;
+      background-color: white;
 
-    svg {
-      font-size: 30px;
-      cursor: pointer;
-      color: white;
+      .postItem__react {
+        margin: 5px 0;
+
+        .reactIcon.row {
+          margin-top: 5px;
+        }
+      }
+
+      .react {
+        margin-left: 10px;
+      }
+
+      .postItem__content__likes {
+        font-size: 14px;
+        margin-left: 15px;
+      }
+
+      .postItem__content__caption {
+        font-size: 14px;
+        margin-left: 15px;
+      }
+
+      .postItem__content__time {
+        font-size: 10px;
+        margin-left: 15px;
+      }
+
+      .info {
+        padding: 10px;
+        &__icon {
+          margin: 10px 0;
+        }
+
+        &__likes {
+          font-weight: 500;
+          font-size: 13px;
+          margin: 0;
+        }
+
+        svg {
+          font-size: 30px;
+          cursor: pointer;
+          color: white;
+        }
+      }
     }
   }
 }
@@ -514,4 +542,28 @@ button.btn.btn-primary.btn-sm {
 
 .detail__content__img .carousel .carousel-indicators [data-bs-target] {
   width: 5px;
+}
+
+.edit_container {
+  position: relative;
+}
+.edit_dialog {
+  z-index: 100;
+  position: absolute;
+  top: 45px;
+  right: 13px;
+  width: 120px;
+  height: 80px;
+  background-color: white;
+  box-shadow: 0px 0px 10px 10px rgba(0, 0, 0, 0.1);
+}
+
+.dialog_container {
+  display: flex;
+  justify-content: space-between;
+  gap: 5px;
+  align-items: center;
+}
+.button {
+  cursor: pointer;
 }

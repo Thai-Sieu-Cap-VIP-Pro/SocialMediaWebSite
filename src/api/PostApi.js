@@ -17,6 +17,7 @@ class PostAPI {
   };
 
   getPostById = (params) => {
+    console.log(params)
     const url = `http://localhost:3001/api/posts/${params.postId}`;
     return axiosClient.get(url, {});
   };
@@ -82,6 +83,16 @@ class PostAPI {
     const url = "http://localhost:3001/api/posts/createPost";
     return axiosClient.post(url, params);
   };
+  updatePost = (params) => {
+    console.log(params)
+    const url = "http://localhost:3001/api/posts/updatePost";
+    return axiosClient.patch(url, params);
+  };
+  deletePost = (params) => {
+    console.log(params)
+    const url = "http://localhost:3001/api/posts/delete/" + params;
+    return axiosClient.delete(url, {});
+  }
 }
 
 const postAPI = new PostAPI();
