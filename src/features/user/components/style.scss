@@ -24,9 +24,9 @@
     font-size: 20px;
 
     .username {
-      font-size: 30px;
+      font-size: 28px;
       font-weight: 300;
-      color: rgb(113, 106, 106);
+      font-weight: lighter;
     }
 
     .edit_button {
@@ -212,5 +212,24 @@ footer {
       border-radius: 3px;
       background-color: white;
     }
+  }
+}
+
+button.btn.btn-outline-success {
+  height: 30px;
+  margin: 20px 6px 5px 11px;
+  line-height: 15px;
+}
+
+.p-2.numpost,
+.p-2.follower,
+.p-2.following {
+  font-size: 18px;
+  margin-right: 20px;
+
+  span {
+    font-weight: 700;
+    margin-right: 5px;
+    margin-left: 5px;
   }
 }

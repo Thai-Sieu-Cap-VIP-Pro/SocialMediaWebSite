@@ -33,11 +33,8 @@ import MessagePopup from "../../chat/components/MessagePopup";
 const PostItem = ({ postId, content }) => {
   const dispatch = useDispatch();
   const captionRef = useRef();
-  let [numLikes, setnumLikes] = useState(content.likes.length);
 
   const current = JSON.parse(localStorage.getItem("LoginUser"));
-
-  const [isLike, setisLike] = useState(content.likes.includes(current._id));
 
   const [isShowMessagePopup, setIsShowMessagePopup] = useState(false);
 
@@ -69,12 +66,10 @@ const PostItem = ({ postId, content }) => {
 
   //hàm xử lý like hay không like bài post
   const HandleLikePost = async (id, userid) => {
-    if (isLike) {
-      setnumLikes((prev) => prev - 1);
+    if (content.likes.includes(current._id)) {
       const action1 = handleUnLike(id);
       await dispatch(action1).unwrap();
     } else {
-      setnumLikes((prev) => prev + 1);
       const action1 = handleLike(id);
       await dispatch(action1).unwrap();
 
@@ -96,8 +91,6 @@ const PostItem = ({ postId, content }) => {
       };
       socket.emit("send_notificaton", notification);
     }
-
-    setisLike(!isLike);
   };
 
   const ShowAlllikesModal = async (a) => {
@@ -144,7 +137,7 @@ const PostItem = ({ postId, content }) => {
         <Col className="postItem__react">
           <Row className="reactIcon">
             <Col md={9}>
-              {isLike === true ? (
+              {content.likes.includes(current._id) === true ? (
                 <Favorite
                   style={{ color: "#ed4956" }}
                   onClick={() => HandleLikePost(postId)}
@@ -170,7 +163,7 @@ const PostItem = ({ postId, content }) => {
             className="postItem__content__likes"
             onClick={() => ShowAlllikesModal(content.likes)}
           >
-            {numLikes} lượt thích
+            {content.likes.length} lượt thích
           </div>
           <div className="postItem__content__caption" ref={captionRef}>
             {content.content}

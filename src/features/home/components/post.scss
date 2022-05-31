@@ -289,36 +289,58 @@ body {
 
       &__body {
         overflow-y: scroll;
-        height: calc(100% - 210px);
+        height: calc(100% - 220px);
         @include ScrollBarCustom;
         position: relative;
         overflow-x: hidden;
+      }
+      &__footer {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: 170px;
+        border-top: 1px solid $borderColor;
+        background-color: white;
 
-        &__footer {
-          position: absolute;
-          bottom: 0;
-          left: 0;
-          width: 100%;
-          height: 50px;
-          border-top: 1px solid $borderColor;
-          background-color: white;
+        .reactIcon.row {
+          margin-top: 10px;
+          margin-left: 5px;
+        }
 
-          .info {
-            padding: 10px;
-            &__icon {
-              margin: 10px 0;
-            }
+        .postItem__react {
+          margin: 5px 0;
+        }
 
-            &__likes {
-              font-weight: 500;
-              font-size: 13px;
-              margin: 0;
-            }
+        .postItem__content__likes {
+          font-size: 13px;
+          margin-left: 20px;
+        }
 
-            &__time {
-              font-size: 13px;
-              margin: 0;
-            }
+        .postItem__content__caption {
+          font-size: 13px;
+          margin-left: 20px;
+        }
+
+        .postItem__content__time {
+          font-size: 10px;
+          margin-left: 20px;
+        }
+        .info {
+          padding: 10px;
+          &__icon {
+            margin: 10px 0;
+          }
+
+          &__likes {
+            font-weight: 500;
+            font-size: 13px;
+            margin: 0;
+          }
+
+          &__time {
+            font-size: 13px;
+            margin: 0;
           }
         }
       }

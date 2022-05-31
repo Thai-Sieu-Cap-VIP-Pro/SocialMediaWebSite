@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
-import { InsertEmoticonOutlined } from '@material-ui/icons';
+import React, { useState } from "react";
+import { InsertEmoticonOutlined } from "@material-ui/icons";
 
-import Dialog from './Dialog';
-import { useSelector } from 'react-redux';
-import FollowersList from './FollowersList';
+import Dialog from "./Dialog";
+import { useSelector } from "react-redux";
+import FollowersList from "./FollowersList";
+import { Button } from "react-bootstrap";
 
 const UserHeader = () => {
   const [showModal, setShowModal] = useState(false);
@@ -55,13 +56,15 @@ const UserHeader = () => {
                 <div className="">
                   <div className="d-flex  flex-row ">
                     <div className="p-2 username ">{name}</div>
+                    <Button variant="outline-success">Nhắn tin</Button>
+                    <Button variant="outline-success">Theo dõi</Button>
                     {authUserId === _id && (
-                      <div
-                        className="p-2  span align-self-center"
+                      <Button
+                        variant="outline-success"
                         onClick={() => setShowModal(true)}
                       >
-                        <button className="edit_button">Edit profile </button>
-                      </div>
+                        Sửa thông tin
+                      </Button>
                     )}
                     <div className="p-2  span align-self-center">
                       <InsertEmoticonOutlined />
@@ -71,20 +74,23 @@ const UserHeader = () => {
               </div>
               <div className="p-0 ">
                 <div className="d-flex  flex-row">
-                  <div className="p-2 ">{posts?.length} posts</div>
-                  <div
-                    className="p-2"
-                    style={{ cursor: 'pointer' }}
-                    onClick={() => handleShowFollow(true)}
-                  >
-                    {totalFollower} followers
+                  <div className="p-2 numpost">
+                    {" "}
+                    <span>{posts?.length} </span>bài viết
                   </div>
                   <div
-                    className="p-2"
-                    style={{ cursor: 'pointer' }}
+                    className="p-2 follower"
+                    style={{ cursor: "pointer" }}
+                    onClick={() => handleShowFollow(true)}
+                  >
+                    <span> {totalFollower}</span> người theo dõi
+                  </div>
+                  <div
+                    className="p-2 following"
+                    style={{ cursor: "pointer" }}
                     onClick={() => handleShowFollow(false)}
                   >
-                    {totalFollowing} following
+                    Đang theo dõi<span>{totalFollowing}</span>
                   </div>
                 </div>
               </div>
