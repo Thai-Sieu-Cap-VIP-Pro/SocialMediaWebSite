@@ -44,7 +44,7 @@ const VideoCall = (props) => {
   const roomID = params.id;
 
   useEffect(() => {
-    socketRef.current = io.connect("http://localhost:3001");
+    socketRef.current = io.connect("https://server-social-ie213.herokuapp.com");
     navigator.mediaDevices
       .getUserMedia({ video: videoConstraints, audio: true })
       .then((stream) => {
