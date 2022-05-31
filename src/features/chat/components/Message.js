@@ -120,7 +120,11 @@ const Message = ({ message, handleImagePopup, handleTymMessage, handleUnTymMessa
                             message.sender?._id === currentUser._id ? 'mine' : ''
                         }`}
                     >
-                        {message.content.text}
+                        {message.content.text.includes('http') ? (
+                            <a href={message.content.text}>{message.content.text}</a>
+                        ) : (
+                            message.content.text
+                        )}
                     </p>
                 )}
 
