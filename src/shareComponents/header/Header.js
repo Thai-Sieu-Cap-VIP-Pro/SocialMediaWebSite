@@ -122,9 +122,9 @@ const Header = () => {
 
     return (
         <header className="header">
-            <div className="header__logo">
-                <img src={IMAGES.logo} alt="" />
-            </div>
+            <NavLink className="header__logo" to="/">
+                <img src={IMAGES.logo} alt=""/>
+            </NavLink>
             <div className="header__search">
                 <SearchOutlined className="concho" />
                 <input
