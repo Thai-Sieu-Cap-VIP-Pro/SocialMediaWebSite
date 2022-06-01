@@ -55,7 +55,7 @@ const ChatContent = ({ isOpenSetting, setIsOpenSetting, isShowPopup, setIsShowPo
     // useEffect
 
     useEffect(() => {
-        document.title = 'Tiha • Chats';
+        document.title = 'Midori • Chats';
     }, []);
 
     const handleScroll = async (e) => {

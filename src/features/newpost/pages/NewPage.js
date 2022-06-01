@@ -30,6 +30,7 @@ const NewPage = () => {
     const [valueInput, setValueInput] = useState(post?.content || '');
 
     useEffect(async () => {
+        document.title = 'Midori • New Post';
         let action2 = getNotification();
         await dispatch(action2).unwrap();
     }, []);
