@@ -13,7 +13,7 @@ import io from "socket.io-client";
 import { useSelector } from "react-redux";
 import PostComment from "./features/home/components/postComment";
 
-export const socket = io.connect("http://localhost:3001");
+export const socket = io.connect("https://server-social-ie213.herokuapp.com");
 
 function App() {
   const { activePostId } = useSelector((state) => state.home);
