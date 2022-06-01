@@ -49,9 +49,8 @@ const CommentItem = ({ CmtItem }) => {
   }
 
   const isDelete =
-    CmtItem.user._id == LoginUser._id || LoginUser._id == activePost.user._id;
-
-  const isEdit = LoginUser._id == CmtItem.user._id;
+    CmtItem?.user?._id == LoginUser?._id ||
+    LoginUser?._id == activePost?.user?._id;
 
   const ShowAlllikesModal = async (a) => {
     const action = getListUser(a);
@@ -172,7 +171,7 @@ const CommentItem = ({ CmtItem }) => {
               <ChatBubbleOutlineOutlined className="rep"></ChatBubbleOutlineOutlined>
               Trả lời
             </p>
-            {(isDelete || isEdit) && (
+            {isDelete && (
               <div className="comment_content_interact_more">
                 <FontAwesomeIcon
                   // className="comment_content_interact_more"

@@ -1,13 +1,14 @@
 import axiosClient from "./AxiosClient";
+import { URL } from "../const/index";
 
 class AuthAPI {
   getAccount = (params) => {
-    const url = "http://localhost:3001/api/auth/login";
+    const url = URL + "/auth/login";
     return axiosClient.post(url, params);
   };
 
   createAccount = (params) => {
-    const url = "http://localhost:3001/api/auth/register";
+    const url = URL + "/auth/register";
     return axiosClient.post(url, params);
   };
 
