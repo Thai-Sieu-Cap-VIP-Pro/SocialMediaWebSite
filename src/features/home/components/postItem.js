@@ -181,7 +181,7 @@ const PostItem = ({ postId, content }) => {
             className="postItem__content__allCmt"
             onClick={() => showDetail(postId)}
           >
-            Xem tất cả 100 bình luận
+            Xem tất cả {content.comments.length} bình luận
           </div>
           <div className="postItem__content__time">
             {format(content.createdAt)}

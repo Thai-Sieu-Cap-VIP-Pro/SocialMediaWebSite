@@ -18,7 +18,6 @@ import {
   SetReplyCmd,
 } from "../../homeSlice";
 import TimeAgo from "javascript-time-ago";
-import { format } from "timeago.js";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEllipsis } from "@fortawesome/free-solid-svg-icons";
 import useCloseOutSideToClose from "../../../../hooks/useCloseOutSideToClose";
@@ -49,8 +48,8 @@ const CommentItem = ({ CmtItem }) => {
   }
 
   const isDelete =
-    CmtItem?.user?._id == LoginUser?._id ||
-    LoginUser?._id == activePost?.user?._id;
+    CmtItem?.user?._id === LoginUser?._id ||
+    LoginUser?._id === activePost?.user?._id;
 
   const ShowAlllikesModal = async (a) => {
     const action = getListUser(a);
@@ -65,7 +64,7 @@ const CommentItem = ({ CmtItem }) => {
   const handleLikeCmt = async (id, x) => {
     setisLike(!isLike);
     const action = likeOrUnlikeCmt(id);
-    if (isLike == true) {
+    if (isLike === true) {
       setNumLikes(--NumLikes);
     } else {
       setNumLikes(++NumLikes);

@@ -1,14 +1,15 @@
 import React, { useState } from "react";
-import { InsertEmoticonOutlined } from "@material-ui/icons";
-
 import FollowersList from "./FollowersList";
 import { Button } from "react-bootstrap";
 import Dialog from "./Dialog";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { createConversation } from "../../chat/ChatSlice";
+import { socket } from "../../../App";
+import { createNotification, follow, unFollow } from "../../home/homeSlice";
 
 const UserHeader = () => {
+  const current = JSON.parse(localStorage.getItem("LoginUser"));
   const [showModal, setShowModal] = useState(false);
   const [showModalFollow, setShowModalFollow] = useState(false);
   const [isShowFollowers, setIsShowFollowers] = useState(false);
@@ -17,13 +18,19 @@ const UserHeader = () => {
   const UserInfo = useSelector((state) => state.user.userInfo);
   const posts = useSelector((state) => state.user.posts);
 
+  var isfollow = UserInfo.followers
+    .map((item) => {
+      return item._id;
+    })
+    .includes(current._id);
+
+  const [IsFollow, setIsFollow] = useState(isfollow);
+
   const { name, avatar, _id } = UserInfo;
   const totalFollower = UserInfo.followers?.length;
   const totalFollowing = UserInfo.following?.length;
 
   const conversations = useSelector((state) => state.chat.conversations);
-  const currentUser = useSelector((state) => state.auth.current);
-  const userInfo = useSelector((state) => state.user.userInfo);
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
@@ -82,6 +89,33 @@ const UserHeader = () => {
     }
   };
 
+  const handleFollow = async (id) => {
+    if (IsFollow) {
+      const action = unFollow(id);
+      await dispatch(action).unwrap();
+      setIsFollow(false);
+    } else {
+      const action1 = follow(id);
+      await dispatch(action1).unwrap();
+      setIsFollow(true);
+      let notification = {
+        postId: current._id,
+        userId: UserInfo._id,
+        type: 3,
+        senderName: current.name,
+        img: current.avatar,
+      };
+      socket.emit("send_notificaton", notification);
+      let paramsCreate = {
+        receiver: id,
+        notiType: 3,
+        desId: current._id,
+      };
+      const actionCreateNoti = createNotification(paramsCreate);
+      await dispatch(actionCreateNoti).unwrap();
+    }
+  };
+
   return (
     <div>
       {showModal && (
@@ -114,8 +148,27 @@ const UserHeader = () => {
                 <div className="">
                   <div className="d-flex  flex-row ">
                     <div className="p-2 username ">{name}</div>
-                    <Button variant="outline-success">Nhắn tin</Button>
-                    <Button variant="outline-success">Theo dõi</Button>
+
+                    {UserInfo._id === current._id ? (
+                      <></>
+                    ) : (
+                      <>
+                        {" "}
+                        <Button
+                          variant="outline-success"
+                          onClick={() => handleGuiTinNhan(current, UserInfo)}
+                        >
+                          Nhắn tin
+                        </Button>
+                        <Button
+                          variant="outline-success"
+                          onClick={() => handleFollow(UserInfo._id)}
+                        >
+                          {IsFollow ? "Bỏ theo dõi" : "Theo dõi"}
+                        </Button>
+                      </>
+                    )}
+
                     {authUserId === _id && (
                       <Button
                         variant="outline-success"
@@ -124,9 +177,9 @@ const UserHeader = () => {
                         Sửa thông tin
                       </Button>
                     )}
-                    <div className="p-2  span align-self-center">
+                    {/* <div className="p-2  span align-self-center">
                       <InsertEmoticonOutlined />
-                    </div>
+                    </div> */}
                   </div>
                 </div>
               </div>
@@ -134,21 +187,21 @@ const UserHeader = () => {
                 <div className="d-flex  flex-row">
                   <div className="p-2 numpost">
                     {" "}
-                    <span>{posts?.length} </span>bài viết
+                    <span>{posts?.length}</span>Bài viết
                   </div>
                   <div
                     className="p-2 follower"
                     style={{ cursor: "pointer" }}
                     onClick={() => handleShowFollow(true)}
                   >
-                    <span> {totalFollower}</span> người theo dõi
+                    <span>{totalFollower}</span>Người theo dõi
                   </div>
                   <div
                     className="p-2 following"
                     style={{ cursor: "pointer" }}
                     onClick={() => handleShowFollow(false)}
                   >
-                    Đang theo dõi<span>{totalFollowing}</span>
+                    <span>{totalFollowing}</span>Đang theo dõi
                   </div>
                 </div>
               </div>

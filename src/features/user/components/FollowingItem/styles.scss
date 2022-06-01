@@ -1,27 +1,29 @@
 .avatar {
-    width: 100%;
-    object-fit: cover;
+  width: 100%;
+  object-fit: cover;
 }
 .accountItem {
-    margin: 20px;
-    img {
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      border: 1px solid gray;
-      margin-right: 5%;
+  margin: 20px;
+  img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 1px solid gray;
+    margin-right: 5%;
+    object-fit: cover;
+  }
+
+  &_name {
+    margin-left: 20px;
+
+    &_username {
+      font-size: 14px;
+      font-weight: 700;
+      color: rgb(61, 61, 61);
     }
-    &_name {
-      margin-left: 20px;
-  
-      &_username {
-        font-size: 14px;
-        font-weight: 700;
-        color: rgb(61, 61, 61);
-      }
-      &_realname {
-        font-size: 14px;
-        color: gray;
-      }
+    &_realname {
+      font-size: 14px;
+      color: gray;
     }
   }
+}
