@@ -1,10 +1,13 @@
-import React, { useState } from 'react';
-import { InsertEmoticonOutlined } from '@material-ui/icons';
+import React, { useState } from "react";
+import { InsertEmoticonOutlined } from "@material-ui/icons";
 
-import Dialog from './Dialog';
-import { useSelector } from 'react-redux';
-import FollowersList from './FollowersList';
 import ChangeProfilePhotoPopup from './ChangeProfilePhotoPopup'
+import FollowersList from "./FollowersList";
+import { Button } from "react-bootstrap";
+import Dialog from "./Dialog";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import { createConversation } from "../../chat/ChatSlice";
 
 const UserHeader = () => {
   const [showModal, setShowModal] = useState(false);
@@ -20,6 +23,12 @@ const UserHeader = () => {
   const totalFollower = UserInfo.followers?.length;
   const totalFollowing = UserInfo.following?.length;
 
+  const conversations = useSelector((state) => state.chat.conversations);
+  const currentUser = useSelector((state) => state.auth.current);
+  const userInfo = useSelector((state) => state.user.userInfo);
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+
   const handleShowFollow = (isFollowers) => {
     setIsShowFollowers(isFollowers);
     setShowModalFollow(true);
@@ -28,6 +37,55 @@ const UserHeader = () => {
   const handleChangeAvt = () => {
     setIsShowChangeAvataPopup(true)
   }
+  const handleGuiTinNhan = (currentUser, destinationUser) => {
+    let exist = [];
+    console.log({ currentUser, destinationUser });
+    console.log(conversations);
+    if (conversations.length !== 0) {
+      exist = conversations.filter((conversation) => {
+        if (conversation.members.length === 2) {
+          const listIds = conversation.members.map((member) => {
+            return member._id;
+          });
+          if (
+            listIds.includes(currentUser._id) &&
+            listIds.includes(destinationUser._id)
+          ) {
+            return true;
+          }
+        }
+        return false;
+      });
+      // exist = conversations.filter((conversation) => {
+      //     const condition1 = conversation.members.length  === 2;
+      //     if (condition1) {
+      //         const tagIds = tags.map((tag) => tag._id);
+      //         const condition2 = tagIds.every((tagId) => {
+      //             return conversation.members.some((member) => {
+      //                 return member._id === tagId;
+      //             });
+      //         });
+      //         if (condition2) {
+      //             return true;
+      //         } else {
+      //             return false;
+      //         }
+      //     } else {
+      //         return false;
+      //     }
+      // });
+    }
+    if (exist.length !== 0) {
+      navigate(`/messenger/${exist[0]._id}`);
+    } else {
+      dispatch(createConversation({ users: [destinationUser] }))
+        .unwrap()
+        .then((resultValue) => {
+          navigate(`/messenger/${resultValue.conversation._id}`);
+        })
+        .catch((rejectedValue) => console.log(rejectedValue));
+    }
+  };
 
   return (
     <div>
@@ -67,13 +125,19 @@ const UserHeader = () => {
                 <div className="">
                   <div className="d-flex  flex-row ">
                     <div className="p-2 username ">{name}</div>
+                    {authUserId != _id && (
+                      <>
+                        <Button variant="outline-success" onClick={() => handleGuiTinNhan(currentUser, userInfo)}>Nhắn tin</Button>
+                        <Button variant="outline-success">Theo dõi</Button>
+                      </>
+                    )}
                     {authUserId === _id && (
-                      <div
-                        className="p-2  span align-self-center"
+                      <Button
+                        variant="outline-success"
                         onClick={() => setShowModal(true)}
                       >
-                        <button className="edit_button">Edit profile </button>
-                      </div>
+                        Sửa thông tin
+                      </Button>
                     )}
                     <div className="p-2  span align-self-center">
                       <InsertEmoticonOutlined />
@@ -83,26 +147,26 @@ const UserHeader = () => {
               </div>
               <div className="p-0 ">
                 <div className="d-flex  flex-row">
-                  <div className="p-2 ">{posts?.length} posts</div>
-                  <div
-                    className="p-2"
-                    style={{ cursor: 'pointer' }}
-                    onClick={() => handleShowFollow(true)}
-                  >
-                    {totalFollower} followers
+                  <div className="p-2 numpost">
+                    {" "}
+                    <span style={{fontSize: 22}}>{posts?.length}</span>Bài viết
                   </div>
                   <div
-                    className="p-2"
-                    style={{ cursor: 'pointer' }}
+                    className="p-2 follower"
+                    style={{ cursor: "pointer" }}
+                    onClick={() => handleShowFollow(true)}
+                  >
+                    <span style={{fontSize: 22}}>{totalFollower}</span>Người theo dõi
+                  </div>
+                  <div
+                    className="p-2 following"
+                    style={{ cursor: "pointer" }}
                     onClick={() => handleShowFollow(false)}
                   >
-                    {totalFollowing} following
+                    <span style={{fontSize: 22}}>{totalFollowing}</span>Đang theo dõi
                   </div>
                 </div>
               </div>
-              {/* <div className="p-2">
-                <div>TT</div>
-              </div> */}
             </div>
           </div>
         </div>

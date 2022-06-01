@@ -32,8 +32,8 @@ const SingleDestination = ({ follow, forRenderSearch = false, isForward = false 
     };
 
     const handleClick = (e) => {
-        e.stopPropagation();
         if (!forRenderSearch) {
+            e.stopPropagation();
             const temp = tags.find((tag) => {
                 return tag._id === follow._id;
             });

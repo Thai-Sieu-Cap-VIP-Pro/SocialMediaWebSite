@@ -34,7 +34,8 @@ const UpdateProfile = () => {
     e.preventDefault();
     console.log(userInfo);
     const action = updateUser({ ...userInfo, avatar: imageAvt });
-    await dispatch(action);
+    const result = await dispatch(action);
+    
   };
 
   return (

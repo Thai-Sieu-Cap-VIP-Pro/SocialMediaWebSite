@@ -1,20 +1,18 @@
 import React from 'react'
 import { useDispatch, useSelector } from 'react-redux';
 import useImageUpload from '../../../../hooks/useImageUpload';
+import { updateAvt } from '../../profileSlice';
 
 
 
 const ChangePhotoPopup = (props) => {
   const currentUser = useSelector((state) => state.auth.current);
-  const urlImg = useImageUpload();
+  const uploadImage = useImageUpload();
   const dispatch = useDispatch();
   const handleFileChange = async (e)=>{
-    // console.log('alo');
-    // const url = await urlImg(e.target.files[0])
-    // console.log(url);
-    // console.log('alo');
-    // dispatch(changeAvatar({newAvt: url})).then((resultValue)=>{}).catch((rejectedValue)=>console.log(rejectedValue));
-    // props.setShowModal(false)
+    const image = await uploadImage(e.target.files[0]);
+    await dispatch(updateAvt({avatar: image}));
+    props.setShowModal(false)
   }
 
   const handleCancle = () => {

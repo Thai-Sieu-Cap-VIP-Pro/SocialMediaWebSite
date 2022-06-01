@@ -18,7 +18,7 @@ const UserPost = () => {
     return (
         <Container>
             <Row className="container">
-                {posts.length>0 &&
+                {posts.length > 0 &&
                     posts
                         .slice()
                         .reverse()

@@ -75,6 +75,24 @@ body {
       cursor: pointer;
     }
 
+    &__caption {
+      overflow-y: hidden;
+      text-overflow: ellipsis;
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      word-break: break-word;
+    }
+
+    &__watchMoreBtn {
+      cursor: pointer;
+      color: grey;
+      &:hover {
+        color: #2bc891;
+        text-decoration: underline;
+      }
+    }
+
     &__allCmt {
       color: gray;
       margin: 10px 0 0 0;
@@ -271,28 +289,43 @@ body {
 
       &__body {
         overflow-y: scroll;
-        height: calc(100% - 110px);
+        height: calc(100% - 220px);
         @include ScrollBarCustom;
         position: relative;
         overflow-x: hidden;
-
-        #load {
-          position: absolute;
-          top: 50%;
-          left: 50%;
-          transform: translate(-50%, -50%);
-        }
       }
-
       &__footer {
         position: absolute;
         bottom: 0;
         left: 0;
         width: 100%;
-        height: 50px;
+        height: 170px;
         border-top: 1px solid $borderColor;
         background-color: white;
 
+        .reactIcon.row {
+          margin-top: 10px;
+          margin-left: 5px;
+        }
+
+        .postItem__react {
+          margin: 5px 0;
+        }
+
+        .postItem__content__likes {
+          font-size: 13px;
+          margin-left: 20px;
+        }
+
+        .postItem__content__caption {
+          font-size: 13px;
+          margin-left: 20px;
+        }
+
+        .postItem__content__time {
+          font-size: 10px;
+          margin-left: 20px;
+        }
         .info {
           padding: 10px;
           &__icon {
@@ -312,17 +345,61 @@ body {
         }
       }
     }
-  }
 
-  &__icon {
-    position: absolute;
-    top: 10px;
-    right: 10px;
+    &__icon {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 160px;
+      border-top: 1px solid $borderColor;
+      background-color: white;
 
-    svg {
-      font-size: 30px;
-      cursor: pointer;
-      color: white;
+      .postItem__react {
+        margin: 5px 0;
+
+        .reactIcon.row {
+          margin-top: 5px;
+        }
+      }
+
+      .react {
+        margin-left: 10px;
+      }
+
+      .postItem__content__likes {
+        font-size: 14px;
+        margin-left: 15px;
+      }
+
+      .postItem__content__caption {
+        font-size: 14px;
+        margin-left: 15px;
+      }
+
+      .postItem__content__time {
+        font-size: 10px;
+        margin-left: 15px;
+      }
+
+      .info {
+        padding: 10px;
+        &__icon {
+          margin: 10px 0;
+        }
+
+        &__likes {
+          font-weight: 500;
+          font-size: 13px;
+          margin: 0;
+        }
+
+        svg {
+          font-size: 30px;
+          cursor: pointer;
+          color: white;
+        }
+      }
     }
   }
 }
@@ -476,7 +553,7 @@ body {
 
 button.btn.btn-primary.btn-sm {
   margin: 10px 0;
-  width: 80%;
+  width: 100%;
 }
 
 .recommend__expand {

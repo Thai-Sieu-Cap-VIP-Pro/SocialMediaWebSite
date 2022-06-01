@@ -63,7 +63,7 @@ const Header = () => {
     const [bruh, setBruh] = useState([]);
     const [searchValue, setSearchValue] = useState('');
     const dispatch = useDispatch();
-    let navigate = useNavigate();
+    const navigate = useNavigate();
 
     const handleSearch = (searchValue) => {
         setSearchValue(searchValue);
@@ -111,13 +111,20 @@ const Header = () => {
         await dispatch(action).unwrap();
     };
 
+    const handleDirectToProfile = async (userId) => {
+        const action = addActiveId(userId);
+        dispatch(action);
+        navigate('/account');
+        setSearchValue('');
+    };
+
     //phần react
 
     return (
         <header className="header">
-            <div className="header__logo">
-                <img src={IMAGES.logo} alt="" />
-            </div>
+            <NavLink className="header__logo" to="/">
+                <img src={IMAGES.logo} alt=""/>
+            </NavLink>
             <div className="header__search">
                 <SearchOutlined className="concho" />
                 <input
@@ -149,7 +156,7 @@ const Header = () => {
                         <div className="header__search__resultContainer">
                             {bruh.length !== 0 ? (
                                 bruh.map((user, index) => (
-                                    <div>
+                                    <div onClick={() => handleDirectToProfile(user._id)}>
                                         <SingleDestination follow={user} forRenderSearch={true} key={index} />
                                     </div>
                                 ))

@@ -14,7 +14,6 @@
 
   &_childrenStatus {
     margin-top: 10px;
-    color: rgb(149, 149, 149);
     cursor: pointer;
   }
 
@@ -50,17 +49,27 @@
       position: relative;
       margin-top: 5px;
 
+      svg {
+        font-size: 14px;
+        cursor: pointer;
+        margin-right: 5px;
+        color: gray;
+      }
+
+      svg.likeActive {
+        color: #ed4956;
+      }
       &_time {
         font-weight: 300;
         padding: 0 20px 0 0;
-        color: #bfbfbf;
+
         font-size: 11px;
       }
 
       &_luotthich {
-        font-weight: 500;
+        font-weight: 100;
         padding: 0 20px 0 0;
-        color: #bfbfbf;
+
         cursor: pointer;
         font-size: 11px;
 
@@ -70,15 +79,19 @@
       }
 
       &_response {
-        font-weight: 500;
-        color: #bfbfbf;
+        font-weight: 100;
+
         cursor: pointer;
         font-size: 11px;
+
+        svg {
+          font-size: 13px;
+        }
       }
 
       &_more {
         position: relative;
-        color: #bfbfbf;
+
         cursor: pointer;
         margin-left: 15px;
         font-size: 15px;
@@ -264,8 +277,17 @@
 .comment_childrenStatus.col-md-10.offset-md-2 {
   font-size: 12px;
   margin-top: 20px;
+  color: #057fd1;
 }
 
 .accountItem.row {
   margin: 10px;
+}
+
+.spinner-grow.text-success {
+  margin: 30px auto;
+}
+
+a:hover {
+  color: #625f5f;
 }
