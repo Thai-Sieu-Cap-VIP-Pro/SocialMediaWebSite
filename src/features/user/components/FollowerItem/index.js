@@ -30,7 +30,7 @@ const FollowerItem = ({ user }) => {
       </Col>
       <Col md={{ span: 4 }}>
         {authUserId === currentUserId && (
-          <Button onClick={() => handleRemoveFollow} size="sm">
+          <Button onClick={() => handleRemoveFollow()} size="sm">
             Hủy theo dõi
           </Button>
         )}
