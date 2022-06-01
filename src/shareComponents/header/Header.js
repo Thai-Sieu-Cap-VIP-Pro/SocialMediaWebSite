@@ -78,8 +78,12 @@ const Header = () => {
     const [isShowNotificationPanel, setIsShowNotificationPanel] = useState(false);
 
     const handleLogout = async () => {
-        const action = Logout();
-        await dispatch(action);
+        try {
+            const result = await dispatch(Logout()).unwrap();
+            console.log(result);
+        } catch (error) {
+            console.log(error);
+        }
         navigate('/auth/login');
     };
 
@@ -122,7 +126,7 @@ const Header = () => {
 
     return (
         <header className="header">
-            <div className="header__logo">
+            <div className="header__logo" onClick={() => navigate('/')}>
                 <img src={IMAGES.logo} alt="" />
             </div>
             <div className="header__search">
@@ -215,8 +219,8 @@ const Header = () => {
                 </div>
             </div>
             <div className="header__profile">
-                <span>{current.name}</span>
-                <img src={current.avatar} alt="" />
+                <span>{current?.name}</span>
+                <img src={current?.avatar} alt="" />
                 <div className="header__profile__list" id="header__profile__list">
                     <ul>
                         <li>
