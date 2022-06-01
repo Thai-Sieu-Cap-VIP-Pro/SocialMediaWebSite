@@ -9,8 +9,6 @@ const AccountItem = ({ user }) => {
   const dispatch = useDispatch();
   const current = JSON.parse(localStorage.getItem("LoginUser"));
 
-  console.log(user[0]);
-
   var isfollow = user[0].followers.includes(current._id);
 
   const [IsFollow, setIsFollow] = useState(isfollow);
