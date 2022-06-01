@@ -1,12 +1,13 @@
-import { current } from "@reduxjs/toolkit";
 import React, { useState } from "react";
 import { useDispatch } from "react-redux";
 import { socket } from "../../../App";
-
+import { useNavigate } from "react-router-dom";
 import { createNotification, follow, unFollow } from "../homeSlice";
 import UserSumary from "./commons/userSumary";
+import { addActiveId } from "../../user/profileSlice";
 
 const RecommendItem = ({ user }) => {
+  const navigate = useNavigate();
   const current = JSON.parse(localStorage.getItem("LoginUser"));
   const [isShowRecommend, setIsShowRecommend] = useState(false);
   const dispatch = useDispatch();
@@ -51,6 +52,12 @@ const RecommendItem = ({ user }) => {
     setIsShowRecommend(false);
   };
 
+  const hanldeShowProfile = (id) => {
+    const action = addActiveId(id);
+    dispatch(action);
+    navigate("/account");
+  };
+
   return (
     <li key={user._id}>
       <div className="recommend__img">
@@ -60,6 +67,7 @@ const RecommendItem = ({ user }) => {
         className="recommend__name"
         onMouseOver={() => showRecommend()}
         onMouseLeave={() => hideRecommend()}
+        onClick={() => hanldeShowProfile(user._id)}
       >
         <a href="">{user?.name}</a>
         <p className="recommend__name_desc">Gợi ý cho bạn</p>

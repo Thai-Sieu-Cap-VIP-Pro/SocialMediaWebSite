@@ -129,6 +129,7 @@ body {
       height: 50px;
       border-radius: 50%;
       margin-right: 30px;
+      object-fit: cover;
     }
 
     p {
@@ -588,4 +589,12 @@ button.btn.btn-primary.btn-sm {
 }
 .button {
   cursor: pointer;
+}
+
+svg.MuiSvgIcon-root.editposst {
+  font-size: 19px;
+}
+
+svg.MuiSvgIcon-root.deleteposst {
+  color: #e35e5e;
 }

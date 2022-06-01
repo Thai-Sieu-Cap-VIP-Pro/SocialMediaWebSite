@@ -1,8 +1,8 @@
-import React from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { Row, Col, Button } from 'react-bootstrap';
-import { removeFollow } from '../../profileSlice';
-import './styles.scss';
+import React from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { Row, Col, Button } from "react-bootstrap";
+import { removeFollow } from "../../profileSlice";
+import "./styles.scss";
 
 const FollowerItem = ({ user }) => {
   const { _id, name, avatar, email } = user;
@@ -31,7 +31,7 @@ const FollowerItem = ({ user }) => {
       <Col md={{ span: 4 }}>
         {authUserId === currentUserId && (
           <Button onClick={() => handleRemoveFollow()} size="sm">
-            Remove
+            Hủy theo dõi
           </Button>
         )}
       </Col>

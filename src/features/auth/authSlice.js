@@ -64,8 +64,8 @@ const AuthSlice = createSlice({
 
     [LoginUser.rejected]: (state, action) => {
       state.loading = false;
-      console.log("Đăng nhập thất bại");
-      state.error = "Đăng nhập thất bại !";
+      console.log(action);
+      alert("Đăng nhập thất bại, vui lòng kiểm tra lại email hoặc mật khẩu");
     },
 
     [LoginUser.fulfilled]: (state, action) => {

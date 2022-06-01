@@ -1,14 +1,10 @@
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import React, { useState } from 'react';
-import { Col, Modal, Row, Form, Button } from 'react-bootstrap';
-import IMAGES from '../../../assets/images/imageStore';
-import { faEllipsis } from '@fortawesome/free-solid-svg-icons';
-import { useDispatch, useSelector } from 'react-redux';
-import { ShowReportModal, HideDetailEdit, deletePost } from '../homeSlice';
-import ReportModal from './reportModal';
-import { addActiveId, getPostsByUserId } from '../../user/profileSlice';
-import { useNavigate, Link } from 'react-router-dom';
-
+import React, { useState } from "react";
+import { Col, Modal, Row, Form, Button } from "react-bootstrap";
+import { useDispatch, useSelector } from "react-redux";
+import { ShowReportModal, HideDetailEdit, deletePost } from "../homeSlice";
+import { addActiveId, getPostsByUserId } from "../../user/profileSlice";
+import { useNavigate, Link } from "react-router-dom";
+import { DeleteForever, BorderColor } from "@material-ui/icons";
 const PostHeader = ({ postId, postUser }) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -30,7 +26,7 @@ const PostHeader = ({ postId, postUser }) => {
   const hanldeShowProfile = (id) => {
     const action = addActiveId(id);
     dispatch(action);
-    navigate('/account');
+    navigate("/account");
   };
 
   const hideDetail = () => {
@@ -39,7 +35,7 @@ const PostHeader = ({ postId, postUser }) => {
   };
 
   const handleEditPost = () => {
-    navigate('new/edit-post');
+    navigate("new/edit-post");
     hideDetail();
   };
   const handleDeletePost = () => {
@@ -50,12 +46,12 @@ const PostHeader = ({ postId, postUser }) => {
     setShowDeleteModal(false);
   };
 
-  const onSubmit = (e) => {
+  const onSubmit = async (e) => {
     e.preventDefault();
     const action1 = deletePost(postId);
-    dispatch(action1);
+    await dispatch(action1);
     const action2 = getPostsByUserId(postUser._id);
-    dispatch(action2);
+    await dispatch(action2);
     closeDialog();
     hideDetail();
   };
@@ -65,34 +61,34 @@ const PostHeader = ({ postId, postUser }) => {
       <Col md={1} onClick={() => hanldeShowProfile(postUser._id)}>
         <img src={postUser?.avatar} alt="" />
       </Col>
-      <Col md={8} onClick={() => hanldeShowProfile(postUser._id)}>
+      <Col md={9} onClick={() => hanldeShowProfile(postUser._id)}>
         <h6>{postUser?.name}</h6>
       </Col>
       {
         //check if user is not the owner of the post
         userInfoId === postUser._id && (
-          <Col className="edit_container" md={3}>
+          <Col className="edit_container" md={2}>
             <div className="dialog_container">
-              <FontAwesomeIcon
+              {/* <FontAwesomeIcon
                 icon={faEllipsis}
                 id="more"
                 onClick={() => showModal(postId)}
-              />
+              /> */}
               <Link
                 to={`/new`}
                 state={{
                   post: currentPost,
                 }}
                 className="button edit_btn"
-                // onClick={() => handleEditPost()}
+                onClick={() => handleEditPost()}
               >
-                Edit
+                <BorderColor className="editposst" />
               </Link>
               <div
                 className="button delete_btn"
                 onClick={() => handleDeletePost()}
               >
-                Delete
+                <DeleteForever className="deleteposst" />
               </div>
             </div>
           </Col>

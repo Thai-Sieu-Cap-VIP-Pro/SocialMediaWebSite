@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 
-import Modal from 'react-bootstrap/Modal';
-import FollowerItem from '../FollowerItem';
-import './styles.scss';
+import Modal from "react-bootstrap/Modal";
+import FollowerItem from "../FollowerItem";
+import "./styles.scss";
 
-import { Button } from 'react-bootstrap';
-import FollowingItem from '../FollowingItem';
+import { Button } from "react-bootstrap";
+import FollowingItem from "../FollowingItem";
 
 const FollowersList = ({ showModal, setShowModal, isFollowers }) => {
   const followersListStore = useSelector(
@@ -32,7 +32,7 @@ const FollowersList = ({ showModal, setShowModal, isFollowers }) => {
     <Modal show={showModal} bsSize="large" onHide={handleCloseDialog} centered>
       <Modal.Header closeButton>
         <Modal.Title>
-          {isFollowers ? 'Followers List' : 'Following List'}
+          {isFollowers ? "Danh sách theo dõi bạn " : "Danh sách đang theo dõi"}
         </Modal.Title>
       </Modal.Header>
       <Modal.Body>

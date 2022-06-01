@@ -13,6 +13,11 @@ class UserAPI {
 
     return axiosClient.post(url, params);
   };
+  updateAvt = (params) => {
+    const url = "http://localhost:3001/api/user/updateAvt";
+
+    return axiosClient.post(url, params);
+  };
   unFollow = (params) => {
     console.log(params);
     const url = `${URL}/user/user/${params}/unfollow`;
