@@ -32,7 +32,7 @@ export const Register = createAsyncThunk('auth/Register', async (args, thunkAPI)
         const response = await authAPI.createAccount(args);
         return response;
     } catch (error) {
-        return thunkAPI.rejectWithValue(`${error}`);
+        return thunkAPI.rejectWithValue(error.response.data);
     }
 });
 
@@ -102,7 +102,6 @@ const AuthSlice = createSlice({
 
         [Register.fulfilled]: (state, action) => {
             state.loading = false;
-            console.log('Đăng ký thành công');
         },
 
         [Logout.fulfilled]: (state, action) => {

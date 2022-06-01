@@ -36,9 +36,13 @@ const NewpostHeader = ({ listImg, content, isUpdate, postId }) => {
         <div className="newHeader">
             <h6>Tạo bài viết mới</h6>
             {!isUpdate ? (
-                <button onClick={handleCreatePost}>Chia sẻ</button>
+                <button className={`${listImg.length === 0 ? 'disabled' : ''}`} onClick={handleCreatePost}>
+                    Chia sẻ
+                </button>
             ) : (
-                <button onClick={handleUpdatePost}>Cập nhật</button>
+                <button className={`${listImg.length === 0 ? 'disabled' : ''}`} onClick={handleUpdatePost}>
+                    Cập nhật
+                </button>
             )}
         </div>
     );
