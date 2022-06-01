@@ -24,6 +24,7 @@ export const unFollow = createAsyncThunk('user/unFollow', async (params) => {
 
 export const removeFollow = createAsyncThunk('user/removeFollow', async (params) => {
   const unFollowUser = await userAPI.removeFollow(params);
+  console.log(unFollowUser);
   return unFollowUser;
 });
 
@@ -86,7 +87,7 @@ const UserSlice = createSlice({
       state.isLoading = true;
     },
     [removeFollow.fulfilled]: (state, action) => {
-      state.userInfo.following = action.payload.unfollowUser?.follower;
+      state.userInfo.followers = action.payload.unfollowUser?.followers;
     },
     [removeFollow.rejected]: (state, action) => {
       state.isLoading = false;
