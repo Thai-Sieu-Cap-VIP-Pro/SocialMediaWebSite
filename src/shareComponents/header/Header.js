@@ -122,8 +122,6 @@ const Header = () => {
         setSearchValue('');
     };
 
-    //phần react
-
     return (
         <header className="header">
             <div className="header__logo" onClick={() => navigate('/')}>
@@ -181,6 +179,7 @@ const Header = () => {
                     </>
                 )}
             </div>
+
             <div className="header__icons">
                 <NavLink to="/">
                     <HomeOutlined />
@@ -218,20 +217,17 @@ const Header = () => {
                     )}
                 </div>
             </div>
+
             <div className="header__profile">
-                <span>{current?.name}</span>
-                <img src={current?.avatar} alt="" />
+                <span>{current.name}</span>
+                <img src={current.avatar} alt="" />
                 <div className="header__profile__list" id="header__profile__list">
                     <ul>
                         <li>
                             <AccountCircleOutlined />
-                            <NavLink onClick={() => handleChangeToProfilePage()} to="/account">
+                            <NavLink onClick={() => handleChangeToProfilePage()} to="/account" className="profile">
                                 Trang cá nhân
                             </NavLink>
-                        </li>
-                        <li>
-                            <SettingsOutlined />
-                            <i>Cài đặt</i>
                         </li>
                         <li id="logout" onClick={handleLogout}>
                             <LocalDiningOutlined />

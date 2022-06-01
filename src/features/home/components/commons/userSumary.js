@@ -1,48 +1,18 @@
-import React, { useEffect, useState } from "react";
-import { Button, Col, Row } from "react-bootstrap";
+import React, { useEffect } from "react";
+import { Col, Row, Spinner } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
-import { socket } from "../../../../App";
-import IMAGES from "../../../../assets/images/imageStore";
 import { getPostsByUserId } from "../../../user/profileSlice";
-import { createNotification, follow } from "../../homeSlice";
 
 const UserSumary = ({ user }) => {
-  const { posts } = useSelector((state) => state.user);
+  const { posts, isLoading } = useSelector((state) => state.user);
   const dispatch = useDispatch();
-  const [IsFollow, setIsFollow] = useState(false);
-  const current = JSON.parse(localStorage.getItem("LoginUser"));
   useEffect(async () => {
     //get list post by user id
     const action = getPostsByUserId(user._id);
-    await dispatch(action);
+    await dispatch(action).unwrap();
   }, []);
 
   //hàm xử lý khi nhấn follow
-  const handleFollow = (id) => {
-    console.log("Dô hàm handle follow");
-    let notification = {
-      userId: id, // cái này là id của thằng cần gửi thông báo tới
-      type: 3,
-      senderName: current.name,
-    };
-    socket.emit("send_notificaton", notification);
-
-    let paramsCreate = {
-      receiver: id,
-      notiType: 3,
-      desId: current._id,
-    };
-
-    console.log("params của thông báo");
-    console.log(paramsCreate);
-    const actionCreateNoti = createNotification(paramsCreate);
-    dispatch(actionCreateNoti);
-
-    console.log(id);
-    const action = follow(id);
-    dispatch(action);
-    setIsFollow(true);
-  };
 
   return (
     <div className="sumary">
@@ -68,21 +38,22 @@ const UserSumary = ({ user }) => {
           <p className="num">{user.following.length}</p>
         </Col>
       </Row>
-      <Row className="sumary_image">
-        {posts.map((item, index) => {
-          if (index < 3) {
-            return (
-              <Col>
-                <img src={item.images[0]} alt="" />
-              </Col>
-            );
-          }
-        })}
-      </Row>
-      <Row className="sumary_button">
-        <Button size="sm" onClick={() => handleFollow(user._id)}>
-          {IsFollow === true ? "UnFollow" : "Follow"}
-        </Button>
+      <Row className="sumary_image text-center">
+        {isLoading ? (
+          <Spinner animation="grow" variant="success" />
+        ) : (
+          <>
+            {posts.map((item, index) => {
+              if (index < 3) {
+                return (
+                  <Col>
+                    <img src={item.images[0]} alt="" />
+                  </Col>
+                );
+              }
+            })}
+          </>
+        )}
       </Row>
     </div>
   );

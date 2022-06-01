@@ -4,6 +4,8 @@ import {
   FavoriteBorderOutlined,
   CheckCircle,
   Favorite,
+  ReplyRounded,
+  ChatBubbleOutlineOutlined,
 } from "@material-ui/icons";
 import "./common.scss";
 import { useDispatch, useSelector } from "react-redux";
@@ -15,7 +17,7 @@ import {
   likeOrUnlikeCmt,
   SetReplyCmd,
 } from "../../homeSlice";
-import { format } from "timeago.js";
+import TimeAgo from "javascript-time-ago";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEllipsis } from "@fortawesome/free-solid-svg-icons";
 import useCloseOutSideToClose from "../../../../hooks/useCloseOutSideToClose";
@@ -23,6 +25,7 @@ import { socket } from "../../../../App";
 
 const CommentItem = ({ CmtItem }) => {
   const dispatch = useDispatch();
+  const timeAgo = new TimeAgo("en-US");
   const LoginUser = JSON.parse(localStorage.getItem("LoginUser"));
   let islike = CmtItem.likes.includes(LoginUser._id);
 
@@ -45,9 +48,8 @@ const CommentItem = ({ CmtItem }) => {
   }
 
   const isDelete =
-    CmtItem.user._id == LoginUser._id || LoginUser._id == activePost.user._id;
-
-  const isEdit = LoginUser._id == CmtItem.user._id;
+    CmtItem?.user?._id === LoginUser?._id ||
+    LoginUser?._id === activePost?.user?._id;
 
   const ShowAlllikesModal = async (a) => {
     const action = getListUser(a);
@@ -62,17 +64,11 @@ const CommentItem = ({ CmtItem }) => {
   const handleLikeCmt = async (id, x) => {
     setisLike(!isLike);
     const action = likeOrUnlikeCmt(id);
-    if (isLike == true) {
+    if (isLike === true) {
       setNumLikes(--NumLikes);
     } else {
       setNumLikes(++NumLikes);
-      let notification = {
-        postId: activePost._id,
-        userId: CmtItem.user._id,
-        type: 6,
-        senderName: LoginUser.name,
-        img: LoginUser.avatar,
-      };
+
       let paramsCreate = {
         receiver: CmtItem.user._id,
         notiType: 6,
@@ -81,7 +77,17 @@ const CommentItem = ({ CmtItem }) => {
 
       const actionCreateNoti = createNotification(paramsCreate);
       await dispatch(actionCreateNoti).unwrap();
-      socket.emit("send_notificaton", notification);
+
+      if (LoginUser._id !== CmtItem.user._id) {
+        let notification = {
+          postId: activePost._id,
+          userId: CmtItem.user._id,
+          type: 6,
+          senderName: LoginUser.name,
+          img: LoginUser.avatar,
+        };
+        socket.emit("send_notificaton", notification);
+      }
     }
 
     try {
@@ -89,8 +95,6 @@ const CommentItem = ({ CmtItem }) => {
     } catch (error) {
       console.log(error);
     }
-
-    setisLike(!isLike);
   };
 
   // const handleEditCmt = (id) => {
@@ -136,18 +140,26 @@ const CommentItem = ({ CmtItem }) => {
           </div>
           <div className="comment_content_interact">
             <p className="comment_content_interact_time">
-              {format(CmtItem.updatedAt)}
+              {/* {format(CmtItem.updatedAt)} */}
+              {timeAgo.format(Date.parse(CmtItem.updatedAt), "mini-now")}
             </p>
-            {NumLikes > 0 ? (
-              <p
-                className="comment_content_interact_luotthich"
-                onClick={() => ShowAlllikesModal(CmtItem.likes)}
-              >
-                {NumLikes} lượt thích
-              </p>
+            {isLike ? (
+              <Favorite
+                className="likeActive"
+                onClick={() => handleLikeCmt(CmtItem._id, CmtItem.user._id)}
+              />
             ) : (
-              <></>
+              <FavoriteBorderOutlined
+                onClick={() => handleLikeCmt(CmtItem._id)}
+              />
             )}
+
+            <p
+              className="comment_content_interact_luotthich"
+              onClick={() => ShowAlllikesModal(CmtItem.likes)}
+            >
+              {NumLikes}
+            </p>
 
             <p
               className="comment_content_interact_response"
@@ -155,9 +167,10 @@ const CommentItem = ({ CmtItem }) => {
                 HandleReply(CmtItem._id, CmtItem.user.name, CmtItem.user._id)
               }
             >
+              <ChatBubbleOutlineOutlined className="rep"></ChatBubbleOutlineOutlined>
               Trả lời
             </p>
-            {(isDelete || isEdit) && (
+            {isDelete && (
               <div className="comment_content_interact_more">
                 <FontAwesomeIcon
                   // className="comment_content_interact_more"
@@ -189,7 +202,7 @@ const CommentItem = ({ CmtItem }) => {
           </div>
         </div>
       </Col>
-      <Col md={{ span: 1 }} className="comment_like">
+      {/* <Col md={{ span: 1 }} className="comment_like">
         {isLike ? (
           <Favorite
             className="likeActive"
@@ -198,7 +211,7 @@ const CommentItem = ({ CmtItem }) => {
         ) : (
           <FavoriteBorderOutlined onClick={() => handleLikeCmt(CmtItem._id)} />
         )}
-      </Col>
+      </Col> */}
       {reply.length > 0 ? (
         <Col
           className="comment_childrenStatus"
