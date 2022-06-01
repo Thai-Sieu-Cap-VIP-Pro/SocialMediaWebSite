@@ -32,7 +32,7 @@ const LoginForm = () => {
 
   const onSubmit = async (values) => {
     const action = LoginUser(values);
-    await dispatch(action);
+    await dispatch(action).unwrap();
     await dispatch(getAllUsers()).unwrap();
 
     const current = JSON.parse(localStorage.getItem("LoginUser"));
