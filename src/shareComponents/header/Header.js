@@ -219,8 +219,8 @@ const Header = () => {
             </div>
 
             <div className="header__profile">
-                <span>{current?.name}</span>
-                <img src={current?.avatar} alt="" />
+                <span>{currentUser?.name}</span>
+                <img src={currentUser?.avatar} alt="" />
                 <div className="header__profile__list" id="header__profile__list">
                     <ul>
                         <li>

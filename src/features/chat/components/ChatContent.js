@@ -58,6 +58,11 @@ const ChatContent = ({ isOpenSetting, setIsOpenSetting, isShowPopup, setIsShowPo
         document.title = 'Midori • Chats';
     }, []);
 
+    // useEffect(() => {
+    //     // chatContentRef.current.scrollTop = 10000000000;
+    //     ref.current.scrollIntoView({ behavior: 'smooth' });
+    // }, [currentConversation]);
+
     const handleScroll = async (e) => {
         if (e.target.scrollTop === 0) {
             if (!isEnough) {
