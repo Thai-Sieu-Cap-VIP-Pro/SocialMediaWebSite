@@ -225,7 +225,7 @@ const Header = () => {
                     <ul>
                         <li>
                             <AccountCircleOutlined />
-                            <NavLink onClick={() => handleChangeToProfilePage()} to="/account" className="profile">
+                            <NavLink onClick={handleChangeToProfilePage} to="/account" className="profile">
                                 Trang cá nhân
                             </NavLink>
                         </li>
