@@ -22,7 +22,7 @@ const UserHeader = () => {
     const posts = useSelector((state) => state.user.posts);
 
     var isfollow = UserInfo?.followers
-        .map((item) => {
+        ?.map((item) => {
             return item._id;
         })
         .includes(current?._id);

@@ -3,7 +3,7 @@ import { Col, Container, Row } from 'react-bootstrap';
 import { useDispatch } from 'react-redux';
 import { useLocation } from 'react-router-dom';
 import Header from '../../../shareComponents/header/Header';
-import { getNotification } from '../../home/homeSlice';
+import { getNotification, HideDetailEdit, HideDetailReducer } from '../../home/homeSlice';
 import NewpostContent from '../components/newPostContent';
 import NewpostHeader from '../components/newPostHeader';
 import NewpostImage from '../components/newPostImage';
@@ -33,6 +33,7 @@ const NewPage = () => {
         document.title = 'Midori • New Post';
         let action2 = getNotification();
         await dispatch(action2).unwrap();
+        dispatch(HideDetailReducer());
     }, []);
 
     return (

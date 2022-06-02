@@ -54,7 +54,11 @@ const AuthSlice = createSlice({
         error: '',
         isLogin: false,
     },
-    reducers: {},
+    reducers: {
+        updateCurrentUser: (state, action) => {
+            state.current = action.payload;
+        },
+    },
     extraReducers: {
         [LoginUser.pending]: (state) => {
             state.loading = true;
@@ -125,5 +129,6 @@ const AuthSlice = createSlice({
 });
 
 export const { reducer: AuthReducer, actions } = AuthSlice;
+export const { updateCurrentUser } = AuthSlice.actions;
 // export const { Logout } = actions;
 export default AuthReducer;

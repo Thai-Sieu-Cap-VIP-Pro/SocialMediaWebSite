@@ -3,6 +3,7 @@ import { Routes, Route, Outlet } from 'react-router-dom';
 import Auth from './features/auth';
 import IndexHome from './features/home';
 import PrivateRout from './shareComponents/privateRout/privateRout';
+import BruhRoute from './shareComponents/privateRout/BruhRoute';
 import IndexChat from './features/chat';
 import NotFound from './shareComponents/notfound/NotFound';
 import NewIndex from './features/newpost/newIndex';
@@ -59,7 +60,14 @@ function App() {
                 ></Route>
                 {/* <Route path="/*" element={<IndexHome />}></Route> */}
                 {/* <Route path="/messenger/*" element={<IndexChat />}></Route> */}
-                <Route path="/auth/*" element={<Auth />}></Route>
+                <Route
+                    path="/auth/*"
+                    element={
+                        <BruhRoute>
+                            <Auth />
+                        </BruhRoute>
+                    }
+                ></Route>
             </Routes>
             <Outlet></Outlet>
             {activePostId == '' ? '' : <PostComment />}
