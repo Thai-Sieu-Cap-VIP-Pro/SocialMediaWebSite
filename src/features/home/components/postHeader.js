@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Col, Modal, Row, Form, Button } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
-import { ShowReportModal, HideDetailEdit, deletePost } from '../homeSlice';
+import { ShowReportModal, HideDetailEdit, deletePost, HideDetailReducer } from '../homeSlice';
 import { addActiveId, getPostsByUserId } from '../../user/profileSlice';
 import { useNavigate, Link } from 'react-router-dom';
 import { DeleteForever, BorderColor } from '@material-ui/icons';
@@ -30,7 +30,7 @@ const PostHeader = ({ postId, postUser }) => {
     };
 
     const hideDetail = () => {
-        const action = HideDetailEdit();
+        const action = HideDetailReducer();
         dispatch(action);
     };
 
