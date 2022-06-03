@@ -58,12 +58,8 @@ const ChatContent = ({ isOpenSetting, setIsOpenSetting, isShowPopup, setIsShowPo
         document.title = 'Midori • Chats';
     }, []);
 
-    // useEffect(() => {
-    //     // chatContentRef.current.scrollTop = 10000000000;
-    //     ref.current.scrollIntoView({ behavior: 'smooth' });
-    // }, [currentConversation]);
-
     const handleScroll = async (e) => {
+        console.log('======', e.target);
         if (e.target.scrollTop === 0) {
             if (!isEnough) {
                 try {
@@ -335,6 +331,11 @@ const ChatContent = ({ isOpenSetting, setIsOpenSetting, isShowPopup, setIsShowPo
         ref.current.scrollIntoView({ behavior: 'smooth' });
         setShowScrollButton(false);
     };
+
+    // useEffect(() => {
+    //     // chatContentRef.current.scrollTop = 10000000000;
+    //     ref.current.scrollIntoView({ behavior: 'smooth' });
+    // }, [getMessagesInCons]);
 
     // useEffect(() => {
     //     ref.current?.scrollIntoView({ behavior: 'smooth' });
