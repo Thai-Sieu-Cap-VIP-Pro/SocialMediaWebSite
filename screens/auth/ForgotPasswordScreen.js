@@ -131,9 +131,6 @@ const styles = StyleSheet.create({
     marginHorizontal: 20,
     borderWidth: 1,
     borderColor: "#4F8A10",
-    backgroundColor: "#DFF2BF",
-    color: "#4F8A10",
-    borderRadius: 25,
   },
   msgText: {
     fontSize: 15,
