@@ -1,0 +1,16 @@
+@import '../../../assets/styles/variable.scss';
+.newWrapper {
+    border: 1px solid $borderColor;
+    height: 80vh;
+    border-radius: 10px;
+}
+
+.newImgWrapper {
+    border-right: 1px solid $borderColor;
+    height: calc(80vh - 50px);
+    overflow-y: hidden;
+}
+
+.newImgWrapper.col-md-7 {
+    padding: 0;
+}

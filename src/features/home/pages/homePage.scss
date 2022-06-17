@@ -1,0 +1,20 @@
+#loadingPosts {
+  position: relative;
+
+  #loadingSpinner {
+    position: absolute;
+    left: 50%;
+    top: 300px;
+  }
+}
+
+.toastMessage {
+  position: fixed;
+  z-index: 100;
+  right: 10px;
+  bottom: 20px;
+}
+
+.toast-body {
+  background: white;
+}
