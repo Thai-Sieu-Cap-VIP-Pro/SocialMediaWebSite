@@ -15,7 +15,7 @@ export const createConversation = createAsyncThunk('conversation/create', async 
         const response = await ChatAPI.createConversation(args);
         return response;
     } catch (error) {
-        return thunkAPI.rejectWithValue(`${error}`);
+        return thunkAPI.rejectWithValue(`${error} `);
     }
 });
 
@@ -134,7 +134,7 @@ export const seenAllMessages = createAsyncThunk('message/seenAllMessages', async
     } catch (error) {
         return thunkAPI.rejectWithValue(`${error}`);
     }
-}); 
+});
 
 export const seenMessage = createAsyncThunk('message/seenMessage', async (args, thunkAPI) => {
     try {
@@ -143,7 +143,7 @@ export const seenMessage = createAsyncThunk('message/seenMessage', async (args, 
     } catch (error) {
         return thunkAPI.rejectWithValue(`${error}`);
     }
-})
+});
 
 const chatSlice = createSlice({
     name: 'chat',
