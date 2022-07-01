@@ -15,7 +15,7 @@ export const createConversation = createAsyncThunk('conversation/create', async 
         const response = await ChatAPI.createConversation(args);
         return response;
     } catch (error) {
-        return thunkAPI.rejectWithValue(`${error}`);
+        return thunkAPI.rejectWithValue(`${error} `);
     }
 });
 
