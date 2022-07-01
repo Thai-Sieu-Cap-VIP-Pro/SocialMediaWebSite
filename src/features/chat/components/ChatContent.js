@@ -1,130 +1,127 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFaceGrinWide, faImage, faHeart, faPaperPlane } from '@fortawesome/free-regular-svg-icons';
-import { Reply, InfoOutlined, FavoriteBorder, Favorite, DeleteOutline } from '@material-ui/icons';
-import { createMessage, getMessageInCons } from '../ChatSlice';
+import { InfoOutlined, Call, ArrowDownward } from '@material-ui/icons';
+import {
+    createMessage,
+    deleteMessage,
+    getMessageInCons,
+    seenAllMessages,
+    seenMessage,
+    tymMessage,
+    unTymMessage,
+} from '../ChatSlice';
 import { useDispatch, useSelector } from 'react-redux';
-import { useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import { checkText } from 'smile2emoji';
-// import Peer from 'simple-peer';
-// import Picker from 'emoji-picker-react';
+import { v1 as uuid } from 'uuid';
 import './Chat.scss';
-import { socket } from '../pages/ChatPage';
-import axios from 'axios';
+import Picker from 'emoji-picker-react';
 import ChatSetting from './ChatSetting';
 import ImagePopup from './ImagePopup';
+import useImageUpload from '../../../hooks/useImageUpload';
+import WarningPopup from '../../../shareComponents/WarningPopup/WarningPopup';
+import Message from './Message';
+import { socket } from '../../../App';
+import useVideoUpload from '../../../hooks/useVideoUpload';
 
-const ChatContent = () => {
+const ChatContent = ({ isOpenSetting, setIsOpenSetting, isShowPopup, setIsShowPopup }) => {
     const [text, setText] = useState('');
+    const [uploading, setUploading] = useState(false);
+    const [isFetchingMessages, setIsFetchingMessages] = useState(false);
+    const [media, setMedia] = useState({ url: '', type: '' });
     const [isTyping, setIsTyping] = useState(false);
-    const [isOpenEmojiPicker, setIsOpenEmojiPicker] = useState(false);
+    const [showEmojiPicker, setShowEmojiPicker] = useState(false);
     const [openImagePopup, setOpenImagePopup] = useState(false);
-    const [image, setImage] = useState(null);
+    const conversations = useSelector((state) => state.chat.conversations);
+    const [currentConversation, setCurrentConversation] = useState(null);
     const [data, setData] = useState([]);
-    const [isTymMsg, setIsTymMsg] = useState(false);
-    const [isOpenSetting, setIsOpenSetting] = useState(false);
     const [srcPopup, setSrcPopup] = useState('');
-    const dispatch = useDispatch();
+    const [videoId, setVideoId] = useState(uuid());
+    const [isCalling, setIsCalling] = useState(false);
     const currentUser = useSelector((state) => state.auth.current);
+    const [showScrollButton, setShowScrollButton] = useState(false);
+    const [isEnough, setIsEnough] = useState(false);
+    const [page, setPage] = useState(0);
     const params = useParams();
-    // const [isShow, setIsShow] = useState(false);
-    // const target = useRef(null);
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
+    const uploadImage = useImageUpload();
+    const uploadVideo = useVideoUpload();
+
     const ref = useRef();
-    console.log('Hello');
+    const chatContentRef = useRef();
 
-    // dummy thingssssssssssssssssssssssss
+    // useEffect
 
-    // const [me, setMe] = useState('');
-    // const [stream, setStream] = useState();
-    // const [receivingCall, setReceivingCall] = useState(false);
-    // const [caller, setCaller] = useState('');
-    // const [callerSignal, setCallerSignal] = useState();
-    // const [callAccepted, setCallAccepted] = useState(false);
-    // const [idToCall, setIdToCall] = useState('');
-    // const [callEnded, setCallEnded] = useState(false);
-    // const [name, setName] = useState('');
-    // const myVideo = useRef();
-    // const userVideo = useRef();
-    // const connectionRef = useRef();
+    useEffect(() => {
+        document.title = 'Midori • Chats';
+    }, []);
 
-    // useEffect(() => {
-    //     navigator.mediaDevices.getUserMedia({ video: true, audio: true }).then((stream) => {
-    //         setStream(stream);
-    //         myVideo.current.srcObject = stream;
-    //         console.log(myVideo.current.srcObject);
-    //         // console.log(stream);
-    //     });
-
-    //     socket.on('me', (id) => {
-    //         setMe(currentUser._id);
-    //     });
-
-    //     socket.on('callUser', (data) => {
-    //         setReceivingCall(true);
-    //         setCaller(data.from);
-    //         setName(data.name);
-    //         setCallerSignal(data.signal);
-    //     });
-    // }, []);
-
-    // const callUser = (id) => {
-    //     const peer = new Peer({
-    //         initiator: true,
-    //         trickle: false,
-    //         stream: stream,
-    //     });
-    //     peer.on('signal', (data) => {
-    //         socket.emit('callUser', {
-    //             userToCall: id,
-    //             signalData: data,
-    //             from: me,
-    //             name: name,
-    //         });
-    //     });
-    //     peer.on('stream', (stream) => {
-    //         userVideo.current.srcObject = stream;
-    //     });
-    //     socket.on('callAccepted', (signal) => {
-    //         setCallAccepted(true);
-    //         peer.signal(signal);
-    //     });
-
-    //     connectionRef.current = peer;
-    // };
-
-    // const answerCall = () => {
-    //     setCallAccepted(true);
-    //     const peer = new Peer({
-    //         initiator: false,
-    //         trickle: false,
-    //         stream: stream,
-    //     });
-    //     peer.on('signal', (data) => {
-    //         socket.emit('answerCall', { signal: data, to: caller });
-    //     });
-    //     peer.on('stream', (stream) => {
-    //         userVideo.current.srcObject = stream;
-    //     });
-
-    //     peer.signal(callerSignal);
-    //     connectionRef.current = peer;
-    // };
-
-    // const leaveCall = () => {
-    //     setCallEnded(true);
-    //     connectionRef.current.destroy();
-    // };
-
-    // sndbjsahdjasbdjbasjdbasjdbjasbdjsabdjsbdjbasjdbjas
-
-    const handleClickEmoji = () => {
-        setIsOpenEmojiPicker(!isOpenEmojiPicker);
+    const handleScroll = async (e) => {
+        console.log('======', e.target);
+        if (e.target.scrollTop === 0) {
+            if (!isEnough) {
+                try {
+                    const height1 = chatContentRef.current.scrollHeight;
+                    console.log({ height1 });
+                    setIsFetchingMessages(true);
+                    const lmao = page + 1;
+                    const result = await dispatch(getMessageInCons({ id: params.id, page: lmao })).unwrap();
+                    const newMessages = await result.messages;
+                    setIsFetchingMessages(false);
+                    if (newMessages.length === 0) {
+                        setIsEnough(true);
+                    } else {
+                        setData((prev) => {
+                            return [...prev, ...newMessages];
+                        });
+                        setPage((prev) => prev + 1);
+                    }
+                    chatContentRef.current.scrollTop = chatContentRef.current.scrollHeight - height1;
+                } catch (error) {
+                    throw error;
+                }
+            }
+        } else {
+            if (
+                chatContentRef.current.scrollHeight -
+                    chatContentRef.current.scrollTop -
+                    chatContentRef.current.clientHeight >
+                300
+            ) {
+                setShowScrollButton(true);
+            } else {
+                setShowScrollButton(false);
+            }
+        }
     };
 
     useEffect(() => {
+        setIsEnough(false);
+        seenAll();
+        getMessagesInCons();
+        setIsOpenSetting(false);
+        setPage(0);
+        setCurrentConversation(conversations.find((conversation) => conversation._id === params.id));
+        socket.emit('sendNotice', [currentUser]);
+        return () => {
+            socket.emit('leaveRoom', params.id);
+        };
+    }, [params.id]);
+
+    useEffect(() => {
         socket.on('recieveMessage', (mess) => {
-            setData((prev) => [...prev, mess]);
-            console.log(mess);
+            seenMess(mess._id);
+            setData((prev) => [mess, ...prev]);
+            if (
+                chatContentRef.current.scrollHeight -
+                    chatContentRef.current.scrollTop -
+                    chatContentRef.current.clientHeight <=
+                300
+            ) {
+                ref.current?.scrollIntoView({ behavior: 'smooth' });
+            }
         });
         return () => {
             socket.off('recieveMessage');
@@ -133,28 +130,103 @@ const ChatContent = () => {
     }, [socket]);
 
     useEffect(() => {
-        if (ref.current) {
-            ref.current.scrollTop = ref.current.scrollHeight;
+        socket.on('recieveTym', (mess) => {
+            setData((prev) => {
+                return prev.map((item) => {
+                    if (item._id === mess._id) {
+                        return mess;
+                    }
+                    return item;
+                });
+            });
+        });
+        return () => {
+            socket.off('recieveTym');
+            console.log('client Off');
+        };
+    }, [socket]);
+
+    useEffect(() => {
+        socket.on('recieveCalling', (videoId) => {
+            setIsCalling(true);
+            setVideoId(videoId);
+        });
+        return () => {
+            socket.off('recieveCalling');
+            console.log('End Call');
+        };
+    }, [socket]);
+
+    useEffect(() => {
+        socket.on('recieveDeleteMsg', (mess) => {
+            setData((prev) => {
+                return prev.map((item) => {
+                    if (item._id === mess._id) {
+                        return mess;
+                    }
+                    return item;
+                });
+            });
+        });
+        return () => {
+            socket.off('recieveDeleteMsg');
+            console.log('client Off');
+        };
+    }, [socket]);
+
+    const handleTymMessage = async (messageId, userId) => {
+        try {
+            const result = await dispatch(tymMessage({ messageId, userId })).unwrap();
+            socket.emit('sendTym', result.newMessage);
+        } catch (error) {
+            throw error;
         }
-    }, [data, socket]);
+    };
+
+    const handleUnTymMessage = async (messageId, userId) => {
+        try {
+            const result = await dispatch(unTymMessage({ messageId, userId })).unwrap();
+            socket.emit('sendTym', result.newMessage);
+        } catch (error) {
+            throw error;
+        }
+    };
 
     const getMessagesInCons = async () => {
         try {
             socket.emit('joinRoom', params.id);
-            const result = await dispatch(getMessageInCons(params.id)).unwrap();
-            console.log(result.messages);
+            const result = await dispatch(getMessageInCons({ id: params.id, page: 0 })).unwrap();
+            //console.log(result.messages);
             setData(result.messages);
         } catch (error) {
             console.log(error);
         }
     };
 
-    useEffect(() => {
-        getMessagesInCons();
-        return () => {
-            socket.emit('leaveRoom', params.id);
-        };
-    }, [params.id]);
+    const seenAll = async () => {
+        try {
+            const result = await dispatch(seenAllMessages({ id: params.id })).unwrap();
+            console.log('seen tin nhan');
+        } catch (error) {
+            console.log(error);
+        }
+    };
+
+    const seenMess = async (id) => {
+        try {
+            console.log(id);
+            const result = await dispatch(seenMessage({ messId: id })).unwrap();
+            console.log(result.seenMessage);
+            return result.seenMessage;
+        } catch (error) {
+            console.log(error);
+        }
+    };
+
+    const handleEmojiClick = (event, emojiObject) => {
+        setText((a) => a + emojiObject.emoji);
+        //setshowEmoji(false);
+    };
 
     const handleChange = (e) => {
         if (!e.target.value) {
@@ -175,9 +247,13 @@ const ChatContent = () => {
 
     const handleSubmit = async () => {
         try {
-            const result = await dispatch(createMessage({ content: text, conversationId: params.id })).unwrap();
+            const result = await dispatch(
+                createMessage({ content: text, conversationId: params.id, userId: currentUser._id })
+            ).unwrap();
             console.log(result);
+            console.log(currentConversation);
             socket.emit('sendMessage', result.newMessage);
+            socket.emit('sendNotice', currentConversation.members);
             setText('');
             setIsTyping(false);
         } catch (error) {
@@ -185,25 +261,51 @@ const ChatContent = () => {
         }
     };
 
+    const handleDeleteMessage = async (id) => {
+        try {
+            const result = await dispatch(deleteMessage({ id })).unwrap();
+            console.log(result.deletedMessage);
+            socket.emit('sendDeleteMsg', result.deletedMessage);
+            socket.emit('sendNotice', conversations.find((conversation) => conversation._id === params.id)?.members);
+        } catch (error) {
+            throw error;
+        }
+    };
+
     const handleFileChange = async (e) => {
-        setImage(e.target.files[0]);
-        const imageData = new FormData();
-        imageData.append('api_key', '711435673899525');
-        imageData.append('file', image);
-        imageData.append('upload_preset', 'socialnetwork');
-        imageData.append('cloud_name', 'wjbucloud');
-        const url = (
-            await axios.post('https://api.cloudinary.com/v1_1/wjbucloud/image/upload', imageData, {
-                headers: {
-                    'content-type': 'multipart/form-data',
-                },
-            })
-        ).data.url;
-        const result = await dispatch(
-            createMessage({ content: url, conversationId: params.id, isImage: true })
-        ).unwrap();
-        console.log(result);
-        socket.emit('sendMessage', result.newMessage);
+        if (e.target.files[0].size <= 52428800) {
+            setUploading(true);
+            if (e.target.files[0].type.includes('image')) {
+                setMedia({ url: window.URL.createObjectURL(e.target.files[0]), type: 'image' });
+                const url = await uploadImage(e.target.files[0]);
+                const result = await dispatch(
+                    createMessage({
+                        content: url,
+                        conversationId: params.id,
+                        messType: 'image',
+                        userId: currentUser._id,
+                    })
+                ).unwrap();
+                socket.emit('sendMessage', result.newMessage);
+                socket.emit('sendNotice', currentConversation.members);
+            } else {
+                setMedia({ url: window.URL.createObjectURL(e.target.files[0]), type: 'video' });
+                const url = await uploadVideo(e.target.files[0]);
+                const result = await dispatch(
+                    createMessage({
+                        content: url,
+                        conversationId: params.id,
+                        messType: 'video',
+                        userId: currentUser._id,
+                    })
+                ).unwrap();
+                socket.emit('sendMessage', result.newMessage);
+                socket.emit('sendNotice', currentConversation.members);
+            }
+            setUploading(false);
+        } else {
+            alert('Kích thước của file quá lớn!');
+        }
     };
 
     const handleImagePopup = (src) => {
@@ -211,92 +313,175 @@ const ChatContent = () => {
         setOpenImagePopup(true);
     };
 
+    const handleCall = () => {
+        socket.emit('IamCalling', {
+            members: currentConversation.members,
+            videoId,
+        });
+    };
+
+    const handleAcceptCall = (id) => {
+        navigate(`/video_call/${videoId}`);
+    };
+    const handleDeny = () => {
+        setIsCalling(false);
+    };
+
+    const handleScrollBottom = () => {
+        ref.current.scrollIntoView({ behavior: 'smooth' });
+        setShowScrollButton(false);
+    };
+
+    // useEffect(() => {
+    //     // chatContentRef.current.scrollTop = 10000000000;
+    //     ref.current.scrollIntoView({ behavior: 'smooth' });
+    // }, [getMessagesInCons]);
+
+    // useEffect(() => {
+    //     ref.current?.scrollIntoView({ behavior: 'smooth' });
+    // }, [handleFileChange, handleSubmit]);
+
     if (isOpenSetting) {
-        return <ChatSetting setIsOpenSetting={setIsOpenSetting} />;
+        return (
+            <ChatSetting
+                setIsOpenSetting={setIsOpenSetting}
+                currentConversation={conversations.find((con) => con._id === params.id)}
+            />
+        );
     } else {
         return (
-            <div className="rightPanel">
+            <div className="rightPanel" style={{ position: 'relative' }}>
                 <div className="rightPanel__title">
                     <div className="rightPanel__title__user">
                         <div className="rightPanel__title__user__image">
-                            <img src="https://source.unsplash.com/random/50×50" alt="unsplash" />
+                            <img
+                                src={
+                                    conversations.find((conversation) => conversation._id === params.id)?.avatar
+                                        ? conversations.find((conversation) => conversation._id === params.id)?.avatar
+                                        : conversations.find((conversation) => conversation._id === params.id)?.members
+                                              .length === 2
+                                        ? conversations
+                                              .find((conversation) => conversation._id === params.id)
+                                              ?.members.find((item) => item._id !== currentUser._id).avatar
+                                        : conversations.find((conversation) => conversation._id === params.id)?.members
+                                              .length === 1
+                                        ? 'https://res.cloudinary.com/wjbucloud/image/upload/v1653282748/haha_axj617.jpg'
+                                        : 'https://res.cloudinary.com/wjbucloud/image/upload/v1651308420/j2team_girl_8_btpoep.jpg'
+                                }
+                                alt="unsplash"
+                            />
                         </div>
-                        <h6 className="rightPanel__title__user__name">HoangKhang0410</h6>
+                        <h6 className="rightPanel__title__user__name">
+                            {conversations.find((conversation) => conversation._id === params.id)?.name
+                                ? conversations.find((conversation) => conversation._id === params.id)?.name
+                                : conversations.find((conversation) => conversation._id === params.id)?.members
+                                      .length === 2
+                                ? conversations
+                                      .find((conversation) => conversation._id === params.id)
+                                      ?.members.find((item) => item._id !== currentUser._id).name
+                                : conversations.find((conversation) => conversation._id === params.id)?.members
+                                      .length === 1
+                                ? 'Không còn ai muốn trò chuyện với bạn nữa'
+                                : conversations
+                                      .find((conversation) => conversation._id === params.id)
+                                      ?.members.filter((item) => item._id !== currentUser._id)
+                                      .map((member) => member.name)
+                                      .join(', ')}
+                        </h6>
                     </div>
-                    <button>Call</button>
-                    <InfoOutlined
-                        fontSize="medium"
-                        style={{ cursor: 'pointer' }}
-                        onClick={() => setIsOpenSetting(true)}
-                    />
+                    <div className="rightPanel__title__call">
+                        <Link target="_blank" to={`/video_call/${videoId}`}>
+                            <Call cursor="pointer" onClick={handleCall} />
+                        </Link>
+                    </div>
+                    <InfoOutlined fontSize="medium" cursor="pointer" onClick={() => setIsOpenSetting(true)} />
                 </div>
-                <div className="rightPanel__conversation" ref={ref}>
-                    {data.map((item, index) => {
-                        return (
-                            <div
-                                className={`rightPanel__conversation__content ${
-                                    item.sender._id === currentUser._id ? 'mine' : ''
-                                }`}
-                                key={index}
-                            >
-                                {item.sender._id !== currentUser._id && (
-                                    <div className="rightPanel__conversation__content__image">
-                                        <img src={item.sender.avatar} alt="unsplash" />
-                                    </div>
-                                )}
-                                {item.content.isImage === true ? (
-                                    <img
-                                        src={item.content.text}
-                                        alt="pictureChat"
-                                        className="rightPanel__conversation__content__textImage"
-                                        onClick={() => handleImagePopup(item.content.text)}
-                                    />
-                                ) : (
-                                    <p
-                                        className={`rightPanel__conversation__content__text ${
-                                            item.sender._id === currentUser._id ? 'mine' : ''
-                                        }`}
-                                    >
-                                        {item.content.text}
-                                    </p>
-                                )}
-                                {isTymMsg && (
-                                    <div
-                                        className={`rightPanel__conversation__content__react ${
-                                            item.sender._id === currentUser._id ? 'mine' : ''
-                                        }`}
-                                    >
-                                        <Favorite
-                                            htmlColor="red"
-                                            fontSize="small"
-                                            className="rightPanel__conversation__content__react__tym"
-                                        />
-                                    </div>
-                                )}
-
-                                <div
-                                    className={`rightPanel__conversation__content__options ${
-                                        item.sender._id === currentUser._id ? 'mine' : ''
-                                    }`}
-                                >
-                                    {!isTymMsg ? (
-                                        <FavoriteBorder onClick={() => setIsTymMsg(true)} />
-                                    ) : (
-                                        <Favorite htmlColor="red" onClick={() => setIsTymMsg(false)} />
-                                    )}
-                                    <Reply />
-                                    <DeleteOutline />
-                                </div>
-                            </div>
-                        );
-                    })}
+                <div className="rightPanel__conversation" ref={chatContentRef} onScroll={handleScroll}>
+                    {isFetchingMessages && (
+                        <img
+                            src="https://res.cloudinary.com/wjbucloud/image/upload/v1653588935/Ball-Drop-Preloader-1-1_kvobub.gif"
+                            style={{ width: '50px', height: 'auto', alignSelf: 'center' }}
+                        ></img>
+                    )}
+                    {data
+                        .slice(0)
+                        .reverse()
+                        .map((item, index) => {
+                            return (
+                                <Message
+                                    message={item}
+                                    key={index}
+                                    handleImagePopup={handleImagePopup}
+                                    handleTymMessage={handleTymMessage}
+                                    handleUnTymMessage={handleUnTymMessage}
+                                    handleDeleteMessage={handleDeleteMessage}
+                                />
+                            );
+                        })}
+                    {uploading ? (
+                        media.type === 'image' ? (
+                            <img
+                                src={media.url}
+                                alt="collections"
+                                style={{
+                                    opacity: 0.5,
+                                    maxWidth: '40%',
+                                    alignSelf: 'flex-end',
+                                    borderRadius: '10px',
+                                }}
+                                loading="lazy"
+                            />
+                        ) : media.type === 'video' ? (
+                            <video
+                                src={media.url}
+                                style={{
+                                    opacity: 0.5,
+                                    maxWidth: '40%',
+                                    alignSelf: 'flex-end',
+                                    borderRadius: '10px',
+                                }}
+                            ></video>
+                        ) : null
+                    ) : null}
+                    {showScrollButton && (
+                        <div
+                            style={{
+                                position: 'absolute',
+                                bottom: '100px',
+                                left: '50%',
+                                transform: 'translateX(-50%)',
+                                borderRadius: '50%',
+                                backgroundColor: '#EEEEEE',
+                                cursor: 'pointer',
+                                zIndex: 5,
+                                padding: '5px',
+                            }}
+                            onClick={handleScrollBottom}
+                        >
+                            <ArrowDownward fontSize="large" htmlColor="#2BC891" />
+                        </div>
+                    )}
+                    <div ref={ref} />
                 </div>
+                {showEmojiPicker && (
+                    <div
+                        style={{
+                            position: 'absolute',
+                            bottom: '60px',
+                            left: '20px',
+                            zIndex: 990,
+                        }}
+                    >
+                        <Picker onEmojiClick={handleEmojiClick}></Picker>
+                    </div>
+                )}
                 <div className="rightPanel__inputContainer">
                     <FontAwesomeIcon
                         className="rightPanel__inputContainer__icon emoji"
                         icon={faFaceGrinWide}
                         size="lg"
                         cursor="pointer"
+                        onClick={() => setShowEmojiPicker(!showEmojiPicker)}
                     />
                     <input
                         type="text"
@@ -310,7 +495,12 @@ const ChatContent = () => {
                             <label htmlFor="image-input" className="rightPanel__inputContainer__icon image">
                                 <FontAwesomeIcon icon={faImage} size="lg" cursor="pointer" />
                             </label>
-                            <input type="file" id="image-input" onChange={handleFileChange} />
+                            <input
+                                type="file"
+                                id="image-input"
+                                onChange={handleFileChange}
+                                accept="image/*, video/mp4"
+                            />
                             <FontAwesomeIcon
                                 className="rightPanel__inputContainer__icon heart"
                                 icon={faHeart}
@@ -328,7 +518,14 @@ const ChatContent = () => {
                         />
                     )}
                 </div>
-
+                {isCalling && (
+                    <WarningPopup
+                        title="Video Call"
+                        content={`Ai đó đang muốn gọi cho bạn`}
+                        handleOK={handleAcceptCall}
+                        handleCANCEL={handleDeny}
+                    />
+                )}
                 {openImagePopup && <ImagePopup src={srcPopup} setOpen={setOpenImagePopup} />}
             </div>
         );

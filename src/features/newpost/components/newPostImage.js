@@ -1,53 +1,71 @@
-import React, { useState } from "react";
-import { AddAPhotoOutlined } from "@material-ui/icons";
-import axios from "axios";
+import React from 'react';
+import { AddAPhotoOutlined } from '@material-ui/icons';
+import { Close } from '@material-ui/icons';
+import useImageUpload from '../../../hooks/useImageUpload';
+import useVideoUpload from '../../../hooks/useVideoUpload';
 
-const NewpostImage = () => {
-  const [listImg, setlistImg] = useState([]);
+const NewpostImage = ({ listImg, setlistImg }) => {
+    const imageUpload = useImageUpload();
+    const videoUpload = useVideoUpload();
+    const imgHandleChange = async (e) => {
+        Array.from(e.target.files).forEach(async (file) => {
+            if (file.size <= 52428800) {
+                if (file.type.includes('image')) {
+                    const url = await imageUpload(file);
+                    setlistImg((prev) => [...prev, { url, type: 'image' }]);
+                } else {
+                    const url = await videoUpload(file);
+                    setlistImg((prev) => [...prev, { url, type: 'video' }]);
+                }
+            } else {
+                alert('Kích thước của file quá lớn!!!');
+            }
+        });
+    };
 
-  const imgHandleChange = async (e) => {
-    console.log(e.target.files);
+    const handleDropImage = (url) => {
+        setlistImg((prev) => {
+            return prev.filter((item) => item !== url);
+        });
+    };
 
-    const imageData = new FormData();
-    imageData.append("api_key", "711435673899525");
-    imageData.append("file", e.target.files[0]);
-    imageData.append("upload_preset", "socialnetwork");
-    imageData.append("cloud_name", "wjbucloud");
-    const url = (
-      await axios.post(
-        "https://api.cloudinary.com/v1_1/wjbucloud/image/upload",
-        imageData,
-        {
-          headers: {
-            "content-type": "multipart/form-data",
-          },
-        }
-      )
-    ).data.url;
+    return (
+        <div className="newImg">
+            <div className="newImg_add">
+                <form action="" encType="multipart/form-data">
+                    <input
+                        type="file"
+                        multiple
+                        name=""
+                        id="cImg"
+                        onChange={imgHandleChange}
+                        accept="video/mp4, image/*"
+                    />
+                    <label htmlFor="cImg">
+                        <AddAPhotoOutlined />
+                    </label>
+                </form>
+            </div>
 
-    console.log(url);
-  };
-
-  return (
-    <div className="newImg">
-      <div className="newImg_add">
-        <form action="" encType="multipart/form-data">
-          <input
-            type="file"
-            multiple
-            name=""
-            id="cImg"
-            onChange={imgHandleChange}
-          />
-          <label htmlFor="cImg">
-            <AddAPhotoOutlined />
-          </label>
-        </form>
-      </div>
-
-      <div className="newImg_listImg"></div>
-    </div>
-  );
+            <div className="newImg_listImg">
+                {/* <Image cloudName="wjbucloud" publicId={listImg} /> */}
+                {listImg.map((item, index) => {
+                    return (
+                        <div className="newImg_listImg_singleImg" key={index}>
+                            <div className="newImg_listImg_singleImg_closeIcon">
+                                <Close onClick={() => handleDropImage(item)} fontSize="small" />
+                            </div>
+                            {item.type === 'image' ? (
+                                <img src={item.url} key={index} alt="imagePosthihi" loading="lazy" />
+                            ) : item.type === 'video' ? (
+                                <video src={item.url} key={index}></video>
+                            ) : null}
+                        </div>
+                    );
+                })}
+            </div>
+        </div>
+    );
 };
 
 export default NewpostImage;

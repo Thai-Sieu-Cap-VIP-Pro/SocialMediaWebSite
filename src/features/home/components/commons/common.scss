@@ -2,9 +2,10 @@
 @import "../../../../assets/styles/variable";
 
 .comment {
-  margin: 20px 0;
+  padding-top: 10px;
   align-items: center;
   font-size: 13px;
+  margin: 12px 0;
 
   &_chilrentCmt {
     margin-left: 30px;
@@ -13,7 +14,6 @@
 
   &_childrenStatus {
     margin-top: 10px;
-    color: rgb(149, 149, 149);
     cursor: pointer;
   }
 
@@ -23,7 +23,7 @@
       font-size: 14px;
       cursor: pointer;
       position: absolute;
-      right: 10px;
+      right: 20px;
       &:hover {
         transform: scale(1.2);
       }
@@ -39,6 +39,7 @@
       width: 30px;
       height: 30px;
       border-radius: 50%;
+      object-fit: cover;
     }
   }
 
@@ -47,18 +48,31 @@
       display: flex;
       align-items: center;
       position: relative;
+      margin-top: 5px;
 
+      svg {
+        font-size: 14px;
+        cursor: pointer;
+        margin-right: 5px;
+        color: gray;
+      }
+
+      svg.likeActive {
+        color: #ed4956;
+      }
       &_time {
         font-weight: 300;
-        margin-right: 20px;
-        color: #bfbfbf;
+        padding: 0 20px 0 0;
+
+        font-size: 11px;
       }
 
       &_luotthich {
-        font-weight: 500;
-        margin-right: 20px;
-        color: #bfbfbf;
+        font-weight: 100;
+        padding: 0 20px 0 0;
+
         cursor: pointer;
+        font-size: 11px;
 
         &:hover {
           color: #e7e4e4;
@@ -66,46 +80,53 @@
       }
 
       &_response {
-        font-weight: 500;
-        color: #bfbfbf;
+        font-weight: 100;
+
         cursor: pointer;
+        font-size: 11px;
+
+        svg {
+          font-size: 13px;
+        }
       }
 
       &_more {
-        color: #bfbfbf;
+        position: relative;
+
         cursor: pointer;
         margin-left: 15px;
         font-size: 15px;
-      }
 
-      &_option {
-        position: absolute;
-        top: -100%;
-        right: 20px;
-        border-radius: 5px;
-        overflow: hidden;
-        box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+        &_option {
+          position: absolute;
+          top: -5px;
+          right: -73px;
+          border-radius: 5px;
+          overflow: hidden;
+          box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
 
-        ul {
-          list-style: none;
-          margin: 0;
-          padding: 0;
+          ul {
+            list-style: none;
+            margin: 0;
+            padding: 0;
 
-          li {
-            padding: 5px 20px;
-            cursor: pointer;
-            &:hover {
-              background-color: #eeecec;
+            li {
+              padding: 5px 20px;
+              cursor: pointer;
+              font-size: 12px;
+              color: black;
+              &:hover {
+                background-color: #eeecec;
+              }
             }
-          }
-          li.disabledd {
-            background-color: red;
+            li.disabledd {
+              display: none;
+            }
           }
         }
       }
     }
     &_caption {
-      margin-bottom: 10px;
       &_name {
         font-weight: 500;
       }
@@ -174,16 +195,26 @@
       }
     }
     &_content {
-      height: 300px;
+      height: fit-content;
       overflow-y: scroll;
       @include ScrollBarCustom;
+      overflow-x: hidden;
+
+      .spinner_wrap {
+        display: flex;
+        justify-content: center;
+        .spinner {
+          text-align: center;
+          margin: 20px 0;
+        }
+      }
     }
   }
 }
 
 //component sumary
 .sumary {
-  width: 400px;
+  width: 300px;
   box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px,
     rgba(60, 64, 67, 0.15) 0px 1px 3px 1px;
   border-radius: 5px;
@@ -192,12 +223,17 @@
   z-index: 20;
 
   &_header {
-    margin: 20px;
     display: flex;
     align-items: center;
+
+    .name {
+      color: $primaryColor;
+      font-weight: bold;
+      font-size: 13px;
+    }
     img {
-      width: 60px;
-      height: 60px;
+      width: 40px;
+      height: 40px;
       border-radius: 50%;
       object-fit: cover;
     }
@@ -209,6 +245,10 @@
       display: flex;
       flex-direction: column;
       text-align: center;
+
+      p {
+        font-size: 10px;
+      }
 
       .num {
         font-weight: bold;
@@ -222,16 +262,33 @@
     }
     img {
       width: 100%;
-      height: 150px;
+      height: 100px;
       object-fit: cover;
     }
   }
 
   &_button {
-    margin: 20px;
     button {
       background-color: $primaryColor;
       border: none;
     }
   }
+}
+
+.comment_childrenStatus.col-md-10.offset-md-2 {
+  font-size: 12px;
+  margin-top: 20px;
+  color: #057fd1;
+}
+
+.accountItem.row {
+  margin: 10px;
+}
+
+.spinner-grow.text-success {
+  margin: 30px auto;
+}
+
+a:hover {
+  color: #625f5f;
 }

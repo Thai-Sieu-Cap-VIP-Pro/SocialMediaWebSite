@@ -1,47 +1,93 @@
 import axiosClient from "./AxiosClient";
-
+import { URL } from "../const/index";
 class PostAPI {
   getPosts = () => {
-    const url = "http://localhost:3001/api/home/post";
+    const url = URL + "/home/post";
     return axiosClient.get(url, {});
   };
 
   getCommentByPostID = (params) => {
-    const url = "http://localhost:3001/api/comments/" + params;
+    const url = URL + "/comments/" + params;
     return axiosClient.get(url, {});
   };
 
   likePost = (params) => {
-    const url = "http://localhost:3001/api/posts/post/" + params + "/like";
-    return axiosClient.patch(url, {});
+    const url = URL + "/posts/post/" + params + "/like";
+    return axiosClient.patch(url, { postId: params });
+  };
+
+  getPostById = (params) => {
+    console.log(params);
+    const url = URL + "/posts/" + params.postId;
+    return axiosClient.get(url, {});
   };
 
   unLikePost = (params) => {
-    const url = "http://localhost:3001/api/posts/post/" + params + "/unlike";
+    const url = URL + "/posts/post/" + params + "/unlike";
     return axiosClient.patch(url, {});
   };
 
   recommendFriends = () => {
-    const url = "http://localhost:3001/api/home/relate";
+    const url = URL + "/home/relate";
     return axiosClient.get(url, {});
   };
 
   addComment = (params) => {
-    console.log(params);
-    // '/:postId/:commentId?'
     let url = "";
     if (params.commentId == null || params.commentId == "") {
-      url = "http://localhost:3001/api/comments/" + params.postId + "/";
+      url = URL + "/comments/" + params.postId + "/";
     } else {
-      url =
-        "http://localhost:3001/api/comments/" +
-        params.postId +
-        "/" +
-        params.commentId;
+      url = URL + "/comments/" + params.postId + "/" + params.commentId;
     }
 
     let content = params.content;
     return axiosClient.post(url, { content });
+  };
+
+  handleLikeCmt = (params) => {
+    const url = URL + "/comments/ul/" + params;
+
+    return axiosClient.put(url, {});
+  };
+
+  deleteCmt = (params) => {
+    const url = URL + "/comments/" + params.CmtId;
+
+    return axiosClient.delete(url, {});
+  };
+
+  editCmt = (params) => {
+    const url = URL + "/comments/" + params.CmtId;
+    return axiosClient.put(url, {});
+  };
+
+  unnFollowFriends = (params) => {
+    const url = URL + "/user/user/" + params + "/unfollow";
+    return axiosClient.patch(url, { params });
+  };
+
+  followFriends = (params) => {
+    const url = URL + "/user/user/" + params + "/follow";
+    return axiosClient.patch(url, { params });
+  };
+
+  getlistLike = (params) => {
+    const url = URL + "/user/users";
+    return axiosClient.post(url, params);
+  };
+  createNewPost = (params) => {
+    const url = URL + "/posts/createPost";
+    return axiosClient.post(url, params);
+  };
+  updatePost = (params) => {
+    console.log(params);
+    const url = URL + "/posts/updatePost";
+    return axiosClient.patch(url, params);
+  };
+  deletePost = (params) => {
+    console.log(params);
+    const url = URL + "/posts/delete/" + params;
+    return axiosClient.delete(url, {});
   };
 }
 

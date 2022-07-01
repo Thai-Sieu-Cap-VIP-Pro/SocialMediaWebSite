@@ -3,11 +3,22 @@ import { Routes, Route, Outlet } from 'react-router-dom';
 import Auth from './features/auth';
 import IndexHome from './features/home';
 import PrivateRout from './shareComponents/privateRout/privateRout';
+import BruhRoute from './shareComponents/privateRout/BruhRoute';
 import IndexChat from './features/chat';
 import NotFound from './shareComponents/notfound/NotFound';
 import NewIndex from './features/newpost/newIndex';
+import VideoCall from './features/chat/components/VideoCall';
+import UserIndex from './features/user';
+
+import io from 'socket.io-client';
+import { useSelector } from 'react-redux';
+import PostComment from './features/home/components/postComment';
+
+export const socket = io.connect('https://server-social-ie213.herokuapp.com');
 
 function App() {
+    const { activePostId } = useSelector((state) => state.home);
+
     return (
         <div className="App">
             <Routes>
@@ -29,6 +40,17 @@ function App() {
                     }
                 ></Route>
                 <Route
+                    forceRefresh
+                    path="/account/*"
+                    element={
+                        <PrivateRout>
+                            <UserIndex />
+                        </PrivateRout>
+                    }
+                ></Route>
+                <Route path="video_call/:id" element={<VideoCall />} />
+
+                <Route
                     path="/new/*"
                     element={
                         <PrivateRout>
@@ -38,9 +60,17 @@ function App() {
                 ></Route>
                 {/* <Route path="/*" element={<IndexHome />}></Route> */}
                 {/* <Route path="/messenger/*" element={<IndexChat />}></Route> */}
-                <Route path="/auth/*" element={<Auth />}></Route>
+                <Route
+                    path="/auth/*"
+                    element={
+                        <BruhRoute>
+                            <Auth />
+                        </BruhRoute>
+                    }
+                ></Route>
             </Routes>
             <Outlet></Outlet>
+            {activePostId == '' ? '' : <PostComment />}
         </div>
     );
 }

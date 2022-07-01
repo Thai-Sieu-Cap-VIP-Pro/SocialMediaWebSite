@@ -64,6 +64,87 @@ export const deleteCon = createAsyncThunk('conversation/delete', async (args, th
     }
 });
 
+export const removeUserInCon = createAsyncThunk('conversation/removeUser', async (args, thunkAPI) => {
+    try {
+        const response = await ChatAPI.removeUserInCon(args);
+        return response;
+    } catch (error) {
+        return thunkAPI.rejectWithValue(`${error}`);
+    }
+});
+
+export const tymMessage = createAsyncThunk('message/tym', async (args, thunkAPI) => {
+    try {
+        const response = await ChatAPI.tymMessage(args);
+        return response;
+    } catch (error) {
+        return thunkAPI.rejectWithValue(`${error}`);
+    }
+});
+
+export const unTymMessage = createAsyncThunk('message/tym', async (args, thunkAPI) => {
+    try {
+        const response = await ChatAPI.unTymMessage(args);
+        return response;
+    } catch (error) {
+        return thunkAPI.rejectWithValue(`${error}`);
+    }
+});
+
+export const changeConversationName = createAsyncThunk('conversation/changeName', async (args, thunkAPI) => {
+    try {
+        const response = await ChatAPI.changeConName(args);
+        return response;
+    } catch (error) {
+        return thunkAPI.rejectWithValue(`${error}`);
+    }
+});
+
+export const changeConversationAvatar = createAsyncThunk('conversation/changeAvatar', async (args, thunkAPI) => {
+    try {
+        const response = await ChatAPI.changeConAvt(args);
+        return response;
+    } catch (error) {
+        return thunkAPI.rejectWithValue(`${error}`);
+    }
+});
+
+export const deleteMessage = createAsyncThunk('message/delete', async (args, thunkAPI) => {
+    try {
+        const response = await ChatAPI.deleteMessage(args);
+        return response;
+    } catch (error) {
+        return thunkAPI.rejectWithValue(`${error}`);
+    }
+});
+
+export const addUserIntoCon = createAsyncThunk('conversation/addUser', async (args, thunkAPI) => {
+    try {
+        const response = await ChatAPI.addUserIntoCon(args);
+        return response;
+    } catch (error) {
+        return thunkAPI.rejectWithValue(`${error}`);
+    }
+});
+
+export const seenAllMessages = createAsyncThunk('message/seenAllMessages', async (args, thunkAPI) => {
+    try {
+        const response = await ChatAPI.seenAllMessages(args);
+        return response;
+    } catch (error) {
+        return thunkAPI.rejectWithValue(`${error}`);
+    }
+});
+
+export const seenMessage = createAsyncThunk('message/seenMessage', async (args, thunkAPI) => {
+    try {
+        const response = await ChatAPI.seenMessage(args);
+        return response;
+    } catch (error) {
+        return thunkAPI.rejectWithValue(`${error}`);
+    }
+});
+
 const chatSlice = createSlice({
     name: 'chat',
     initialState: {
@@ -72,6 +153,7 @@ const chatSlice = createSlice({
         error: false,
         userFollowing: [],
         tags: [],
+        messagesInConversation: [],
     },
     reducers: {
         createTag: (state, action) => {
@@ -110,7 +192,7 @@ const chatSlice = createSlice({
         [createConversation.fulfilled]: (state, action) => {
             state.loading = false;
             state.error = false;
-            state.conversations.push(action.payload.newConversation);
+            state.conversations.unshift(action.payload.conversation);
         },
         [createConversation.rejected]: (state, action) => {
             state.loading = false;
@@ -130,8 +212,8 @@ const chatSlice = createSlice({
             state.error = true;
         },
         [createMessage.pending]: (state, action) => {
-            state.loading = false;
-            state.error = true;
+            state.loading = true;
+            state.error = false;
         },
         [createMessage.fulfilled]: (state, action) => {
             state.loading = false;
@@ -148,10 +230,150 @@ const chatSlice = createSlice({
         [getMessageInCons.fulfilled]: (state, action) => {
             state.loading = false;
             state.error = false;
+            state.messagesInConversation = action.payload.messages;
         },
         [getMessageInCons.rejected]: (state, action) => {
             state.loading = false;
             state.error = true;
+        },
+        [removeUserInCon.pending]: (state, action) => {
+            state.loading = true;
+            state.error = false;
+        },
+        [removeUserInCon.fulfilled]: (state, action) => {
+            state.loading = false;
+            state.error = false;
+            state.conversations = state.conversations.filter(
+                (conversation) => conversation._id !== action.payload.newConversation._id
+            );
+        },
+        [removeUserInCon.rejected]: (state, action) => {
+            state.loading = false;
+            state.error = true;
+        },
+        [deleteCon.pending]: (state, action) => {
+            state.loading = true;
+            state.error = false;
+        },
+        [deleteCon.fulfilled]: (state, action) => {
+            state.loading = false;
+            state.error = false;
+            state.conversations = state.conversations.filter(
+                (conversation) => conversation._id !== action.payload.conversation._id
+            );
+        },
+        [deleteCon.rejected]: (state, action) => {
+            state.loading = false;
+            state.error = true;
+        },
+        [tymMessage.pending]: (state, action) => {
+            state.loading = true;
+            state.error = false;
+        },
+        [tymMessage.fulfilled]: (state, action) => {
+            state.loading = false;
+            state.error = false;
+        },
+        [tymMessage.rejected]: (state, action) => {
+            state.loading = false;
+            state.error = true;
+        },
+        [unTymMessage.pending]: (state, action) => {
+            state.loading = true;
+            state.error = false;
+        },
+        [unTymMessage.fulfilled]: (state, action) => {
+            state.loading = false;
+            state.error = false;
+        },
+        [unTymMessage.rejected]: (state, action) => {
+            state.loading = false;
+            state.error = true;
+        },
+        [changeConversationName.pending]: (state, action) => {
+            state.loading = true;
+            state.error = false;
+        },
+        [changeConversationName.fulfilled]: (state, action) => {
+            state.loading = false;
+            state.error = false;
+            const conIndex = state.conversations.findIndex(
+                (conversation) => conversation._id == action.payload.newConversation._id
+            );
+            state.conversations[conIndex].name = action.payload.newConversation.name;
+        },
+        [changeConversationName.rejected]: (state, action) => {
+            state.loading = false;
+            state.error = true;
+        },
+        [changeConversationAvatar.pending]: (state, action) => {
+            state.loading = true;
+            state.error = false;
+        },
+        [changeConversationAvatar.fulfilled]: (state, action) => {
+            state.loading = false;
+            state.error = false;
+            const conIndex = state.conversations.findIndex(
+                (conversation) => conversation._id == action.payload.newConversation._id
+            );
+            state.conversations[conIndex].avatar = action.payload.newConversation.avatar;
+        },
+        [changeConversationAvatar.rejected]: (state, action) => {
+            state.loading = false;
+            state.error = true;
+        },
+        [deleteMessage.pending]: (state, action) => {
+            state.loading = true;
+            state.error = false;
+        },
+        [deleteMessage.rejected]: (state, action) => {
+            state.loading = false;
+            state.error = true;
+        },
+        [deleteMessage.fulfilled]: (state, action) => {
+            state.loading = false;
+            state.error = false;
+        },
+        [addUserIntoCon.pending]: (state, action) => {
+            state.loading = true;
+            state.error = false;
+        },
+        [addUserIntoCon.rejected]: (state, action) => {
+            state.loading = false;
+            state.error = true;
+        },
+        [addUserIntoCon.fulfilled]: (state, action) => {
+            state.loading = false;
+            state.conversations
+                .filter((con) => {
+                    return con._id !== action.payload.newConversation._id;
+                })
+                .unshift();
+            state.error = false;
+        },
+        [seenAllMessages.pending]: (state, action) => {
+            state.loading = true;
+            state.error = false;
+        },
+        [seenAllMessages.rejected]: (state, action) => {
+            state.loading = false;
+            state.error = true;
+        },
+        [seenAllMessages.fulfilled]: (state, action) => {
+            state.loading = false;
+            state.error = false;
+        },
+        [seenMessage.pending]: (state, action) => {
+            state.loading = true;
+            state.error = false;
+        },
+        [seenMessage.rejected]: (state, action) => {
+            state.loading = false;
+            state.error = true;
+        },
+        [seenMessage.fulfilled]: (state, action) => {
+            state.loading = false;
+            state.error = false;
         },
     },
 });
