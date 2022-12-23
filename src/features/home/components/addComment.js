@@ -1,22 +1,17 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState } from "react";
 import { Col, Row, Spinner } from "react-bootstrap";
-import {
-  InsertEmoticonOutlined,
-  HighlightOffOutlined,
-} from "@material-ui/icons";
 import Picker from "emoji-picker-react";
 import {
   addNewComment,
   CancelReplyCmd,
   createNotification,
-  getCommentsByPostID,
 } from "../homeSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCircleXmark } from "@fortawesome/free-solid-svg-icons";
 import useCloseOutSideToClose from "../../../hooks/useCloseOutSideToClose";
-import ErrToast from "../../../shareComponents/errorToast/errToast";
 import { socket } from "../../../App";
+import { BsEmojiLaughing } from "react-icons/bs";
 
 const AddComment = ({ postId, userPostId }) => {
   const current = JSON.parse(localStorage.getItem("LoginUser"));
@@ -173,7 +168,7 @@ const AddComment = ({ postId, userPostId }) => {
         <Spinner animation="border" variant="primary" size="sm" />
       </div>
       <Col md={1}>
-        <InsertEmoticonOutlined onClick={() => setshowEmoji(!showEmoji)} />
+        <BsEmojiLaughing onClick={() => setshowEmoji(!showEmoji)} />
       </Col>
       {showEmoji && (
         <Picker

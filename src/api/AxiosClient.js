@@ -1,6 +1,4 @@
 import queryString from "query-string";
-import jwt_decode from "jwt-decode";
-import dayjs from "dayjs";
 import axios from "axios";
 
 const axiosClient = axios.create({

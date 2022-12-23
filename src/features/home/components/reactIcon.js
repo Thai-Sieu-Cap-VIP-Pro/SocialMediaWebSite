@@ -1,10 +1,3 @@
-import {
-  FavoriteBorderOutlined,
-  SendOutlined,
-  AddCommentOutlined,
-  Favorite,
-  BookmarkBorderOutlined,
-} from "@material-ui/icons";
 import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Col, Row } from "react-bootstrap";
@@ -15,6 +8,8 @@ import {
   ShowDetail,
 } from "../homeSlice";
 import { socket } from "../../../App";
+import { MdFavorite, MdOutlineAddComment } from "react-icons/md";
+import { AiOutlineSend, AiOutlineShareAlt } from "react-icons/ai";
 
 const ReactIcon = ({ postId }) => {
   const { listPosts } = useSelector((state) => state.home);
@@ -75,20 +70,20 @@ const ReactIcon = ({ postId }) => {
     <Row className="reactIcon">
       <Col md={9}>
         {isLike === true ? (
-          <Favorite
+          <MdFavorite
             style={{ color: "#ed4956" }}
             onClick={() => HandleLikePost(postId)}
           />
         ) : (
-          <FavoriteBorderOutlined onClick={() => HandleLikePost(postId)} />
+          <MdFavoriteBorder onClick={() => HandleLikePost(postId)} />
         )}
 
-        <AddCommentOutlined onClick={() => showDetail(postId)} />
+        <MdOutlineAddComment onClick={() => showDetail(postId)} />
 
-        <SendOutlined />
+        <AiOutlineSend />
       </Col>
       <Col md={3} style={{ textAlign: "right" }}>
-        <BookmarkBorderOutlined />
+        <AiOutlineShareAlt />
       </Col>
     </Row>
   );

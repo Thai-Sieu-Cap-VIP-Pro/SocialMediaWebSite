@@ -1,9 +1,9 @@
 import React from "react";
-import { Close } from "@material-ui/icons";
 import AccountItem from "./accountItem";
 import { useDispatch, useSelector } from "react-redux";
 import { HideAllLikesModal } from "../../homeSlice";
 import { Spinner } from "react-bootstrap";
+import { AiOutlineClose } from "react-icons/ai";
 
 const AlllikesPopup = () => {
   const dispatch = useDispatch();
@@ -21,7 +21,8 @@ const AlllikesPopup = () => {
       <div className="alllikes_content">
         <div className="alllikes_content_header">
           <p>Lượt thích ({listLikeCmt.listUsers.length})</p>
-          <Close onClick={HideAlllikesModal} />
+
+          <AiOutlineClose onClick={HideAlllikesModal} />
         </div>
         <div className="alllikes_content_content">
           {listLikeCmt.isLoad ? (

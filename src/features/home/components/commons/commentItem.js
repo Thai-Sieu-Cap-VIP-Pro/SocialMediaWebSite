@@ -1,12 +1,9 @@
 import React, { useState } from "react";
 import { Col, Row } from "react-bootstrap";
-import {
-  FavoriteBorderOutlined,
-  CheckCircle,
-  Favorite,
-  ReplyRounded,
-  ChatBubbleOutlineOutlined,
-} from "@material-ui/icons";
+
+import { AiOutlineCheckCircle, AiFillWechat } from "react-icons/ai";
+import { MdFavoriteBorder, MdFavorite } from "react-icons/md";
+
 import "./common.scss";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -133,7 +130,8 @@ const CommentItem = ({ CmtItem }) => {
             <span className="comment_content_caption_name">
               {CmtItem.user.name}
             </span>
-            <CheckCircle />
+            <AiOutlineCheckCircle />
+
             <span className="comment_content_caption_contnet">
               {CmtItem.content}
             </span>
@@ -144,14 +142,12 @@ const CommentItem = ({ CmtItem }) => {
               {timeAgo.format(Date.parse(CmtItem.updatedAt), "mini-now")}
             </p>
             {isLike ? (
-              <Favorite
+              <MdFavorite
                 className="likeActive"
                 onClick={() => handleLikeCmt(CmtItem._id, CmtItem.user._id)}
               />
             ) : (
-              <FavoriteBorderOutlined
-                onClick={() => handleLikeCmt(CmtItem._id)}
-              />
+              <MdFavorite onClick={() => handleLikeCmt(CmtItem._id)} />
             )}
 
             <p
@@ -167,7 +163,7 @@ const CommentItem = ({ CmtItem }) => {
                 HandleReply(CmtItem._id, CmtItem.user.name, CmtItem.user._id)
               }
             >
-              <ChatBubbleOutlineOutlined className="rep"></ChatBubbleOutlineOutlined>
+              <AiFillWechat className="rep" />
               Trả lời
             </p>
             {isDelete && (
@@ -202,16 +198,7 @@ const CommentItem = ({ CmtItem }) => {
           </div>
         </div>
       </Col>
-      {/* <Col md={{ span: 1 }} className="comment_like">
-        {isLike ? (
-          <Favorite
-            className="likeActive"
-            onClick={() => handleLikeCmt(CmtItem._id, CmtItem.user._id)}
-          />
-        ) : (
-          <FavoriteBorderOutlined onClick={() => handleLikeCmt(CmtItem._id)} />
-        )}
-      </Col> */}
+
       {reply.length > 0 ? (
         <Col
           className="comment_childrenStatus"

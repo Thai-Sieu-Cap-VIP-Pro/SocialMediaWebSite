@@ -12,13 +12,6 @@ import {
   ShowDetail,
 } from "../homeSlice";
 
-import {
-  FavoriteBorderOutlined,
-  SendOutlined,
-  AddCommentOutlined,
-  Favorite,
-  BookmarkBorderOutlined,
-} from "@material-ui/icons";
 import PostHeader from "./postHeader";
 import { format } from "timeago.js";
 import {
@@ -29,6 +22,12 @@ import {
 import ReportModal from "./reportModal";
 import { socket } from "../../../App";
 import MessagePopup from "../../chat/components/MessagePopup";
+import {
+  MdFavorite,
+  MdFavoriteBorder,
+  MdOutlineAddComment,
+} from "react-icons/md";
+import { AiOutlineSend, AiOutlineShareAlt } from "react-icons/ai";
 
 const PostItem = ({ postId, content }) => {
   const dispatch = useDispatch();
@@ -139,22 +138,21 @@ const PostItem = ({ postId, content }) => {
           <Row className="reactIcon">
             <Col md={9}>
               {content.likes.includes(current._id) === true ? (
-                <Favorite
+                <MdFavorite
                   style={{ color: "#ed4956" }}
                   onClick={() => HandleLikePost(postId)}
                 />
               ) : (
-                <FavoriteBorderOutlined
+                <MdFavoriteBorder
                   onClick={() => HandleLikePost(postId, content.user._id)}
                 />
               )}
+              <MdOutlineAddComment onClick={() => showDetail(postId)} />
 
-              <AddCommentOutlined onClick={() => showDetail(postId)} />
-
-              <SendOutlined onClick={() => setIsShowMessagePopup(true)} />
+              <AiOutlineSend onClick={() => setIsShowMessagePopup(true)} />
             </Col>
             <Col md={3} style={{ textAlign: "right" }}>
-              <BookmarkBorderOutlined />
+              <AiOutlineShareAlt />
             </Col>
           </Row>
         </Col>
