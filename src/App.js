@@ -22,7 +22,14 @@ function App() {
   return (
     <div className="App">
       <Routes>
-        <Route path="/*" element={<IndexHome />}></Route>
+        <Route
+          path="/*"
+          element={
+            <PrivateRout>
+              <IndexHome />
+            </PrivateRout>
+          }
+        ></Route>
 
         <Route
           path="/messenger/*"

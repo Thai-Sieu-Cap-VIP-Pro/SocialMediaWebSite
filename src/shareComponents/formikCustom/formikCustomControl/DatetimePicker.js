@@ -1,8 +1,8 @@
 import React from "react";
 import { ErrorMessage, Field } from "formik";
-import DateView from 'react-datepicker'
+import DateView from "react-datepicker";
 import TextError from "./TextError";
-import 'react-datepicker/dist/react-datepicker.css'
+import "react-datepicker/dist/react-datepicker.css";
 
 const Datetimepicker = (props) => {
   const { label, name, options, ...rest } = props;
@@ -19,8 +19,9 @@ const Datetimepicker = (props) => {
                 id={name}
                 {...field}
                 {...rest}
+                placeholderText="Select date"
                 selected={value}
-                onChange={val => setFieldValue(name, val)}
+                onChange={(val) => setFieldValue(name, val)}
               />
             );
           }}

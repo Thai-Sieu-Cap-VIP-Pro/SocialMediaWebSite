@@ -32,6 +32,7 @@ import Message from "./Message";
 import { socket } from "../../../App";
 import useVideoUpload from "../../../hooks/useVideoUpload";
 import { AiOutlineArrowDown } from "react-icons/ai";
+import { FiSettings } from "react-icons/fi";
 
 const ChatContent = ({
   isOpenSetting,
@@ -433,10 +434,13 @@ const ChatContent = ({
           </div>
           <div className="rightPanel__title__call">
             <Link target="_blank" to={`/video_call/${videoId}`}>
-              <BiPhoneCall onClick={handleCall} />
+              <BiPhoneCall onClick={handleCall} style={{ color: "#2bc891" }} />
             </Link>
           </div>
-          <BiPhoneCall onClick={() => setIsOpenSetting(true)} />
+          <FiSettings
+            onClick={() => setIsOpenSetting(true)}
+            style={{ cursor: "pointer" }}
+          />
         </div>
         <div
           className="rightPanel__conversation"
@@ -549,12 +553,6 @@ const ChatContent = ({
                 id="image-input"
                 onChange={handleFileChange}
                 accept="image/*, video/mp4"
-              />
-              <FontAwesomeIcon
-                className="rightPanel__inputContainer__icon heart"
-                icon={faHeart}
-                size="lg"
-                cursor="pointer"
               />
             </>
           ) : (

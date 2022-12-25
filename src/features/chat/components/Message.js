@@ -160,7 +160,10 @@ const Message = ({
                 message.sender?._id === currentUser._id ? "mine" : ""
               }`}
             >
-              <MdFavorite className="rightPanel__conversation__content__react__tym" />
+              <MdFavorite
+                className="rightPanel__conversation__content__react__tym"
+                style={{ color: "rgb(237, 73, 86)" }}
+              />
 
               <span>{message.tym.length}</span>
             </div>
@@ -171,7 +174,10 @@ const Message = ({
                   message.sender?._id === currentUser._id ? "mine" : ""
                 }`}
               >
-                <MdFavorite className="rightPanel__conversation__content__react__tym" />
+                <MdFavorite
+                  className="rightPanel__conversation__content__react__tym"
+                  style={{ color: "rgb(237, 73, 86)" }}
+                />
               </div>
             )
           ))}

@@ -198,7 +198,11 @@ const Header = () => {
             <></>
           )}
 
-          <GrNotification ref={domNode} onClick={showNotificationPanel} />
+          <GrNotification
+            ref={domNode}
+            style={{ fontSize: "23px" }}
+            onClick={showNotificationPanel}
+          />
           {isShowNotificationPanel ? (
             <div ref={domNode} className="notification__panel">
               {listNotification.length > 0 ? (

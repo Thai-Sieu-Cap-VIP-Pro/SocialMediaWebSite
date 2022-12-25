@@ -41,9 +41,16 @@ select {
 
 .form_control {
   margin-bottom: 20px;
-  margin-right: 20px;
 }
 
 .error {
+  margin-top: 5px;
+  display: flex;
+  align-items: center;
   color: red;
+  font-size: 12px;
+}
+
+.error__text {
+  margin-left: 5px;
 }
