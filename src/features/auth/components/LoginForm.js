@@ -4,16 +4,15 @@ import * as Yup from "yup";
 import "./auth.scss";
 import { Button, Spinner } from "react-bootstrap";
 import FormikControl from "../../../shareComponents/formikCustom/FormikControl";
-import { Link, useNavigate, Navigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import IMAGES from "../../../assets/images/imageStore";
 import { useDispatch, useSelector } from "react-redux";
 import { getAllUsers, LoginUser } from "../authSlice";
-import { getListRecommendFriends } from "../../home/homeSlice";
 import { addActiveId } from "../../user/profileSlice";
 
 const initialValues = {
-  email: "thai@gmail.com",
-  password: "123",
+  email: "",
+  password: "",
 };
 
 const validationSchema = Yup.object({
@@ -49,7 +48,7 @@ const LoginForm = () => {
           <img src={IMAGES.login.avatar} alt="" />
         </div>
 
-        <div className="loginForm__right__header">WELCOME</div>
+        <div className="loginForm__right__header">SIGN IN</div>
         <div className="loginForm__right__content">
           <Formik
             initialValues={initialValues}
@@ -61,6 +60,7 @@ const LoginForm = () => {
                 <Form>
                   <FormikControl
                     control="input"
+                    placeholder="sample@gmail.com"
                     type="email"
                     label="Email"
                     name="email"
@@ -68,6 +68,7 @@ const LoginForm = () => {
 
                   <FormikControl
                     control="input"
+                    placeholder="*********"
                     label="Password"
                     type="password"
                     name="password"
@@ -77,10 +78,14 @@ const LoginForm = () => {
                     variant="primary"
                     type="submit"
                     disabled={!formik.isValid}
+                    style={{
+                      width: "100%",
+                      background: "#2bc891",
+                      border: "none",
+                    }}
                   >
                     {loading ? (
                       <div>
-                        {" "}
                         <Spinner
                           as="span"
                           animation="grow"
@@ -102,7 +107,10 @@ const LoginForm = () => {
         </div>
 
         <div className="loginForm__right__footer">
-          Do you have account? <Link to="/auth/register">Register Now</Link>
+          Do you have account?{" "}
+          <Link to="/auth/register" style={{ "text-decoration": "none" }}>
+            Register Now
+          </Link>
         </div>
       </div>
     </div>

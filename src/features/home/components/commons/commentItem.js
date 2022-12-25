@@ -1,8 +1,7 @@
 import React, { useState } from "react";
 import { Col, Row } from "react-bootstrap";
 
-import { AiOutlineCheckCircle, AiFillWechat } from "react-icons/ai";
-import { MdFavoriteBorder, MdFavorite } from "react-icons/md";
+import { MdFavorite, MdOutlineComment } from "react-icons/md";
 
 import "./common.scss";
 import { useDispatch, useSelector } from "react-redux";
@@ -19,6 +18,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEllipsis } from "@fortawesome/free-solid-svg-icons";
 import useCloseOutSideToClose from "../../../../hooks/useCloseOutSideToClose";
 import { socket } from "../../../../App";
+import { FaCheck } from "react-icons/fa";
 
 const CommentItem = ({ CmtItem }) => {
   const dispatch = useDispatch();
@@ -130,8 +130,7 @@ const CommentItem = ({ CmtItem }) => {
             <span className="comment_content_caption_name">
               {CmtItem.user.name}
             </span>
-            <AiOutlineCheckCircle />
-
+            <FaCheck className="check" />
             <span className="comment_content_caption_contnet">
               {CmtItem.content}
             </span>
@@ -163,7 +162,7 @@ const CommentItem = ({ CmtItem }) => {
                 HandleReply(CmtItem._id, CmtItem.user.name, CmtItem.user._id)
               }
             >
-              <AiFillWechat className="rep" />
+              <MdOutlineComment className="rep" />
               Trả lời
             </p>
             {isDelete && (
